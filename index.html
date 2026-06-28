@@ -30,7 +30,6 @@
             const [sortConfig, setSortConfig] = useState({ key: 'cagr_1y', direction: 'desc' });
             const [expandedRow, setExpandedRow] = useState(null);
 
-            // 搜尋引擎狀態
             const [searchIndex, setSearchIndex] = useState([]);
             const [searchQuery, setSearchQuery] = useState("");
             const [showDropdown, setShowDropdown] = useState(false);
@@ -62,12 +61,9 @@
             useEffect(() => {
                 fetch('./data_news.json?t=' + new Date().getTime())
                     .then(res => res.json()).then(data => setNewsData(data)).catch(() => setNewsData({}));
-                
-                // 載入搜尋索引 (極輕量)
                 fetch('./search_index.json?t=' + new Date().getTime())
                     .then(res => res.json()).then(data => setSearchIndex(data)).catch(() => setSearchIndex([]));
                 
-                // 點擊空白處關閉搜尋下拉選單
                 const handleClickOutside = (event) => {
                     if (searchRef.current && !searchRef.current.contains(event.target)) setShowDropdown(false);
                 };
@@ -104,12 +100,10 @@
                 setSortConfig({ key, direction });
             };
 
-            // 模糊搜尋過濾邏輯 (限制10筆防畫面過長)
             const filteredSearch = searchIndex.filter(item => 
                 item.id.includes(searchQuery) || item.name.includes(searchQuery)
             ).slice(0, 10);
 
-            // 搜尋結果點擊事件：自動跳轉頁籤並展開列
             const handleSelectSearchResult = (item) => {
                 setActiveTab(item.category);
                 setExpandedRow(item.id);
@@ -121,8 +115,6 @@
 
             return (
                 <div className="p-2 md:p-6 max-w-[1600px] mx-auto w-full overflow-hidden">
-                    
-                    {/* 搜尋導覽區塊 */}
                     <div className="mb-6 relative w-full md:w-96 z-50" ref={searchRef}>
                         <div className="relative">
                             <input 
@@ -177,7 +169,7 @@
                                             { key: 'price', label: '市價' }, { key: 'premium', label: '折溢價' },
                                             { key: 'aum', label: '規模(億)' }, { key: 'cagr_1y', label: '近1年報酬' },
                                             { key: 'sharpe', label: '夏普值' }, { key: 'mdd', label: '最大回撤' },
-                                            { key: 'vol_20d', label: '日均量(張)' }
+                                            { key: 'issue_time', label: '發行時間' }, { key: 'vol_20d', label: '日均量(張)' }
                                         ].map(col => (
                                             <th key={col.key} className="px-4 py-3 cursor-pointer hover:bg-slate-200 select-none" onClick={() => requestSort(col.key)}>
                                                 <span className="flex items-center gap-1">{col.label} <span className="text-blue-600 font-black">{sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</span></span>
@@ -213,31 +205,42 @@
                                                         <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
                                                         <td className="px-4 py-3 text-red-500">{fmtPct(row.mdd)}</td>
+                                                        <td className="px-4 py-3 font-semibold text-slate-600">{fmtText(row.issue_time)}</td>
                                                         <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
                                                     </React.Fragment>
                                                 )}
                                             </tr>
                                             {expandedRow === row.id && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan={isIPO ? "6" : "8"} className="p-4 md:px-8">
-                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
+                                                    <td colSpan={isIPO ? "6" : "9"} className="p-4 md:px-8">
+                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-3' : ''} gap-4`}>
                                                             {!isIPO && (
-                                                                <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                    <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息總額 (近12個月)</h4>
-                                                                    <ul className="text-sm space-y-2">
-                                                                        <li className="flex justify-between border-b pb-1"><span className="text-slate-600">實質 TTM 殖利率</span><span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span></li>
-                                                                        <li className="flex justify-between border-b pb-1"><span className="text-slate-600">累計發放配息金額</span><span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span></li>
-                                                                        <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放金額</span><span className="font-bold text-slate-800">{fmtVal(row.next_div_amount, "$")}</span></li>
-                                                                        <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放日期</span><span className="font-bold text-slate-800">{fmtText(row.next_div_date)}</span></li>
-                                                                    </ul>
-                                                                </div>
+                                                                <React.Fragment>
+                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息</h4>
+                                                                        <ul className="text-sm space-y-2">
+                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">實質 TTM 殖利率</span><span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span></li>
+                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">累計發放金額</span><span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span></li>
+                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放金額</span><span className="font-bold text-slate-800">{fmtVal(row.next_div_amount, "$")}</span></li>
+                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放日期</span><span className="font-bold text-slate-800">{fmtText(row.next_div_date)}</span></li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                        <h4 className="font-bold mb-3 text-blue-800">📊 前三名成分股與比例</h4>
+                                                                        <ul className="text-sm space-y-2">
+                                                                            {row.top_holdings && row.top_holdings.length > 0 ? 
+                                                                                row.top_holdings.map((h, i) => <li key={i} className="border-b border-slate-100 pb-1 text-slate-700 font-semibold">{h}</li>) : 
+                                                                                <li className="text-slate-500">API 防護阻擋或無資料</li>}
+                                                                        </ul>
+                                                                    </div>
+                                                                </React.Fragment>
                                                             )}
                                                             <div className="bg-white p-4 rounded-lg border shadow-sm">
                                                                 <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態牆</h4>
                                                                 <ul className="text-sm space-y-2">
                                                                     {news.length > 0 ? news.map((n, i) => (
                                                                         <li key={i} className="border-b border-slate-50 pb-1"><a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> <span className="text-xs text-slate-400">({n.date})</span></li>
-                                                                    )) : <li className="text-slate-500">當前無重大關聯新聞（僅追蹤熱門標的）</li>}
+                                                                    )) : <li className="text-slate-500">當前無重大關聯新聞</li>}
                                                                 </ul>
                                                             </div>
                                                         </div>
