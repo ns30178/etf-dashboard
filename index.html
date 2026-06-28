@@ -43,6 +43,9 @@
                     if (aValue === null && bValue === null) return 0;
                     if (aValue === null) return 1; 
                     if (bValue === null) return -1; 
+                    
+                    if (typeof aValue === 'string') return sortConfig.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                    
                     if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
                     if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
                     return 0;
@@ -56,9 +59,21 @@
                 setSortConfig({ key, direction });
             };
 
-            const formatPct = (val) => val === null ? "N/A" : `${(val * 100).toFixed(2)}%`;
-            const formatNum = (val) => val === null ? "N/A" : val.toFixed(2);
-            const getReturnColor = (val) => val === null ? "text-slate-400" : (val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold");
+            const formatPct = (val) => (val === null || val === 0) ? "N/A" : `${(val * 100).toFixed(2)}%`;
+            const formatNum = (val) => (val === null || val === 0) ? "N/A" : val.toFixed(2);
+            const getReturnColor = (val) => (val === null || val === 0) ? "text-slate-400" : (val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold");
+
+            const getCategoryColor = (cat) => {
+                const colors = {
+                    "高股息": "bg-purple-100 text-purple-700",
+                    "市值型": "bg-blue-100 text-blue-700",
+                    "債券型": "bg-stone-100 text-stone-700",
+                    "主題型": "bg-teal-100 text-teal-700",
+                    "槓桿型": "bg-red-100 text-red-700",
+                    "反向型": "bg-green-100 text-green-700"
+                };
+                return colors[cat] || "bg-slate-100 text-slate-700";
+            };
 
             if (loading) return <div className="text-center p-10 text-xl font-bold text-blue-600">系統量化數據載入中，請稍候...</div>;
 
@@ -73,67 +88,42 @@
                         </button>
                     </div>
 
-                    {/* IPO 區塊 */}
                     {activeTab === 'IPO' && (
                         <div className="bg-white rounded-lg shadow border border-slate-200 w-full overflow-x-auto">
-                            <div className="p-3 bg-blue-50 text-blue-800 text-sm font-semibold border-b border-blue-100">
-                                💡 提示：申購中的 ETF 尚未掛牌，無公開 API 報價，此區塊資料由系統管理員手動維護更新。
-                            </div>
                             <table className="w-full text-sm text-left whitespace-nowrap min-w-[600px]">
                                 <thead className="bg-slate-100 text-slate-600">
                                     <tr>
-                                        <th className="px-4 py-3">代號 / 真實股名</th><th className="px-4 py-3">掛牌日</th>
+                                        <th className="px-4 py-3">代號 / 中文名稱</th>
+                                        <th className="px-4 py-3">分類</th>
+                                        <th className="px-4 py-3">掛牌日</th>
                                         <th className="px-4 py-3">發行價</th><th className="px-4 py-3">經管費</th>
                                         <th className="px-4 py-3">配息頻率</th><th className="px-4 py-3">前十大成分股</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {data.ipo.map((ipo, idx) => (
-                                        <React.Fragment key={idx}>
-                                            <tr className="border-b hover:bg-slate-50 cursor-pointer" onClick={() => setExpandedRow(expandedRow === `ipo_${idx}` ? null : `ipo_${idx}`)}>
-                                                <td className="px-4 py-3 font-bold text-blue-700 flex items-center gap-2">
-                                                    <span className="text-blue-400 text-lg">{expandedRow === `ipo_${idx}` ? '▼' : '▶'}</span>
-                                                    {ipo.id} {ipo.name}
-                                                </td>
-                                                <td className="px-4 py-3">{ipo.issueDate}</td><td className="px-4 py-3">${ipo.price.toFixed(2)}</td>
-                                                <td className="px-4 py-3">{ipo.fee}%</td><td className="px-4 py-3">{ipo.freq}</td>
-                                                <td className="px-4 py-3 text-xs text-slate-500">{ipo.topHoldings}</td>
-                                            </tr>
-                                            {/* IPO 新聞展開 */}
-                                            {expandedRow === `ipo_${idx}` && (
-                                                <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan="6" className="p-4 md:px-8">
-                                                        <div className="bg-white p-4 rounded border shadow-sm">
-                                                            <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態</h4>
-                                                            <ul className="text-sm space-y-2">
-                                                                {ipo.news && ipo.news.length > 0 ? ipo.news.map((n, i) => (
-                                                                    <li key={i}><a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> <span className="text-xs text-slate-400">({n.date})</span></li>
-                                                                )) : <li className="text-slate-500">目前尚無關聯新聞</li>}
-                                                            </ul>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </React.Fragment>
+                                        <tr key={idx} className="border-b hover:bg-slate-50">
+                                            <td className="px-4 py-3 font-bold text-blue-700">{ipo.id} {ipo.name}</td>
+                                            <td className="px-4 py-3"><span className={`px-2 py-1 text-xs rounded-full font-semibold ${getCategoryColor(ipo.category)}`}>{ipo.category}</span></td>
+                                            <td className="px-4 py-3">{ipo.issueDate}</td><td className="px-4 py-3">${ipo.price.toFixed(2)}</td>
+                                            <td className="px-4 py-3">{ipo.fee}%</td><td className="px-4 py-3">{ipo.freq}</td>
+                                            <td className="px-4 py-3 text-xs text-slate-500">{ipo.topHoldings}</td>
+                                        </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
                     )}
 
-                    {/* MAIN 區塊 */}
                     {activeTab === 'MAIN' && (
                         <div className="bg-white rounded-lg shadow border border-slate-200 w-full relative">
-                            <div className="p-3 bg-blue-50 text-blue-800 text-xs md:text-sm font-semibold border-b border-blue-100 flex justify-between">
-                                <span>👆 點選表頭欄位即可自動排序</span>
-                                <span>👇 點選任一 ETF 可展開新聞動態</span>
-                            </div>
                             <div className="overflow-x-auto max-h-[80vh] w-full relative">
                                 <table className="w-full text-sm text-left whitespace-nowrap">
                                     <thead className="bg-slate-100 text-slate-600 font-semibold sticky top-0 z-20 shadow-sm">
                                         <tr>
                                             <th className="px-4 py-3 sticky left-0 bg-slate-100 z-30 border-r shadow-[1px_0_0_0_#e2e8f0] min-w-[200px]">代號 / 中文名稱</th>
                                             {[
+                                                { key: 'category', label: '分類' },
                                                 { key: 'price', label: '市價' },
                                                 { key: 'cagr_1y', label: '近1年報酬' },
                                                 { key: 'sharpe', label: '夏普值' },
@@ -161,6 +151,11 @@
                                                             </div>
                                                         </div>
                                                     </td>
+                                                    <td className="px-4 py-3">
+                                                        <span className={`px-2 py-1 text-xs rounded-full font-semibold ${getCategoryColor(row.category)}`}>
+                                                            {row.category}
+                                                        </span>
+                                                    </td>
                                                     <td className="px-4 py-3 font-semibold">{formatNum(row.price)}</td>
                                                     <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{formatPct(row.cagr_1y)}</td>
                                                     <td className="px-4 py-3">{formatNum(row.sharpe)}</td>
@@ -168,17 +163,23 @@
                                                     <td className="px-4 py-3 font-mono text-slate-600">{row.vol_20d?.toLocaleString() || "N/A"}</td>
                                                 </tr>
                                                 
-                                                {/* 展開新聞與配息區塊 */}
                                                 {expandedRow === row.id && (
                                                     <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                        <td colSpan="6" className="p-4 md:px-8">
+                                                        <td colSpan="7" className="p-4 md:px-8">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                                 <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                    <h4 className="font-bold mb-3 text-blue-800">💰 配息與其他資訊</h4>
-                                                                    <div className="text-sm text-slate-500">
-                                                                        <p>因官方 API 限制，詳細配息日與殖利率需另外接付費資訊源。</p>
-                                                                        <p className="mt-2">✅ 目前已追蹤到該檔 ETF 的量化基礎資料。</p>
-                                                                    </div>
+                                                                    <h4 className="font-bold mb-3 text-blue-800">💰 殖利率與配息資訊</h4>
+                                                                    <ul className="text-sm space-y-2">
+                                                                        <li className="flex justify-between border-b border-slate-100 pb-1">
+                                                                            <span className="text-slate-600">近 12 個月殖利率 (TTM)</span>
+                                                                            <span className="font-bold text-purple-600">{formatPct(row.yield_ttm)}</span>
+                                                                        </li>
+                                                                        <li className="flex justify-between border-b border-slate-100 pb-1">
+                                                                            <span className="text-slate-600">近 12 個月配息總額</span>
+                                                                            <span className="font-bold text-slate-800">${formatNum(row.dividend_rate)}</span>
+                                                                        </li>
+                                                                    </ul>
+                                                                    <div className="mt-3 text-xs text-slate-400">※ 殖利率數據來自公開歷史資訊，不代表未來績效保證。</div>
                                                                 </div>
                                                                 <div className="bg-white p-4 rounded-lg border shadow-sm">
                                                                     <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態</h4>
@@ -188,7 +189,7 @@
                                                                                 <a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> 
                                                                                 <span className="text-xs text-slate-400 ml-2">({n.date})</span>
                                                                             </li>
-                                                                        )) : <li className="text-slate-500">近期尚無重大新聞</li>}
+                                                                        )) : <li className="text-slate-500">近期尚無重大新聞或日均量較低</li>}
                                                                     </ul>
                                                                 </div>
                                                             </div>
