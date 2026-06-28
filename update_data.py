@@ -4,7 +4,6 @@ import cloudscraper
 import time
 import random
 import requests
-import yfinance as yf
 from bs4 import BeautifulSoup
 from datetime import datetime
 
@@ -20,6 +19,22 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
+def safe_yahoo_get(url):
+    """帶有指數退避 (Exponential Backoff) 的安全請求模組，專治 429 錯誤"""
+    for attempt in range(4): # 最多重試 4 次
+        try:
+            res = scraper.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10)
+            if res.status_code == 429:
+                # 遇到 429，休眠時間隨重試次數指數增加 (2秒, 4秒, 8秒...)
+                time.sleep((2 ** attempt) + random.uniform(1, 3))
+                continue
+            if res.status_code == 200:
+                return res.json()
+            break # 遇到 404 等其他錯誤則直接跳出
+        except:
+            time.sleep(2)
+    return {}
+
 def categorize_etf(name):
     if any(k in name for k in ['正2', '正達', '倍']): return "槓桿型"
     if any(k in name for k in ['反1', '反向']): return "反向型"
@@ -31,56 +46,25 @@ def categorize_etf(name):
 
 def get_all_taiwan_etfs():
     tickers = {}
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
-    print("取得官方最新 ETF 名冊...")
-    
-    # 1. 嘗試 OpenAPI
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    print("👉 正在取得官方最新 ETF 名冊...")
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=10)
-        if res.status_code == 200:
-            for item in res.json():
-                if str(item.get('Code', '')).startswith('00'):
-                    tickers[f"{item['Code']}.TW"] = item.get('Name', '未知名稱')
+        for item in scraper.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=10).json():
+            if str(item.get('Code', '')).startswith('00'):
+                tickers[f"{item['Code']}.TW"] = item.get('Name', '未知名稱')
     except: pass
-    
     try:
-        res = requests.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes", headers=headers, timeout=10)
-        if res.status_code == 200:
-            for item in res.json():
-                code = str(item.get('SecuritiesCompanyCode', ''))
-                if code.startswith('00'):
-                    tickers[f"{code}.TWO"] = item.get('CompanyName', '未知名稱')
+        for item in scraper.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes", headers=headers, timeout=10).json():
+            code = str(item.get('SecuritiesCompanyCode', ''))
+            if code.startswith('00'):
+                tickers[f"{code}.TWO"] = item.get('CompanyName', '未知名稱')
     except: pass
-
-    # 2. 嘗試從淨值網頁反向萃取代號
-    if not tickers:
-        try:
-            res = scraper.get("https://www.twse.com.tw/rwd/zh/fund/MI_101?response=json", headers=headers, timeout=10).json()
-            for row in res.get('data', []):
-                code = str(row[0])
-                if code.startswith('00'):
-                    tickers[f"{code}.TW"] = str(row[1])
-        except: pass
-        try:
-            res = scraper.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=headers, timeout=10).json()
-            for row in res.get('aaData', []):
-                code = str(row[0])
-                if code.startswith('00'):
-                    tickers[f"{code}.TWO"] = str(row[1])
-        except: pass
-
-    # 3. 備案暴力生成模式
-    if not tickers:
-        for i in range(50, 1000):
-            tickers[f"00{str(i).zfill(3)}.TW"] = "台股 ETF"
-            tickers[f"00{str(i).zfill(3)}B.TWO"] = "債券 ETF"
-
     return tickers
 
 def get_official_nav():
     nav_dict = {}
     headers = {"User-Agent": "Mozilla/5.0"}
-    print("同步證交所與櫃買中心官方淨值...")
+    print("👉 正在同步證交所與櫃買中心官方淨值...")
     try:
         res = scraper.get("https://www.twse.com.tw/rwd/zh/fund/MI_101?response=json", headers=headers, timeout=10).json()
         for row in res.get('data', []):
@@ -93,47 +77,33 @@ def get_official_nav():
             try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
             except: pass
     except: pass
-    
-    if not nav_dict:
-        try:
-            for item in scraper.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=10).json():
-                try: nav_dict[f"{item['Code']}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
-                except: pass
-            for item in scraper.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_etf_nav", headers=headers, timeout=10).json():
-                try: nav_dict[f"{item['SecuritiesCompanyCode']}.TWO"] = float(str(item.get('Nav', '0')).replace(',', ''))
-                except: pass
-        except: pass
-
     return nav_dict
 
 def get_robust_fund_data(ticker, current_price):
     aum, nav, y_ttm, d_rate = None, None, None, None
+    url = f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{ticker}?modules=summaryDetail,defaultKeyStatistics"
+    
+    res_json = safe_yahoo_get(url)
+    if not res_json: return {'aum': aum, 'nav': nav, 'yield': y_ttm, 'dividend_rate': d_rate}
+
     try:
-        url = f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{ticker}?modules=summaryDetail"
-        res = scraper.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5).json()
-        summary = res.get('quoteSummary', {}).get('result', [{}])[0].get('summaryDetail', {})
+        result = res_json.get('quoteSummary', {}).get('result', [{}])[0]
+        summary = result.get('summaryDetail', {})
+        stats = result.get('defaultKeyStatistics', {})
+
         nav = summary.get('navPrice', {}).get('raw')
         assets = summary.get('totalAssets', {}).get('raw')
         mcap = summary.get('marketCap', {}).get('raw')
+        shares = stats.get('sharesOutstanding', {}).get('raw')
+
         if assets: aum = round(assets / 100000000, 2)
         elif mcap: aum = round(mcap / 100000000, 2)
+        elif shares and current_price: aum = round((shares * current_price) / 100000000, 2)
+
         y_ttm = summary.get('trailingAnnualDividendYield', {}).get('raw')
         d_rate = summary.get('trailingAnnualDividendRate', {}).get('raw')
     except: pass
 
-    if aum is None or nav is None:
-        try:
-            tk = yf.Ticker(ticker)
-            info = tk.info
-            if nav is None: nav = info.get('navPrice')
-            if aum is None:
-                assets2 = info.get('totalAssets')
-                mcap2 = info.get('marketCap')
-                shares2 = info.get('sharesOutstanding')
-                if assets2: aum = round(assets2 / 100000000, 2)
-                elif mcap2: aum = round(mcap2 / 100000000, 2)
-                elif shares2 and current_price: aum = round((shares2 * current_price) / 100000000, 2)
-        except: pass
     return {'aum': aum, 'nav': nav, 'yield': y_ttm, 'dividend_rate': d_rate}
 
 def fetch_yahoo_news(ticker):
@@ -150,14 +120,17 @@ def fetch_yahoo_news(ticker):
 
 def fetch_yahoo_data_and_dividends(ticker):
     url = f"https://query2.finance.yahoo.com/v8/finance/chart/{ticker}?range=1y&interval=1d&events=div"
+    resp = safe_yahoo_get(url)
+    if not resp: return None, 0
+
     try:
-        resp = scraper.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10).json()
         result = resp.get('chart', {}).get('result', [{}])[0]
         close_prices = result.get('indicators', {}).get('quote', [{}])[0].get('close')
         volumes = result.get('indicators', {}).get('quote', [{}])[0].get('volume')
         if not close_prices: return None, 0
         if not volumes: volumes = [0] * len(close_prices)
         df = pd.DataFrame({'Close': close_prices, 'Volume': volumes}).dropna()
+        
         div_total = sum([float(div.get('amount', 0)) for div in result.get('events', {}).get('dividends', {}).values()])
         return df, div_total
     except: return None, 0
@@ -165,7 +138,7 @@ def fetch_yahoo_data_and_dividends(ticker):
 def main():
     etf_dict = get_all_taiwan_etfs()
     all_tickers = list(etf_dict.keys())
-    print(f"總計找到 {len(all_tickers)} 檔 ETF，啟動全方位量化與新聞掃描...")
+    print(f"🚀 總計找到 {len(all_tickers)} 檔 ETF，啟動安全防封鎖掃描模式 (預計需時 10~15 分鐘)...")
     
     official_nav = get_official_nav()
     
@@ -174,7 +147,7 @@ def main():
     success_count = 0
     
     for idx, ticker in enumerate(all_tickers):
-        if idx % 20 == 0: print(f"運算進度: {idx+1} / {len(all_tickers)} 檔...")
+        if idx % 20 == 0: print(f"⚡ 運算進度: {idx+1} / {len(all_tickers)} 檔...")
             
         df, div_total_chart = fetch_yahoo_data_and_dividends(ticker)
         if df is None or df.empty or len(df) < 20: continue
@@ -206,7 +179,6 @@ def main():
             
             if vol_20d > 100:
                 news_db[ticker_id] = fetch_yahoo_news(ticker)
-                time.sleep(random.uniform(0.3, 0.7))
 
             db[category].append({
                 "id": ticker_id, "name": name, "price": current_price,
@@ -215,6 +187,9 @@ def main():
                 "dividend_rate": final_div_rate, "vol_20d": vol_20d
             })
             success_count += 1
+            
+            # 加入常態安全間距，避免觸發 429
+            time.sleep(random.uniform(1.5, 3.5))
         except: continue
 
     for cat, data in db.items():
@@ -234,7 +209,7 @@ def main():
     with open("data_news.json", "w", encoding="utf-8") as f:
         json.dump(news_db, f, ensure_ascii=False, indent=2)
         
-    print(f"任務全數完成！共成功導出 {success_count} 檔有效 ETF 量化基本面與動態新聞。")
+    print(f"🎉 任務全數完成！共成功導出 {success_count} 檔有效 ETF 量化基本面與動態新聞。")
 
 if __name__ == "__main__":
     main()
