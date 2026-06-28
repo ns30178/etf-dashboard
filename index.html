@@ -18,22 +18,41 @@
             "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
             "主題型": "data_theme.json", "債券型": "data_bond.json",
             "綜合/其他": "data_other.json", "槓桿型": "data_leverage.json",
-            "反向型": "data_inverse.json", "即將上市(IPO)": "data_ipo.json"
+            "反向型": "data_inverse.json"
         };
         const CATEGORIES = Object.keys(FILE_MAP);
 
         function ETFDashboard() {
-            const [activeTab, setActiveTab] = useState('高股息'); 
+            const [activeTab, setActiveTab] = useState('高股息');
             const [currentData, setCurrentData] = useState([]);
-            const [newsData, setNewsData] = useState({});
             const [loading, setLoading] = useState(true);
             const [sortConfig, setSortConfig] = useState({ key: 'cagr_1y', direction: 'desc' });
             const [expandedRow, setExpandedRow] = useState(null);
 
-            useEffect(() => {
-                fetch('./data_news.json?t=' + new Date().getTime())
-                    .then(res => res.json()).then(data => setNewsData(data)).catch(() => setNewsData({}));
-            }, []);
+            // 嚴格格式化邏輯
+            const fmtVal = (val, prefix = "") => {
+                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "-";
+                return `${prefix}${Number(val).toFixed(2)}`;
+            };
+            const fmtPct = (val) => {
+                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "-";
+                return `${(Number(val) * 100).toFixed(2)}%`;
+            };
+            const fmtText = (val) => {
+                if (val === null || val === undefined || val === "") return "-";
+                return val;
+            };
+
+            const getReturnColor = (val) => {
+                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
+                return val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold";
+            };
+            const getPremiumStyle = (val) => {
+                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
+                if (val > 0.005) return "bg-red-500 text-white font-bold px-2 py-0.5 rounded text-xs"; 
+                if (val < -0.005) return "text-green-600 font-bold";
+                return "text-slate-700 font-semibold";
+            };
 
             useEffect(() => {
                 setLoading(true);
@@ -46,7 +65,6 @@
 
             const sortedData = useMemo(() => {
                 let sortableItems = [...currentData];
-                if (activeTab === '即將上市(IPO)') return sortableItems;
                 sortableItems.sort((a, b) => {
                     let aValue = a[sortConfig.key];
                     let bValue = b[sortConfig.key];
@@ -57,7 +75,7 @@
                     return 0;
                 });
                 return sortableItems;
-            }, [currentData, sortConfig, activeTab]);
+            }, [currentData, sortConfig]);
 
             const requestSort = (key) => {
                 let direction = 'desc';
@@ -65,17 +83,7 @@
                 setSortConfig({ key, direction });
             };
 
-            const formatPct = (val) => (val === null || val === undefined) ? "N/A" : `${(val * 100).toFixed(2)}%`;
-            const formatNum = (val) => (val === null || val === undefined) ? "N/A" : val.toFixed(2);
-            const getReturnColor = (val) => (val === null || val === undefined) ? "text-slate-400" : (val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold");
-            const getPremiumStyle = (val) => {
-                if (val === null || val === undefined) return "text-slate-400";
-                if (val > 0.005) return "bg-red-500 text-white font-bold px-2 py-0.5 rounded text-xs"; 
-                if (val < -0.005) return "text-green-600 font-bold";
-                return "text-slate-700 font-semibold";
-            };
-
-            if (loading) return <div className="text-center p-10 text-xl font-bold text-blue-600">數據整合載入中，請稍候...</div>;
+            if (loading) return <div className="text-center p-10 text-xl font-bold text-blue-600">系統資料載入中，請稍候...</div>;
 
             return (
                 <div className="p-2 md:p-6 max-w-[1600px] mx-auto w-full overflow-hidden">
@@ -90,18 +98,14 @@
                     <div className="bg-white rounded-lg shadow border border-slate-200 w-full relative">
                         <div className="p-2 bg-blue-50 text-blue-800 text-xs font-semibold border-b border-blue-100 flex justify-between">
                             <span>當前板塊：{activeTab} ({sortedData.length} 檔)</span>
-                            {activeTab !== '即將上市(IPO)' && <span>👆 點選欄位標頭可即時排序</span>}
+                            <span>👆 點選欄位標頭可即時排序</span>
                         </div>
                         <div className="overflow-x-auto max-h-[80vh] w-full relative">
                             <table className="w-full text-sm text-left whitespace-nowrap">
                                 <thead className="bg-slate-100 text-slate-600 font-semibold sticky top-0 z-20 shadow-sm">
                                     <tr>
                                         <th className="px-4 py-3 sticky left-0 bg-slate-100 z-30 border-r min-w-[200px]">代號 / 中文名稱</th>
-                                        {activeTab === '即將上市(IPO)' ? [
-                                            { key: 'issueDate', label: '掛牌日' }, { key: 'price', label: '發行價' },
-                                            { key: 'fee', label: '經管費' }, { key: 'freq', label: '配息頻率' }
-                                        ].map(col => <th key={col.key} className="px-4 py-3">{col.label}</th>) : 
-                                        [
+                                        {[
                                             { key: 'price', label: '市價' }, { key: 'premium', label: '折溢價' },
                                             { key: 'aum', label: '規模(億)' }, { key: 'cagr_1y', label: '近1年報酬' },
                                             { key: 'sharpe', label: '夏普值' }, { key: 'mdd', label: '最大回撤' },
@@ -111,14 +115,10 @@
                                                 <span className="flex items-center gap-1">{col.label} <span className="text-blue-600 font-black">{sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</span></span>
                                             </th>
                                         ))}
-                                        {activeTab === '即將上市(IPO)' && <th className="px-4 py-3">前十大成分股</th>}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
-                                    {sortedData.map((row, idx) => {
-                                        const isIPO = activeTab === '即將上市(IPO)';
-                                        const news = newsData[row.id] || [];
-                                        return (
+                                    {sortedData.map((row, idx) => (
                                         <React.Fragment key={row.id || idx}>
                                             <tr className={`hover:bg-blue-50 cursor-pointer ${expandedRow === row.id ? 'bg-blue-50' : 'bg-white'}`} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>
                                                 <td className="px-4 py-3 sticky left-0 z-10 border-r border-slate-100 bg-inherit">
@@ -127,43 +127,25 @@
                                                         <div><div className="font-bold text-slate-800 text-base">{row.id}</div><div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div></div>
                                                     </div>
                                                 </td>
-                                                {isIPO ? (
-                                                    <React.Fragment>
-                                                        <td className="px-4 py-3">{row.issueDate}</td><td className="px-4 py-3">${row.price?.toFixed(2)}</td>
-                                                        <td className="px-4 py-3">{row.fee}%</td><td className="px-4 py-3">{row.freq}</td>
-                                                        <td className="px-4 py-3 text-xs text-slate-500 whitespace-normal min-w-[200px]">{row.topHoldings}</td>
-                                                    </React.Fragment>
-                                                ) : (
-                                                    <React.Fragment>
-                                                        <td className="px-4 py-3 font-semibold">{formatNum(row.price)}</td>
-                                                        <td className="px-4 py-3"><span className={getPremiumStyle(row.premium)}>{formatPct(row.premium)}</span></td>
-                                                        <td className="px-4 py-3 text-slate-700 font-mono">{formatNum(row.aum)}</td>
-                                                        <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{formatPct(row.cagr_1y)}</td>
-                                                        <td className="px-4 py-3">{formatNum(row.sharpe)}</td>
-                                                        <td className="px-4 py-3 text-red-500">{formatPct(row.mdd)}</td>
-                                                        <td className="px-4 py-3 font-mono text-slate-600">{row.vol_20d?.toLocaleString() || "N/A"}</td>
-                                                    </React.Fragment>
-                                                )}
+                                                <td className="px-4 py-3 font-semibold">{fmtVal(row.price)}</td>
+                                                <td className="px-4 py-3"><span className={getPremiumStyle(row.premium)}>{fmtPct(row.premium)}</span></td>
+                                                <td className="px-4 py-3 text-slate-700 font-mono">{fmtVal(row.aum)}</td>
+                                                <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
+                                                <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
+                                                <td className="px-4 py-3 text-red-500">{fmtPct(row.mdd)}</td>
+                                                <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
                                             </tr>
                                             {expandedRow === row.id && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan={isIPO ? "6" : "8"} className="p-4 md:px-8">
+                                                    <td colSpan="8" className="p-4 md:px-8">
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                            {!isIPO && (
-                                                                <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                    <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息總額 (近12個月)</h4>
-                                                                    <ul className="text-sm space-y-2">
-                                                                        <li className="flex justify-between border-b pb-1"><span className="text-slate-600">實質 TTM 殖利率</span><span className="font-bold text-purple-600 text-lg">{formatPct(row.yield_ttm)}</span></li>
-                                                                        <li className="flex justify-between border-b pb-1"><span className="text-slate-600">累計發放配息金額</span><span className="font-bold text-slate-800">${formatNum(row.dividend_rate)}</span></li>
-                                                                    </ul>
-                                                                </div>
-                                                            )}
                                                             <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態牆</h4>
+                                                                <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息總額 (近12個月)</h4>
                                                                 <ul className="text-sm space-y-2">
-                                                                    {news.length > 0 ? news.map((n, i) => (
-                                                                        <li key={i} className="border-b border-slate-50 pb-1"><a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> <span className="text-xs text-slate-400">({n.date})</span></li>
-                                                                    )) : <li className="text-slate-500">當前無重大關聯新聞（僅追蹤熱門標的）</li>}
+                                                                    <li className="flex justify-between border-b pb-1"><span className="text-slate-600">實質 TTM 殖利率</span><span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span></li>
+                                                                    <li className="flex justify-between border-b pb-1"><span className="text-slate-600">累計發放配息金額</span><span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span></li>
+                                                                    <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放金額</span><span className="font-bold text-slate-800">{fmtVal(row.next_div_amount, "$")}</span></li>
+                                                                    <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放日期</span><span className="font-bold text-slate-800">{fmtText(row.next_div_date)}</span></li>
                                                                 </ul>
                                                             </div>
                                                         </div>
@@ -171,8 +153,7 @@
                                                 </tr>
                                             )}
                                         </React.Fragment>
-                                        );
-                                    })}
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
