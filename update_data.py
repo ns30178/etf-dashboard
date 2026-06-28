@@ -4,12 +4,24 @@ import cloudscraper
 import time
 import random
 import requests
+import yfinance as yf
 from bs4 import BeautifulSoup
 from datetime import datetime
 
 scraper = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True})
 
+FILE_MAP = {
+    "高股息": "data_high_div.json",
+    "市值型": "data_market_cap.json",
+    "主題型": "data_theme.json",
+    "債券型": "data_bond.json",
+    "槓桿型": "data_leverage.json",
+    "反向型": "data_inverse.json",
+    "綜合/其他": "data_other.json"
+}
+
 def categorize_etf(name):
+    """根據中文名稱自動分類 ETF 類型"""
     if any(k in name for k in ['正2', '正達', '倍']): return "槓桿型"
     if any(k in name for k in ['反1', '反向']): return "反向型"
     if any(k in name for k in ['高息', '高股息', '優息', '股息', '息收']): return "高股息"
@@ -19,8 +31,10 @@ def categorize_etf(name):
     return "綜合/其他"
 
 def get_all_taiwan_etfs():
+    """從官方 API 提取代號與正確中文名稱"""
     tickers = {}
     headers = {'User-Agent': 'Mozilla/5.0'}
+    print("👉 正在取得官方最新 ETF 名冊...")
     try:
         for item in scraper.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=10).json():
             if str(item.get('Code', '')).startswith('00'):
@@ -35,52 +49,57 @@ def get_all_taiwan_etfs():
     return tickers
 
 def get_official_nav():
+    """多重管道抓取官方每日清算淨值，徹底清洗千分位逗號"""
     nav_dict = {}
     headers = {"User-Agent": "Mozilla/5.0"}
+    print("👉 正在同步證交所與櫃買中心官方淨值...")
     try:
-        for item in scraper.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=10).json():
-            try: nav_dict[f"{item['Code']}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
+        res = scraper.get("https://www.twse.com.tw/rwd/zh/fund/MI_101?response=json", headers=headers, timeout=10).json()
+        for row in res.get('data', []):
+            try: nav_dict[f"{row[0]}.TW"] = float(str(row[3]).replace(',', ''))
             except: pass
     except: pass
     try:
-        for item in scraper.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_etf_nav", headers=headers, timeout=10).json():
-            try: nav_dict[f"{item['SecuritiesCompanyCode']}.TWO"] = float(str(item.get('Nav', '0')).replace(',', ''))
+        res = scraper.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=headers, timeout=10).json()
+        for row in res.get('aaData', []):
+            try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
             except: pass
     except: pass
     return nav_dict
 
-def get_yahoo_fundamentals(tickers_list):
-    fund_data = {}
-    headers = {"User-Agent": "Mozilla/5.0"}
-    for i in range(0, len(tickers_list), 40):
-        batch = tickers_list[i:i+40]
-        url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(batch)}"
+def get_robust_fund_data(ticker, current_price):
+    """資產規模與淨值雙重防禦解析模組"""
+    aum, nav, y_ttm, d_rate = None, None, None, None
+    try:
+        url = f"https://query2.finance.yahoo.com/v10/finance/quoteSummary/{ticker}?modules=summaryDetail"
+        res = scraper.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=5).json()
+        summary = res.get('quoteSummary', {}).get('result', [{}])[0].get('summaryDetail', {})
+        nav = summary.get('navPrice', {}).get('raw')
+        assets = summary.get('totalAssets', {}).get('raw')
+        mcap = summary.get('marketCap', {}).get('raw')
+        if assets: aum = round(assets / 100000000, 2)
+        elif mcap: aum = round(mcap / 100000000, 2)
+        y_ttm = summary.get('trailingAnnualDividendYield', {}).get('raw')
+        d_rate = summary.get('trailingAnnualDividendRate', {}).get('raw')
+    except: pass
+
+    if aum is None or nav is None:
         try:
-            res = scraper.get(url, headers=headers, timeout=10).json().get('quoteResponse', {}).get('result', [])
-            for item in res:
-                sym = item.get('symbol')
-                
-                mcap = item.get('marketCap')
-                assets = item.get('totalAssets')
-                shares = item.get('sharesOutstanding')
-                price = item.get('regularMarketPrice')
-                
-                aum = None
-                if assets and assets > 0: aum = round(assets / 100000000, 2)
-                elif mcap and mcap > 0: aum = round(mcap / 100000000, 2)
-                elif shares and price and shares > 0: aum = round((shares * price) / 100000000, 2)
-                
-                fund_data[sym] = {
-                    'aum': aum,
-                    'nav': item.get('navPrice'),
-                    'yield': item.get('trailingAnnualDividendYield') or item.get('dividendYield'),
-                    'dividend_rate': item.get('trailingAnnualDividendRate') or item.get('dividendRate')
-                }
+            tk = yf.Ticker(ticker)
+            info = tk.info
+            if nav is None: nav = info.get('navPrice')
+            if aum is None:
+                assets2 = info.get('totalAssets')
+                mcap2 = info.get('marketCap')
+                shares2 = info.get('sharesOutstanding')
+                if assets2: aum = round(assets2 / 100000000, 2)
+                elif mcap2: aum = round(mcap2 / 100000000, 2)
+                elif shares2 and current_price: aum = round((shares2 * current_price) / 100000000, 2)
         except: pass
-        time.sleep(1)
-    return fund_data
+    return {'aum': aum, 'nav': nav, 'yield': y_ttm, 'dividend_rate': d_rate}
 
 def fetch_yahoo_news(ticker):
+    """抓取單檔標的最新財經新聞"""
     try:
         soup = BeautifulSoup(scraper.get(f"https://tw.stock.yahoo.com/quote/{ticker}/news", timeout=5).text, 'html.parser')
         news = []
@@ -93,39 +112,36 @@ def fetch_yahoo_news(ticker):
     except: return []
 
 def fetch_yahoo_data_and_dividends(ticker):
+    """直連底層數據庫，加總歷史配息事表記錄"""
     url = f"https://query2.finance.yahoo.com/v8/finance/chart/{ticker}?range=1y&interval=1d&events=div"
     try:
         resp = scraper.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10).json()
         result = resp.get('chart', {}).get('result', [{}])[0]
-        
         close_prices = result.get('indicators', {}).get('quote', [{}])[0].get('close')
         volumes = result.get('indicators', {}).get('quote', [{}])[0].get('volume')
         if not close_prices: return None, 0
         if not volumes: volumes = [0] * len(close_prices)
         df = pd.DataFrame({'Close': close_prices, 'Volume': volumes}).dropna()
-        
-        div_total = 0.0
-        events = result.get('events')
-        if events and 'dividends' in events:
-            for ts, div in events['dividends'].items():
-                div_total += float(div.get('amount', 0))
-                
+        div_total = sum([float(div.get('amount', 0)) for div in result.get('events', {}).get('dividends', {}).values()])
         return df, div_total
     except: return None, 0
 
 def main():
     etf_dict = get_all_taiwan_etfs()
     all_tickers = list(etf_dict.keys())
+    print(f"🚀 總計找到 {len(all_tickers)} 檔 ETF，啟動全方位量化與新聞掃描...")
     
     official_nav = get_official_nav()
-    fundamentals = get_yahoo_fundamentals(all_tickers)
     
-    market_db = []
+    db = {cat: [] for cat in FILE_MAP.keys()}
+    news_db = {}
+    success_count = 0
     
     for idx, ticker in enumerate(all_tickers):
+        if idx % 20 == 0: print(f"⚡ 運算進度: {idx+1} / {len(all_tickers)} 檔...")
+            
         df, div_total_chart = fetch_yahoo_data_and_dividends(ticker)
         if df is None or df.empty or len(df) < 20: continue
-            
         try:
             current_price = float(df['Close'].iloc[-1])
             vol_20d = int(df['Volume'].tail(20).mean() / 1000) if not df['Volume'].empty else 0
@@ -142,48 +158,50 @@ def main():
 
             name = etf_dict.get(ticker, "未知名稱")
             category = categorize_etf(name)
-            fund_info = fundamentals.get(ticker, {})
             
+            fund_info = get_robust_fund_data(ticker, current_price)
             nav = official_nav.get(ticker) or fund_info.get('nav')
             premium = ((current_price - nav) / nav) if nav and nav > 0 else None
             
             final_div_rate = div_total_chart if div_total_chart > 0 else fund_info.get('dividend_rate')
-            final_yield = None
-            if final_div_rate and current_price > 0:
-                final_yield = final_div_rate / current_price
-            elif fund_info.get('yield'):
-                final_yield = fund_info.get('yield')
+            final_yield = (final_div_rate / current_price) if final_div_rate and current_price > 0 else fund_info.get('yield')
 
-            news_data = fetch_yahoo_news(ticker) if vol_20d > 100 else []
+            ticker_id = ticker.split('.')[0]
+            
+            # 日均量大於 100 張才爬新聞，精確控制請求頻率
+            if vol_20d > 100:
+                news_db[ticker_id] = fetch_yahoo_news(ticker)
+                time.sleep(random.uniform(0.3, 0.7))
 
-            market_db.append({
-                "id": ticker.split('.')[0],
-                "name": name, 
-                "category": category,
-                "price": current_price,
-                "premium": premium,
-                "aum": fund_info.get('aum'),
-                "cagr_1y": cagr_1y,
-                "sharpe": sharpe,
-                "mdd": mdd,
-                "yield_ttm": final_yield, 
-                "dividend_rate": final_div_rate,
-                "vol_20d": vol_20d,
-                "news": news_data
+            db[category].append({
+                "id": ticker_id, "name": name, "price": current_price,
+                "premium": premium, "aum": fund_info.get('aum'), "cagr_1y": cagr_1y,
+                "sharpe": sharpe, "mdd": mdd, "yield_ttm": final_yield, 
+                "dividend_rate": final_div_rate, "vol_20d": vol_20d
             })
-            time.sleep(random.uniform(0.5, 1.2))
-        except Exception: continue
+            success_count += 1
+        except: continue
 
+    # 寫入各分類數據檔
+    for cat, data in db.items():
+        with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+
+    # IPO 資料與新聞抓取
     ipo_db = [
         {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
         {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
     ]
-    
     for ipo in ipo_db:
-        ipo['news'] = fetch_yahoo_news(ipo['id'])
+        news_db[ipo['id']] = fetch_yahoo_news(ipo['id'])
+        
+    with open("data_ipo.json", "w", encoding="utf-8") as f:
+        json.dump(ipo_db, f, ensure_ascii=False, indent=2)
 
-    with open("market_data.json", "w", encoding="utf-8") as f:
-        json.dump({"ipo": ipo_db, "main": market_db}, f, ensure_ascii=False, indent=2)
+    with open("data_news.json", "w", encoding="utf-8") as f:
+        json.dump(news_db, f, ensure_ascii=False, indent=2)
+        
+    print(f"🎉 任務全數完成！共成功導出 {success_count} 檔有效 ETF 量化基本面與動態新聞。")
 
 if __name__ == "__main__":
     main()
