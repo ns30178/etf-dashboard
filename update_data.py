@@ -1,3 +1,4 @@
+import yfinance as yf
 import requests
 import pandas as pd
 import json
@@ -12,10 +13,6 @@ FILE_MAP = {
     "主題型": "data_theme.json", "債券型": "data_bond.json",
     "槓桿型": "data_leverage.json", "反向型": "data_inverse.json",
     "綜合/其他": "data_other.json"
-}
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 }
 
 def sanitize_json(val):
@@ -37,84 +34,33 @@ def categorize_etf(name):
     if any(k in name for k in ['50', '100', '市值', '加權', '大盤', '摩台', 'MSCI', '中型', '富時']): return "市值型"
     return "綜合/其他"
 
-def fetch_etf_list_and_nav():
+def fetch_etf_list():
+    """透過 FinMind API 獲取 ETF 名單，繞過 TWSE/TPEX 對 GitHub IP 的封鎖"""
     tickers = {}
-    nav_dict = {}
-    print("🔍 正在透過第三方 API 獲取台股 ETF 名單，繞過政府 IP 封鎖...")
-
-    # 1. 取得台股 ETF 完整名單 (透過 FinMind API)
     try:
         url = "https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo"
-        res = requests.get(url, headers=HEADERS, timeout=10)
+        res = requests.get(url, timeout=10)
         if res.status_code == 200:
-            data = res.json().get('data', [])
-            for item in data:
+            for item in res.json().get('data', []):
                 if item.get('industry_category') == 'ETF':
                     code = str(item.get('stock_id'))
-                    name = str(item.get('stock_name'))
-                    market = str(item.get('type')).lower()
-                    if market == 'twse':
-                        tickers[f"{code}.TW"] = name
-                    elif market == 'tpex':
-                        tickers[f"{code}.TWO"] = name
-    except Exception as e:
-        print(f"[警告] 名單獲取失敗: {e}")
-
-    # 核心備援名單 (防呆)
+                    if code.startswith('00'):
+                        market = str(item.get('type')).lower()
+                        suffix = '.TW' if market == 'twse' else '.TWO'
+                        tickers[f"{code}{suffix}"] = str(item.get('stock_name'))
+    except:
+        pass
+    
+    # 極端備援名單
     if not tickers:
-        print("[警告] API 獲取名單失敗，啟用核心備援名單...")
-        core_etfs = [
-            "0050.TW", "0056.TW", "00878.TW", "00929.TW", "00919.TW", "00713.TW",
-            "00915.TW", "00918.TW", "00939.TW", "00940.TW", "006208.TW", "00679B.TWO",
-            "00687B.TWO", "00722B.TWO", "00772B.TWO", "00937B.TWO", "00632R.TW", "00631L.TW"
-        ]
-        for t in core_etfs:
-            tickers[t] = t.split('.')[0]
-
-    # 2. 嘗試獲取官方淨值 (若 GitHub IP 被擋則略過，後續使用 Yahoo 備援)
-    try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=HEADERS, timeout=5)
-        if res.status_code == 200:
-            for item in res.json():
-                try: nav_dict[f"{item.get('Code')}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
-                except: pass
-    except: pass
-
-    try:
-        res = requests.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=HEADERS, timeout=5)
-        if res.status_code == 200:
-            for row in res.json().get('aaData', []):
-                try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
-                except: pass
-    except: pass
-
-    return tickers, nav_dict
-
-def fetch_yahoo_quote(ticker):
-    url = f"https://query2.finance.yahoo.com/v7/finance/quote?symbols={ticker}"
-    try:
-        res = requests.get(url, headers=HEADERS, timeout=5)
-        if res.status_code == 200:
-            return res.json().get('quoteResponse', {}).get('result', [{}])[0]
-    except: pass
-    return {}
-
-def fetch_yahoo_chart(ticker):
-    url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?range=1y&interval=1d"
-    try:
-        res = requests.get(url, headers=HEADERS, timeout=5)
-        if res.status_code == 200:
-            result = res.json().get('chart', {}).get('result', [{}])[0]
-            timestamps = result.get('timestamp', [])
-            indicators = result.get('indicators', {}).get('quote', [{}])[0]
-            if timestamps and indicators.get('close'):
-                return pd.DataFrame({'Close': indicators['close'], 'Volume': indicators.get('volume', [])}, index=timestamps).dropna()
-    except: pass
-    return pd.DataFrame()
+        core_etfs = ["0050.TW", "0056.TW", "00878.TW", "00929.TW", "00919.TW", "00713.TW", "00679B.TWO", "00687B.TWO"]
+        for t in core_etfs: tickers[t] = t.split('.')[0]
+    return tickers
 
 def fetch_yahoo_news(ticker_id):
     try:
-        res = requests.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", headers=HEADERS, timeout=5)
+        headers = {"User-Agent": "Mozilla/5.0"}
+        res = requests.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", headers=headers, timeout=5)
         soup = BeautifulSoup(res.text, 'html.parser')
         news = []
         for a in soup.find_all('a', href=True):
@@ -126,21 +72,19 @@ def fetch_yahoo_news(ticker_id):
     except: return []
 
 def main():
-    tickers, nav_dict = fetch_etf_list_and_nav()
-    if not tickers:
-        print("❌ 備援機制失效，程式安全終止。")
-        return
-
+    tickers = fetch_etf_list()
     db = {cat: [] for cat in FILE_MAP.keys()}
     news_db = {}
-    print(f"🚀 啟動極速量化引擎，共計掃描 {len(tickers)} 檔...")
+    
+    session = requests.Session()
+    session.headers.update({"User-Agent": "Mozilla/5.0"})
 
     for idx, (ticker, name) in enumerate(tickers.items()):
-        if idx % 50 == 0 and idx > 0:
-            print(f"⏳ 進度: {idx} / {len(tickers)}")
-
         try:
-            hist = fetch_yahoo_chart(ticker)
+            tk = yf.Ticker(ticker, session=session)
+            
+            # 1. 抓取歷史股價與技術指標
+            hist = tk.history(period="1y")
             if hist.empty or len(hist) < 20: continue
 
             current_price = float(hist['Close'].iloc[-1])
@@ -155,31 +99,40 @@ def main():
             else:
                 cagr_1y, sharpe, mdd = None, None, None
 
-            quote = fetch_yahoo_quote(ticker)
-            
-            aum_raw = quote.get('marketCap')
-            if aum_raw:
-                aum = aum_raw / 100000000
-            else:
-                shares = quote.get('sharesOutstanding')
-                aum = (shares * current_price) / 100000000 if shares and current_price else None
+            # 2. 透過 fast_info 強制取得發行股數，無懼 Crumb 封鎖
+            fast = tk.fast_info
+            shares = fast.shares if hasattr(fast, 'shares') else None
+            aum = (shares * current_price) / 100000000 if (shares and not math.isnan(shares)) else None
 
-            nav = nav_dict.get(ticker) or quote.get('regularMarketPrice')
-            premium = ((current_price - nav) / nav) if nav and nav > 0 else None
-
-            yield_ttm = quote.get('trailingAnnualDividendYield')
-            dividend_rate = quote.get('trailingAnnualDividendRate')
-            
+            # 3. 透過 dividends 物件反推實質配息 (繞過 info 的封鎖)
+            divs = tk.dividends
+            dividend_rate = None
+            yield_ttm = None
             next_div_date = None
-            next_div_amount = quote.get('dividendRate')
-            ex_div_ts = quote.get('exDividendDate')
-            
-            if ex_div_ts and ex_div_ts >= datetime.now().timestamp():
-                next_div_date = datetime.fromtimestamp(ex_div_ts).strftime('%Y-%m-%d')
-            else:
-                next_div_amount = None
+            next_div_amount = None
 
-            final_name = quote.get('shortName', name) if name.startswith("00") else name
+            if not divs.empty:
+                now = pd.Timestamp.now(tz=divs.index.tz)
+                one_year_ago = now - pd.DateOffset(years=1)
+                
+                # 計算近 12 個月配息總額
+                past_divs = divs[(divs.index >= one_year_ago) & (divs.index <= now)]
+                if not past_divs.empty:
+                    dividend_rate = float(past_divs.sum())
+                    yield_ttm = dividend_rate / current_price
+
+                # 判斷未來已公告配息
+                future_divs = divs[divs.index > now]
+                if not future_divs.empty:
+                    next_div_date = future_divs.index[0].strftime('%Y-%m-%d')
+                    next_div_amount = float(future_divs.iloc[0])
+
+            # 4. 淨值與折溢價備援
+            info = tk.info
+            nav = info.get('navPrice')
+            premium = ((current_price - nav) / nav) if (nav and nav > 0) else None
+
+            final_name = info.get('shortName', name) if name.startswith("00") else name
             category = categorize_etf(final_name)
             ticker_id = ticker.split('.')[0]
             
@@ -198,6 +151,7 @@ def main():
             
         time.sleep(random.uniform(0.1, 0.3))
 
+    # 輸出
     for cat, data in db.items():
         clean_data = sanitize_json(data)
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
@@ -215,8 +169,6 @@ def main():
 
     with open("data_news.json", "w", encoding="utf-8") as f:
         json.dump(news_db, f, ensure_ascii=False, indent=2)
-
-    print("🎉 資料庫更新完成。")
 
 if __name__ == "__main__":
     main()
