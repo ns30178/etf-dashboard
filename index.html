@@ -11,7 +11,7 @@
 <body class="bg-slate-50 text-slate-800 font-sans">
     <div id="root"></div>
     <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
+        const { useState, useEffect } = React;
         const FILE_MAP = {
             "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
             "主題型": "data_theme.json", "債券型": "data_bond.json",
@@ -22,10 +22,10 @@
 
         function ETFDashboard() {
             const [activeTab, setActiveTab] = useState('高股息');
-            const [currentData, setCurrentData] = useState([]);
+            const [data, setData] = useState([]);
             const [loading, setLoading] = useState(true);
 
-            // 【格式化核心邏輯】
+            // 【格式化核心】確保無數據時顯示 "-"
             const fmtVal = (val, prefix = "") => (val === null || val === undefined || val === 0 || isNaN(val)) ? "-" : `${prefix}${val.toFixed(2)}`;
             const fmtPct = (val) => (val === null || val === undefined || val === 0 || isNaN(val)) ? "-" : `${(val * 100).toFixed(2)}%`;
 
@@ -33,11 +33,9 @@
                 setLoading(true);
                 fetch(`./${FILE_MAP[activeTab]}?t=` + new Date().getTime())
                     .then(res => res.json())
-                    .then(data => { setCurrentData(data); setLoading(false); })
-                    .catch(() => { setCurrentData([]); setLoading(false); });
+                    .then(d => { setData(d); setLoading(false); })
+                    .catch(() => { setData([]); setLoading(false); });
             }, [activeTab]);
-
-            if (loading) return <div className="p-10 text-center font-bold">載入中...</div>;
 
             return (
                 <div className="p-4">
@@ -46,16 +44,17 @@
                             <button key={cat} onClick={() => setActiveTab(cat)} className={`px-4 py-2 font-bold ${activeTab === cat ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>{cat}</button>
                         ))}
                     </div>
-                    <table className="w-full text-sm bg-white border">
+                    <table className="w-full text-sm bg-white border text-center">
                         <thead className="bg-slate-100">
                             <tr>
-                                <th className="p-2">代號</th><th className="p-2">市價</th><th className="p-2">折溢價</th>
-                                <th className="p-2">規模(億)</th><th className="p-2">殖利率</th><th className="p-2">配息額</th>
+                                <th className="p-2">代號</th><th className="p-2">市價</th>
+                                <th className="p-2">折溢價</th><th className="p-2">規模(億)</th>
+                                <th className="p-2">殖利率</th><th className="p-2">配息額</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {currentData.map((row, idx) => (
-                                <tr key={idx} className="border-b text-center">
+                            {data.map((row, idx) => (
+                                <tr key={idx} className="border-b">
                                     <td className="p-2 font-bold">{row.id}</td>
                                     <td className="p-2">{fmtVal(row.price)}</td>
                                     <td className="p-2">{fmtPct(row.premium)}</td>
