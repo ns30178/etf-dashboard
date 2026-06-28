@@ -20,7 +20,7 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
 
 def send_telegram_message(message):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
@@ -75,8 +75,9 @@ def get_yahoo_crumb():
     session = requests.Session()
     session.headers.update(HEADERS)
     try:
-        session.get('https://fc.yahoo.com', timeout=5)
+        session.get('https://tw.yahoo.com/', timeout=5)
         crumb = session.get('https://query1.finance.yahoo.com/v1/test/getcrumb', timeout=5).text
+        if "<html>" in crumb: return session, ""
         return session, crumb
     except:
         return session, ""
@@ -118,6 +119,40 @@ def fetch_yahoo_quote(symbol, market, session, crumb):
     except: pass
     return {}
 
+def fetch_yahoo_html_backup(ticker_id):
+    """備援機制：強制解析 Yahoo 前端 HTML 取得淨值與規模，不受 API Crumb 限制"""
+    data = {"nav": None, "aum": None}
+    try:
+        url = f"https://tw.stock.yahoo.com/quote/{ticker_id}/profile"
+        res = requests.get(url, headers=HEADERS, timeout=5)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        
+        nav_node = soup.find(string=lambda t: t and t.strip() == "淨值")
+        if nav_node:
+            try: data['nav'] = float(nav_node.find_next('span').text.replace(',', ''))
+            except: pass
+            
+        aum_node = soup.find(string=lambda t: t and t.strip() == "基金規模")
+        if aum_node:
+            try:
+                aum_str = aum_node.find_next('span').text
+                if '億' in aum_str: data['aum'] = float(aum_str.replace('億', '').replace(',', '').strip())
+            except: pass
+    except: pass
+    
+    if data['nav'] is None:
+        try:
+            url_quote = f"https://tw.stock.yahoo.com/quote/{ticker_id}"
+            res_q = requests.get(url_quote, headers=HEADERS, timeout=5)
+            soup_q = BeautifulSoup(res_q.text, 'html.parser')
+            nav_node = soup_q.find(string=lambda t: t and t.strip() == "淨值")
+            if nav_node:
+                try: data['nav'] = float(nav_node.find_next('span').text.replace(',', ''))
+                except: pass
+        except: pass
+        
+    return data
+
 def fetch_yahoo_news(symbol):
     try:
         res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=HEADERS, timeout=5)
@@ -142,11 +177,10 @@ def main():
     search_index = []
     yh_session, crumb = get_yahoo_crumb()
 
-    print(f"啟動 API 量化引擎，共計 {len(tickers)} 檔...")
+    print(f"啟動 API 混合量化引擎，共計 {len(tickers)} 檔...")
 
     for idx, (ticker_id, info) in enumerate(tickers.items()):
         try:
-            # 1. 歷史與技術數據
             hist = fetch_fugle_candles(ticker_id)
             if hist.empty or len(hist) < 20: continue
 
@@ -162,7 +196,6 @@ def main():
             else:
                 cagr_1y, sharpe, mdd = None, None, None
 
-            # 2. 配息數據
             div_data = fetch_finmind_dividend(ticker_id)
             ttm_div = 0.0
             now = datetime.now()
@@ -175,7 +208,6 @@ def main():
                     if ex_date <= now: ttm_div += amt
                 except: pass
 
-            # 3. 規模與次期配息預測
             quote = fetch_yahoo_quote(ticker_id, info['market'], yh_session, crumb)
             aum_raw = quote.get('marketCap')
             if aum_raw: aum = aum_raw / 100000000
@@ -184,6 +216,13 @@ def main():
                 aum = (shares * current_price) / 100000000 if shares and current_price else None
 
             nav = nav_dict.get(ticker_id) or quote.get('navPrice') or quote.get('regularMarketPrice')
+            
+            # HTML 備援啟動：若 API 抓不到規模或淨值，啟用 HTML 網頁提取
+            if aum is None or nav is None or nav == current_price:
+                html_data = fetch_yahoo_html_backup(ticker_id)
+                if aum is None: aum = html_data.get('aum')
+                if nav is None or nav == current_price: nav = html_data.get('nav') or nav
+
             premium = ((current_price - nav) / nav) if nav and nav > 0 else None
 
             next_div_date, next_div_amount = None, None
@@ -195,7 +234,6 @@ def main():
             dividend_rate = ttm_div if ttm_div > 0 else None
             yield_ttm = (ttm_div / current_price) if (ttm_div and current_price) else None
 
-            # 寫入
             category = categorize_etf(info['name'])
             db[category].append({
                 "id": ticker_id, "name": info['name'], "price": current_price, "premium": premium,
