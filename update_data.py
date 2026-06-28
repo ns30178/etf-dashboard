@@ -2,8 +2,6 @@ import pandas as pd
 import json
 import cloudscraper
 import time
-import random
-from bs4 import BeautifulSoup
 from datetime import datetime
 
 scraper = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True})
@@ -63,9 +61,7 @@ def get_yahoo_batch_info(tickers):
             mcap = item.get('marketCap')
             price = item.get('regularMarketPrice')
             shares = item.get('sharesOutstanding')
-            
             aum = (mcap / 100000000) if mcap else ((shares * price) / 100000000 if (shares and price) else None)
-            
             batch_data[sym] = {
                 'price': price,
                 'aum': round(aum, 2) if aum else None,
@@ -82,7 +78,7 @@ def fetch_historical_chart(ticker):
     try:
         result = resp.get('chart', {}).get('result', [{}])[0]
         close = result.get('indicators', {}).get('quote', [{}])[0].get('close')
-        vol = result.get('indicators', {}).get('quote', [{}))[0].get('volume')
+        vol = result.get('indicators', {}).get('quote', [{}])[0].get('volume')
         return pd.DataFrame({'Close': close, 'Volume': vol}).dropna()
     except: return None
 
@@ -103,18 +99,4 @@ def main():
         current_price = info.get('price') or float(df['Close'].iloc[-1])
         vol_20d = int(df['Volume'].tail(20).mean() / 1000)
         nav = official_nav.get(ticker)
-        premium = ((current_price - nav) / nav) if nav and nav > 0 else None
-        
-        db[categorize_etf(etf_dict[ticker])].append({
-            "id": ticker.split('.')[0], "name": etf_dict[ticker], "price": current_price,
-            "premium": premium, "aum": info.get('aum'), "yield_ttm": info.get('yield_ttm'), 
-            "dividend_rate": info.get('dividend_rate'), "vol_20d": vol_20d
-        })
-        if vol_20d > 100: news_db[ticker.split('.')[0]] = [] # 新聞牆佔位
-    
-    for cat, data in db.items():
-        with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(data, f, ensure_ascii=False, indent=2)
-    with open("data_news.json", "w", encoding="utf-8") as f: json.dump(news_db, f, ensure_ascii=False, indent=2)
-
-if __name__ == "__main__":
-    main()
+        premium = ((current_price - nav) / nav) if nav and nav >
