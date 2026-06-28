@@ -9,7 +9,6 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        /* 隱藏卷軸但保持可滑動 */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -23,7 +22,7 @@
         const CATEGORIES = ["高股息", "市值型", "主題型", "債券型", "綜合/其他", "槓桿型", "反向型"];
 
         function ETFDashboard() {
-            const [activeTab, setActiveTab] = useState('高股息'); // 預設首頁為高股息
+            const [activeTab, setActiveTab] = useState('高股息'); 
             const [data, setData] = useState({ ipo: [], main: [] });
             const [loading, setLoading] = useState(true);
             const [sortConfig, setSortConfig] = useState({ key: 'cagr_1y', direction: 'desc' });
@@ -42,13 +41,11 @@
                     });
             }, []);
 
-            // 1. 先依據 Tab 進行資料過濾
             const filteredData = useMemo(() => {
                 if (activeTab === 'IPO') return data.ipo;
                 return data.main.filter(row => row.category === activeTab);
             }, [data.main, data.ipo, activeTab]);
 
-            // 2. 對過濾後的資料進行排序
             const sortedData = useMemo(() => {
                 let sortableItems = [...filteredData];
                 sortableItems.sort((a, b) => {
@@ -86,7 +83,6 @@
             return (
                 <div className="p-2 md:p-6 max-w-[1600px] mx-auto w-full overflow-hidden">
                     
-                    {/* 分頁標籤列 (可橫向滑動) */}
                     <div className="flex overflow-x-auto gap-2 mb-4 pb-2 border-b-2 border-slate-200 hide-scrollbar">
                         {CATEGORIES.map(cat => (
                             <button 
@@ -120,12 +116,34 @@
                                 </thead>
                                 <tbody>
                                     {sortedData.map((ipo, idx) => (
-                                        <tr key={idx} className="border-b hover:bg-slate-50">
-                                            <td className="px-4 py-3 font-bold text-blue-700">{ipo.id} {ipo.name}</td>
-                                            <td className="px-4 py-3">{ipo.issueDate}</td><td className="px-4 py-3">${ipo.price.toFixed(2)}</td>
-                                            <td className="px-4 py-3">{ipo.fee}%</td><td className="px-4 py-3">{ipo.freq}</td>
-                                            <td className="px-4 py-3 text-xs text-slate-500">{ipo.topHoldings}</td>
-                                        </tr>
+                                        <React.Fragment key={`ipo_${idx}`}>
+                                            <tr className={`border-b hover:bg-slate-50 cursor-pointer ${expandedRow === `ipo_${idx}` ? 'bg-blue-50' : ''}`} onClick={() => setExpandedRow(expandedRow === `ipo_${idx}` ? null : `ipo_${idx}`)}>
+                                                <td className="px-4 py-3 font-bold text-blue-700 flex items-center gap-2">
+                                                    <span className="text-blue-400 text-lg">{expandedRow === `ipo_${idx}` ? '▼' : '▶'}</span>
+                                                    {ipo.id} {ipo.name}
+                                                </td>
+                                                <td className="px-4 py-3">{ipo.issueDate}</td><td className="px-4 py-3">${ipo.price.toFixed(2)}</td>
+                                                <td className="px-4 py-3">{ipo.fee}%</td><td className="px-4 py-3">{ipo.freq}</td>
+                                                <td className="px-4 py-3 text-xs text-slate-500">{ipo.topHoldings}</td>
+                                            </tr>
+                                            {expandedRow === `ipo_${idx}` && (
+                                                <tr className="bg-slate-50 border-b-2 border-blue-200">
+                                                    <td colSpan="6" className="p-4 md:px-8">
+                                                        <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                            <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態</h4>
+                                                            <ul className="text-sm space-y-2">
+                                                                {ipo.news && ipo.news.length > 0 ? ipo.news.map((n, i) => (
+                                                                    <li key={i} className="border-b border-slate-50 pb-1">
+                                                                        <a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> 
+                                                                        <span className="text-xs text-slate-400 ml-2">({n.date})</span>
+                                                                    </li>
+                                                                )) : <li className="text-slate-500">近期尚無重大新聞</li>}
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>
