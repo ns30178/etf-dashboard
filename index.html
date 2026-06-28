@@ -8,7 +8,6 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
     <div id="root"></div>
@@ -20,31 +19,21 @@
             const [activeTab, setActiveTab] = useState('MAIN');
             const [data, setData] = useState({ ipo: [], main: [] });
             const [loading, setLoading] = useState(true);
-            const [errorMsg, setErrorMsg] = useState("");
             const [sortConfig, setSortConfig] = useState({ key: 'cagr_1y', direction: 'desc' });
             const [expandedRow, setExpandedRow] = useState(null);
 
             useEffect(() => {
-                // 加上隨機參數強制讀取最新 JSON，避免瀏覽器快取
                 fetch('./market_data.json?t=' + new Date().getTime())
-                    .then(res => {
-                        if(!res.ok) throw new Error("無效的資料來源");
-                        return res.json();
-                    })
+                    .then(res => res.json())
                     .then(jsonData => {
-                        if(!jsonData.main || jsonData.main.length === 0) {
-                            throw new Error("目前資料庫為空，請確認後端爬蟲是否執行成功。");
-                        }
                         setData(jsonData);
                         setLoading(false);
                     })
                     .catch(err => {
-                        setErrorMsg(err.message);
+                        console.error(err);
                         setLoading(false);
                     });
             }, []);
-
-            useEffect(() => { feather.replace(); });
 
             const sortedData = useMemo(() => {
                 let sortableItems = [...data.main];
@@ -72,50 +61,78 @@
             const getReturnColor = (val) => val === null ? "text-slate-400" : (val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold");
 
             if (loading) return <div className="text-center p-10 text-xl font-bold text-blue-600">系統量化數據載入中，請稍候...</div>;
-            if (errorMsg) return <div className="text-center p-10 text-xl font-bold text-red-600">系統錯誤: {errorMsg}<br/><span className="text-sm text-slate-500">請前往 GitHub Actions 點擊 Run workflow 手動觸發爬蟲更新資料。</span></div>;
 
             return (
                 <div className="p-2 md:p-6 max-w-[1600px] mx-auto w-full overflow-hidden">
                     <div className="mb-4 border-b-2 border-slate-200 flex flex-wrap gap-2">
-                        <button onClick={() => setActiveTab('MAIN')} className={`px-3 py-2 text-sm md:text-base font-bold rounded-t-lg ${activeTab === 'MAIN' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                        <button onClick={() => setActiveTab('MAIN')} className={`px-4 py-3 text-sm md:text-base font-bold rounded-t-lg ${activeTab === 'MAIN' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
                             全市場已上市 ETF ({data.main.length} 檔)
                         </button>
-                        <button onClick={() => setActiveTab('IPO')} className={`px-3 py-2 text-sm md:text-base font-bold rounded-t-lg ${activeTab === 'IPO' ? 'bg-blue-600 text-white' : 'bg-slate-200 text-slate-600'}`}>
+                        <button onClick={() => setActiveTab('IPO')} className={`px-4 py-3 text-sm md:text-base font-bold rounded-t-lg ${activeTab === 'IPO' ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200 text-slate-600'}`}>
                             即將上市區 (IPO)
                         </button>
                     </div>
 
+                    {/* IPO 區塊 */}
                     {activeTab === 'IPO' && (
-                        <div className="bg-white rounded-lg shadow overflow-x-auto border border-slate-200 w-full">
+                        <div className="bg-white rounded-lg shadow border border-slate-200 w-full overflow-x-auto">
+                            <div className="p-3 bg-blue-50 text-blue-800 text-sm font-semibold border-b border-blue-100">
+                                💡 提示：申購中的 ETF 尚未掛牌，無公開 API 報價，此區塊資料由系統管理員手動維護更新。
+                            </div>
                             <table className="w-full text-sm text-left whitespace-nowrap min-w-[600px]">
                                 <thead className="bg-slate-100 text-slate-600">
                                     <tr>
-                                        <th className="px-4 py-3">代號 / 名稱</th><th className="px-4 py-3">掛牌日</th>
+                                        <th className="px-4 py-3">代號 / 真實股名</th><th className="px-4 py-3">掛牌日</th>
                                         <th className="px-4 py-3">發行價</th><th className="px-4 py-3">經管費</th>
                                         <th className="px-4 py-3">配息頻率</th><th className="px-4 py-3">前十大成分股</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {data.ipo.map((ipo, idx) => (
-                                        <tr key={idx} className="border-b hover:bg-slate-50">
-                                            <td className="px-4 py-3 font-bold text-blue-700">{ipo.id} {ipo.name}</td>
-                                            <td className="px-4 py-3">{ipo.issueDate}</td><td className="px-4 py-3">${ipo.price.toFixed(2)}</td>
-                                            <td className="px-4 py-3">{ipo.fee}%</td><td className="px-4 py-3">{ipo.freq}</td>
-                                            <td className="px-4 py-3 text-xs text-slate-500 whitespace-normal min-w-[150px]">{ipo.topHoldings}</td>
-                                        </tr>
+                                        <React.Fragment key={idx}>
+                                            <tr className="border-b hover:bg-slate-50 cursor-pointer" onClick={() => setExpandedRow(expandedRow === `ipo_${idx}` ? null : `ipo_${idx}`)}>
+                                                <td className="px-4 py-3 font-bold text-blue-700 flex items-center gap-2">
+                                                    <span className="text-blue-400 text-lg">{expandedRow === `ipo_${idx}` ? '▼' : '▶'}</span>
+                                                    {ipo.id} {ipo.name}
+                                                </td>
+                                                <td className="px-4 py-3">{ipo.issueDate}</td><td className="px-4 py-3">${ipo.price.toFixed(2)}</td>
+                                                <td className="px-4 py-3">{ipo.fee}%</td><td className="px-4 py-3">{ipo.freq}</td>
+                                                <td className="px-4 py-3 text-xs text-slate-500">{ipo.topHoldings}</td>
+                                            </tr>
+                                            {/* IPO 新聞展開 */}
+                                            {expandedRow === `ipo_${idx}` && (
+                                                <tr className="bg-slate-50 border-b-2 border-blue-200">
+                                                    <td colSpan="6" className="p-4 md:px-8">
+                                                        <div className="bg-white p-4 rounded border shadow-sm">
+                                                            <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態</h4>
+                                                            <ul className="text-sm space-y-2">
+                                                                {ipo.news && ipo.news.length > 0 ? ipo.news.map((n, i) => (
+                                                                    <li key={i}><a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> <span className="text-xs text-slate-400">({n.date})</span></li>
+                                                                )) : <li className="text-slate-500">目前尚無關聯新聞</li>}
+                                                            </ul>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
                     )}
 
+                    {/* MAIN 區塊 */}
                     {activeTab === 'MAIN' && (
                         <div className="bg-white rounded-lg shadow border border-slate-200 w-full relative">
+                            <div className="p-3 bg-blue-50 text-blue-800 text-xs md:text-sm font-semibold border-b border-blue-100 flex justify-between">
+                                <span>👆 點選表頭欄位即可自動排序</span>
+                                <span>👇 點選任一 ETF 可展開新聞動態</span>
+                            </div>
                             <div className="overflow-x-auto max-h-[80vh] w-full relative">
                                 <table className="w-full text-sm text-left whitespace-nowrap">
                                     <thead className="bg-slate-100 text-slate-600 font-semibold sticky top-0 z-20 shadow-sm">
                                         <tr>
-                                            <th className="px-4 py-3 sticky left-0 bg-slate-100 z-30 border-r shadow-[1px_0_0_0_#e2e8f0] min-w-[120px]">代號/名稱</th>
+                                            <th className="px-4 py-3 sticky left-0 bg-slate-100 z-30 border-r shadow-[1px_0_0_0_#e2e8f0] min-w-[200px]">代號 / 中文名稱</th>
                                             {[
                                                 { key: 'price', label: '市價' },
                                                 { key: 'cagr_1y', label: '近1年報酬' },
@@ -124,7 +141,9 @@
                                                 { key: 'vol_20d', label: '日均量(張)' }
                                             ].map(col => (
                                                 <th key={col.key} className="px-4 py-3 cursor-pointer hover:bg-slate-200 select-none" onClick={() => requestSort(col.key)}>
-                                                    {col.label} {sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                                    <span className="flex items-center gap-1">
+                                                        {col.label} <span className="text-blue-600 font-black">{sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</span>
+                                                    </span>
                                                 </th>
                                             ))}
                                         </tr>
@@ -134,15 +153,48 @@
                                             <React.Fragment key={row.id}>
                                                 <tr className={`hover:bg-blue-50 cursor-pointer ${expandedRow === row.id ? 'bg-blue-50' : 'bg-white'}`} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>
                                                     <td className="px-4 py-3 sticky left-0 z-10 border-r border-slate-100 bg-inherit shadow-[1px_0_0_0_#e2e8f0]">
-                                                        <div className="font-bold">{row.id}</div>
-                                                        <div className="text-xs text-slate-500">{row.name}</div>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-blue-400 text-lg">{expandedRow === row.id ? '▼' : '▶'}</span>
+                                                            <div>
+                                                                <div className="font-bold text-slate-800 text-base">{row.id}</div>
+                                                                <div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div>
+                                                            </div>
+                                                        </div>
                                                     </td>
                                                     <td className="px-4 py-3 font-semibold">{formatNum(row.price)}</td>
                                                     <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{formatPct(row.cagr_1y)}</td>
                                                     <td className="px-4 py-3">{formatNum(row.sharpe)}</td>
                                                     <td className="px-4 py-3 text-red-500">{formatPct(row.mdd)}</td>
-                                                    <td className="px-4 py-3 font-mono">{row.vol_20d?.toLocaleString() || "N/A"}</td>
+                                                    <td className="px-4 py-3 font-mono text-slate-600">{row.vol_20d?.toLocaleString() || "N/A"}</td>
                                                 </tr>
+                                                
+                                                {/* 展開新聞與配息區塊 */}
+                                                {expandedRow === row.id && (
+                                                    <tr className="bg-slate-50 border-b-2 border-blue-200">
+                                                        <td colSpan="6" className="p-4 md:px-8">
+                                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                    <h4 className="font-bold mb-3 text-blue-800">💰 配息與其他資訊</h4>
+                                                                    <div className="text-sm text-slate-500">
+                                                                        <p>因官方 API 限制，詳細配息日與殖利率需另外接付費資訊源。</p>
+                                                                        <p className="mt-2">✅ 目前已追蹤到該檔 ETF 的量化基礎資料。</p>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                    <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態</h4>
+                                                                    <ul className="text-sm space-y-2">
+                                                                        {row.news && row.news.length > 0 ? row.news.map((n, i) => (
+                                                                            <li key={i} className="border-b border-slate-50 pb-1">
+                                                                                <a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> 
+                                                                                <span className="text-xs text-slate-400 ml-2">({n.date})</span>
+                                                                            </li>
+                                                                        )) : <li className="text-slate-500">近期尚無重大新聞</li>}
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                )}
                                             </React.Fragment>
                                         ))}
                                     </tbody>
