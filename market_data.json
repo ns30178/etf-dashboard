@@ -3,24 +3,44 @@
     {
       "id": "00946",
       "name": "群益科技高息成長",
-      "category": "高股息",
       "issueDate": "2026-05-09",
       "price": 10.0,
       "fee": 0.3,
       "freq": "月配",
       "topHoldings": "聯發科, 瑞昱, 聯詠",
-      "news": []
+      "news": [
+        {
+          "title": "6萬股民關注！00946連兩月配0.058元 年化配息率6.85%",
+          "link": "https://tw.stock.yahoo.com/news/6%E8%90%AC%E8%82%A1%E6%B0%91%E9%97%9C%E6%B3%A8%EF%BC%8100946%E9%80%A3%E5%85%A9%E6%9C%88%E9%85%8D0058%E5%85%83-%E5%B9%B4%E5%8C%96%E9%85%8D%E6%81%AF%E7%8E%87685-032708803.html",
+          "date": "2026-06-28"
+        },
+        {
+          "title": "高股息不香了？00946調升配息首日填息達陣 7千股民續下車",
+          "link": "https://tw.stock.yahoo.com/news/%E9%AB%98%E8%82%A1%E6%81%AF%E4%B8%8D%E9%A6%99%E4%BA%86%EF%BC%9F00946%E8%AA%BF%E5%8D%87%E9%85%8D%E6%81%AF%E9%A6%96%E6%97%A5%E5%A1%AB%E6%81%AF%E9%81%94%E9%99%A3-7%E5%8D%83%E8%82%A1%E6%B0%91%E7%BA%8C%E4%B8%8B%E8%BB%8A-014400598.html",
+          "date": "2026-06-28"
+        },
+        {
+          "title": "年化配息率最高近8% 一表看7檔本周除息ETF",
+          "link": "https://tw.stock.yahoo.com/news/%E5%B9%B4%E5%8C%96%E9%85%8D%E6%81%AF%E7%8E%87%E6%9C%80%E9%AB%98%E8%BF%918-%E4%B8%80%E8%A1%A8%E7%9C%8B7%E6%AA%94%E6%9C%AC%E5%91%A8%E9%99%A4%E6%81%AFetf-024656851.html",
+          "date": "2026-06-28"
+        }
+      ]
     },
     {
       "id": "00947",
       "name": "台新臺灣IC設計",
-      "category": "主題型",
       "issueDate": "2026-06-12",
       "price": 15.0,
       "fee": 0.4,
       "freq": "季配",
       "topHoldings": "台積電, 聯發科, 瑞昱",
-      "news": []
+      "news": [
+        {
+          "title": "台股ETF突破3.3兆！一表看9檔報酬率 00952近五成居冠",
+          "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1etf%E7%AA%81%E7%A0%B433%E5%85%86%EF%BC%81%E4%B8%80%E8%A1%A8%E7%9C%8B9%E6%AA%94%E5%A0%B1%E9%85%AC%E7%8E%87-00952%E8%BF%91%E4%BA%94%E6%88%90%E5%B1%85%E5%86%A0-103518945.html",
+          "date": "2026-06-28"
+        }
+      ]
     }
   ],
   "main": [
