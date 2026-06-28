@@ -1,4 +1,3 @@
-
 import pandas as pd
 import json
 import cloudscraper
@@ -49,8 +48,8 @@ def get_all_taiwan_etfs():
     return tickers
 
 def get_yahoo_fundamentals(tickers_list):
-    """批次取得殖利率與配息數據"""
-    print("抓取配息與殖利率資料...")
+    """批次取得規模、淨值、殖利率與配息數據"""
+    print("抓取基本面、折溢價與配息資料...")
     fundamentals = {}
     for i in range(0, len(tickers_list), 40):
         batch = tickers_list[i:i+40]
@@ -60,9 +59,18 @@ def get_yahoo_fundamentals(tickers_list):
             res = resp.json().get('quoteResponse', {}).get('result', [])
             for item in res:
                 sym = item.get('symbol')
+                
+                # 擴大抓取欄位以涵蓋規模與淨值
+                y_ttm = item.get('trailingAnnualDividendYield') or item.get('dividendYield')
+                d_rate = item.get('trailingAnnualDividendRate') or item.get('dividendRate')
+                aum_raw = item.get('marketCap')
+                nav = item.get('navPrice')
+
                 fundamentals[sym] = {
-                    'yield': item.get('trailingAnnualDividendYield', 0),
-                    'dividend_rate': item.get('trailingAnnualDividendRate', 0)
+                    'yield': y_ttm,
+                    'dividend_rate': d_rate,
+                    'aum': round(aum_raw / 100000000, 2) if aum_raw else None, # 轉換為億
+                    'nav': nav
                 }
         except Exception:
             pass
@@ -154,11 +162,19 @@ def main():
             category = categorize_etf(name)
             fund_data = fundamentals.get(ticker, {})
 
+            # 計算折溢價
+            nav = fund_data.get('nav')
+            premium = None
+            if nav and current_price and nav > 0:
+                premium = (current_price - nav) / nav
+
             market_db.append({
                 "id": ticker.split('.')[0],
                 "name": name, 
                 "category": category,
                 "price": current_price,
+                "premium": premium,
+                "aum": fund_data.get('aum'),
                 "cagr_1y": cagr_1y,
                 "sharpe": sharpe,
                 "mdd": mdd,
