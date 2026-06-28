@@ -59,9 +59,17 @@
                 setSortConfig({ key, direction });
             };
 
-            const formatPct = (val) => (val === null || val === 0) ? "N/A" : `${(val * 100).toFixed(2)}%`;
-            const formatNum = (val) => (val === null || val === 0) ? "N/A" : val.toFixed(2);
-            const getReturnColor = (val) => (val === null || val === 0) ? "text-slate-400" : (val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold");
+            // 修正數值判定邏輯，確保 0 不會被當作 N/A 處理
+            const formatPct = (val) => (val === null || val === undefined) ? "N/A" : `${(val * 100).toFixed(2)}%`;
+            const formatNum = (val) => (val === null || val === undefined) ? "N/A" : val.toFixed(2);
+            const getReturnColor = (val) => (val === null || val === undefined) ? "text-slate-400" : (val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold");
+
+            const getPremiumStyle = (val) => {
+                if (val === null || val === undefined) return "text-slate-400";
+                if (val > 0.01) return "bg-red-500 text-white font-bold px-2 py-0.5 rounded"; 
+                if (val < -0.01) return "text-green-600 font-bold";
+                return "text-slate-700 font-semibold";
+            };
 
             const getCategoryColor = (cat) => {
                 const colors = {
@@ -125,6 +133,8 @@
                                             {[
                                                 { key: 'category', label: '分類' },
                                                 { key: 'price', label: '市價' },
+                                                { key: 'premium', label: '折溢價' },
+                                                { key: 'aum', label: '規模(億)' },
                                                 { key: 'cagr_1y', label: '近1年報酬' },
                                                 { key: 'sharpe', label: '夏普值' },
                                                 { key: 'mdd', label: '最大回撤' },
@@ -157,6 +167,8 @@
                                                         </span>
                                                     </td>
                                                     <td className="px-4 py-3 font-semibold">{formatNum(row.price)}</td>
+                                                    <td className="px-4 py-3"><span className={getPremiumStyle(row.premium)}>{formatPct(row.premium)}</span></td>
+                                                    <td className="px-4 py-3 text-slate-700 font-mono">{formatNum(row.aum)}</td>
                                                     <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{formatPct(row.cagr_1y)}</td>
                                                     <td className="px-4 py-3">{formatNum(row.sharpe)}</td>
                                                     <td className="px-4 py-3 text-red-500">{formatPct(row.mdd)}</td>
@@ -165,7 +177,7 @@
                                                 
                                                 {expandedRow === row.id && (
                                                     <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                        <td colSpan="7" className="p-4 md:px-8">
+                                                        <td colSpan="9" className="p-4 md:px-8">
                                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                                 <div className="bg-white p-4 rounded-lg border shadow-sm">
                                                                     <h4 className="font-bold mb-3 text-blue-800">💰 殖利率與配息資訊</h4>
@@ -179,7 +191,7 @@
                                                                             <span className="font-bold text-slate-800">${formatNum(row.dividend_rate)}</span>
                                                                         </li>
                                                                     </ul>
-                                                                    <div className="mt-3 text-xs text-slate-400">※ 殖利率數據來自公開歷史資訊，不代表未來績效保證。</div>
+                                                                    <div className="mt-3 text-xs text-slate-400">※ 殖利率數據來自 Yahoo 歷史資訊。若該 ETF 上市未滿一年或資料庫缺漏，數值將顯示為 N/A。</div>
                                                                 </div>
                                                                 <div className="bg-white p-4 rounded-lg border shadow-sm">
                                                                     <h4 className="font-bold mb-3 text-blue-800">📰 關聯新聞動態</h4>
@@ -188,7 +200,7 @@
                                                                             <li key={i} className="border-b border-slate-50 pb-1">
                                                                                 <a href={n.link} target="_blank" className="text-blue-600 hover:underline">{n.title}</a> 
                                                                                 <span className="text-xs text-slate-400 ml-2">({n.date})</span>
-                                                                            </li>
+                                                                           </li>
                                                                         )) : <li className="text-slate-500">近期尚無重大新聞或日均量較低</li>}
                                                                     </ul>
                                                                 </div>
