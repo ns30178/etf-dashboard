@@ -30,6 +30,7 @@
             const [sortConfig, setSortConfig] = useState({ key: 'cagr_1y', direction: 'desc' });
             const [expandedRow, setExpandedRow] = useState(null);
 
+            // 嚴格攔截所有空值、0 或 NaN，強制轉為 "-"
             const fmtVal = (val, prefix = "") => {
                 if (val === null || val === undefined || val === "" || val === 0 || Number.isNaN(val)) return "-";
                 return `${prefix}${Number(val).toFixed(2)}`;
