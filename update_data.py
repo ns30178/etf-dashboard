@@ -1,13 +1,9 @@
-import yfinance as yf
 import requests
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
 import pandas as pd
 import json
 import time
 import math
 import random
-import functools
 from bs4 import BeautifulSoup
 from datetime import datetime
 
@@ -19,19 +15,9 @@ FILE_MAP = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept": "application/json"
 }
-
-def get_robust_session():
-    """建立附帶自動重試與嚴格 Timeout 的安全連線池，防止 yfinance 掛機"""
-    session = requests.Session()
-    retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
-    adapter = HTTPAdapter(max_retries=retry)
-    session.mount('http://', adapter)
-    session.mount('https://', adapter)
-    session.headers.update(HEADERS)
-    session.request = functools.partial(session.request, timeout=5)
-    return session
 
 def sanitize_json(val):
     if isinstance(val, dict):
@@ -55,11 +41,12 @@ def categorize_etf(name):
 def fetch_etf_list_and_nav():
     tickers = {}
     nav_dict = {}
+    session = requests.Session()
     
-    # 1. 透過第三方 FinMind 獲取台股 ETF 名單 (破解政府 IP 封鎖)
+    # 1. 透過第三方 API (FinMind) 獲取全市場 ETF，繞過政府對 GitHub IP 的封鎖
     try:
         url = "https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo"
-        res = requests.get(url, headers=HEADERS, timeout=10)
+        res = session.get(url, headers=HEADERS, timeout=10)
         if res.status_code == 200:
             for item in res.json().get('data', []):
                 if item.get('industry_category') == 'ETF':
@@ -68,23 +55,24 @@ def fetch_etf_list_and_nav():
                     market = str(item.get('type')).lower()
                     if market == 'twse': tickers[f"{code}.TW"] = name
                     elif market == 'tpex': tickers[f"{code}.TWO"] = name
-    except: pass
+    except Exception as e:
+        print(f"[警告] 名單獲取失敗: {e}")
 
-    # 備用核心清單
+    # 備用清單
     if not tickers:
-        core_etfs = ["0050.TW", "0056.TW", "00878.TW", "00929.TW", "00919.TW", "00713.TW", "00915.TW", "00939.TW", "00940.TW", "006208.TW", "00679B.TWO", "00687B.TWO", "00937B.TWO"]
+        core_etfs = ["0050.TW", "0056.TW", "00878.TW", "00929.TW", "00919.TW", "00713.TW", "00915.TW", "00939.TW", "00940.TW", "006208.TW", "00679B.TWO", "00687B.TWO"]
         for t in core_etfs: tickers[t] = t.split('.')[0]
 
-    # 2. 獲取官方淨值 (若 GitHub 在美國被擋，則會為空，由後方 Yahoo 淨值備援)
+    # 2. 抓取官方淨值 (直接請求網頁版 API)
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=HEADERS, timeout=5)
-        for item in res.json():
-            try: nav_dict[f"{item.get('Code')}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
+        res = session.get("https://www.twse.com.tw/rwd/zh/fund/MI_101?response=json", headers=HEADERS, timeout=5)
+        for row in res.json().get('data', []):
+            try: nav_dict[f"{row[0]}.TW"] = float(str(row[4]).replace(',', ''))
             except: pass
     except: pass
 
     try:
-        res = requests.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=HEADERS, timeout=5)
+        res = session.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=HEADERS, timeout=5)
         for row in res.json().get('aaData', []):
             try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
             except: pass
@@ -92,9 +80,50 @@ def fetch_etf_list_and_nav():
 
     return tickers, nav_dict
 
+def fetch_yahoo_data(ticker, session):
+    """完全棄用 yfinance，使用原生 requests 抓取 Yahoo 底層 API，保證不卡死且無 Crumb 限制"""
+    data = {}
+    
+    # 1. Quote 資訊 (抓取股數、市值、最新報價、預期配息)
+    try:
+        q_url = f"https://query2.finance.yahoo.com/v7/finance/quote?symbols={ticker}"
+        q_res = session.get(q_url, headers=HEADERS, timeout=5)
+        if q_res.status_code == 200:
+            quote = q_res.json().get('quoteResponse', {}).get('result', [{}])[0]
+            data['price'] = quote.get('regularMarketPrice')
+            data['shares'] = quote.get('sharesOutstanding')
+            data['mcap'] = quote.get('marketCap')
+            data['q_yield'] = quote.get('trailingAnnualDividendYield')
+            data['q_div_rate'] = quote.get('trailingAnnualDividendRate')
+            data['q_ex_div'] = quote.get('exDividendDate')
+            data['q_next_div'] = quote.get('dividendRate')
+    except: pass
+
+    # 2. Chart 與 歷史配息事件 (計算技術指標、實質 TTM 配息)
+    try:
+        c_url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?range=1y&interval=1d&events=div"
+        c_res = session.get(c_url, headers=HEADERS, timeout=5)
+        if c_res.status_code == 200:
+            result = c_res.json().get('chart', {}).get('result', [{}])[0]
+            
+            # K線圖數據
+            timestamps = result.get('timestamp', [])
+            indicators = result.get('indicators', {}).get('quote', [{}])[0]
+            if timestamps and indicators.get('close'):
+                data['hist'] = pd.DataFrame({
+                    'Close': indicators['close'],
+                    'Volume': indicators.get('volume', [])
+                }, index=timestamps).dropna()
+            
+            # 歷史配息紀錄
+            data['dividends'] = result.get('events', {}).get('dividends', {})
+    except: pass
+
+    return data
+
 def fetch_yahoo_news(ticker_id, session):
     try:
-        res = session.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", timeout=5)
+        res = session.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", headers=HEADERS, timeout=5)
         soup = BeautifulSoup(res.text, 'html.parser')
         news = []
         for a in soup.find_all('a', href=True):
@@ -107,27 +136,27 @@ def fetch_yahoo_news(ticker_id, session):
 
 def main():
     tickers, nav_dict = fetch_etf_list_and_nav()
-    robust_session = get_robust_session()
+    session = requests.Session()
     db = {cat: [] for cat in FILE_MAP.keys()}
     news_db = {}
 
-    print(f"🚀 啟動完整量化引擎，共計掃描 {len(tickers)} 檔...")
+    print(f"🚀 啟動無依賴原生量化引擎，共計 {len(tickers)} 檔...")
 
     for idx, (ticker, name) in enumerate(tickers.items()):
-        if idx % 20 == 0 and idx > 0:
+        if idx % 30 == 0 and idx > 0:
             print(f"⏳ 進度: {idx} / {len(tickers)}")
 
         try:
-            tk = yf.Ticker(ticker, session=robust_session)
+            raw_data = fetch_yahoo_data(ticker, session)
             
-            # 1. 股價與技術指標
-            hist = tk.history(period="1y")
-            if hist.empty or len(hist) < 20:
-                continue
+            # 解析歷史資料
+            hist = raw_data.get('hist')
+            if hist is None or hist.empty or len(hist) < 20: continue
 
-            current_price = float(hist['Close'].iloc[-1])
+            current_price = raw_data.get('price') or float(hist['Close'].iloc[-1])
             vol_20d = int(hist['Volume'].tail(20).mean() / 1000)
 
+            # 技術指標計算
             if len(hist) >= 200:
                 cagr_1y = float((current_price - hist['Close'].iloc[0]) / hist['Close'].iloc[0])
                 max_p = hist['Close'].cummax()
@@ -137,37 +166,46 @@ def main():
             else:
                 cagr_1y, sharpe, mdd = None, None, None
 
-            # 2. 基本面、配息與規模 (AUM)
-            info = tk.info
-            
-            # 規模計算：首選官方總資產 -> 其次市值 -> 最終備援(股數*市價)
-            aum = info.get('totalAssets') or info.get('marketCap')
+            # 規模與折溢價
+            aum = raw_data.get('mcap')
             if aum:
                 aum = aum / 100000000
-            else:
-                try:
-                    shares = info.get('sharesOutstanding') or tk.fast_info.shares
-                    aum = (shares * current_price) / 100000000 if shares and current_price else None
-                except:
-                    aum = None
-
-            # 淨值與折溢價：首選官方抓取 -> 其次 Yahoo 報價
-            nav = nav_dict.get(ticker) or info.get('navPrice')
+            elif raw_data.get('shares') and current_price:
+                aum = (raw_data['shares'] * current_price) / 100000000
+                
+            nav = nav_dict.get(ticker)
             premium = ((current_price - nav) / nav) if nav and nav > 0 else None
 
-            # 配息資料擷取
-            yield_ttm = info.get('trailingAnnualDividendYield')
-            dividend_rate = info.get('trailingAnnualDividendRate')
-            
+            # 實質配息與未來配息計算
+            now_ts = datetime.now().timestamp()
+            ttm_div = 0.0
             next_div_date = None
             next_div_amount = None
-            ex_div_ts = info.get('exDividendDate')
-            if ex_div_ts and ex_div_ts >= datetime.now().timestamp():
-                next_div_date = datetime.fromtimestamp(ex_div_ts).strftime('%Y-%m-%d')
-                next_div_amount = info.get('dividendRate') or info.get('lastDividendValue')
 
-            # 資料庫匯整
-            final_name = info.get('shortName', name) if name.startswith("00") else name
+            if raw_data.get('dividends'):
+                for ts_str, div_info in raw_data['dividends'].items():
+                    ts = int(ts_str)
+                    amt = float(div_info['amount'])
+                    # 過去一年內除息的總和
+                    if now_ts - 31536000 <= ts <= now_ts:
+                        ttm_div += amt
+                    # 未來已公告除息
+                    elif ts > now_ts:
+                        next_div_date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+                        next_div_amount = amt
+
+            # 如果歷史配息沒抓到，使用 Quote 的備援資料
+            dividend_rate = ttm_div if ttm_div > 0 else raw_data.get('q_div_rate')
+            yield_ttm = (dividend_rate / current_price) if (dividend_rate and current_price) else raw_data.get('q_yield')
+
+            if not next_div_date:
+                q_ex = raw_data.get('q_ex_div')
+                if q_ex and q_ex > now_ts:
+                    next_div_date = datetime.fromtimestamp(q_ex).strftime('%Y-%m-%d')
+                    next_div_amount = raw_data.get('q_next_div')
+
+            # 寫入資料
+            final_name = name
             category = categorize_etf(final_name)
             ticker_id = ticker.split('.')[0]
             
@@ -180,26 +218,26 @@ def main():
             
             # 新聞抓取
             if vol_20d > 100:
-                news_db[ticker_id] = fetch_yahoo_news(ticker_id, robust_session)
-                
-        except Exception:
-            pass # 發生無效代號直接跳過
-            
-        time.sleep(random.uniform(0.1, 0.4))
+                news_db[ticker_id] = fetch_yahoo_news(ticker_id, session)
 
-    # 匯出資料庫
+        except Exception as e:
+            pass
+            
+        time.sleep(random.uniform(0.1, 0.3))
+
+    # 輸出過濾 JSON
     for cat, data in db.items():
         clean_data = sanitize_json(data)
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
             json.dump(clean_data, f, ensure_ascii=False, indent=2)
 
-    # 寫入靜態 IPO 與其新聞
+    # IPO 靜態檔案
     ipo_db = [
         {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
         {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
     ]
     for ipo in ipo_db:
-        news_db[ipo['id']] = fetch_yahoo_news(ipo['id'], robust_session)
+        news_db[ipo['id']] = fetch_yahoo_news(ipo['id'], session)
         
     with open("data_ipo.json", "w", encoding="utf-8") as f:
         json.dump(ipo_db, f, ensure_ascii=False, indent=2)
