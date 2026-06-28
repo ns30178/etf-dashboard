@@ -7,9 +7,11 @@ import math
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
-# 讀取 GitHub Secrets 金鑰
+# 環境變數與金鑰
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
 FUGLE_KEY = os.environ.get("FUGLE_API_KEY", "")
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
 FILE_MAP = {
     "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -18,7 +20,14 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
+
+def send_telegram_message(message):
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
+    try: requests.post(url, json=payload, timeout=5)
+    except: pass
 
 def sanitize_json(val):
     if isinstance(val, dict):
@@ -41,7 +50,6 @@ def categorize_etf(name):
 
 def fetch_etf_list_and_nav():
     tickers, nav_dict = {}, {}
-    # 1. 透過 FinMind 獲取 ETF 名單
     try:
         url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo&token={FINMIND_TOKEN}"
         res = requests.get(url, timeout=10)
@@ -52,7 +60,6 @@ def fetch_etf_list_and_nav():
                     tickers[code] = {"name": str(item.get('stock_name')), "market": item.get('type').lower()}
     except: pass
     
-    # 2. 獲取官方淨值 (若 GitHub IP 被擋則依靠後續 Yahoo 備援)
     try:
         res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=HEADERS, timeout=5)
         for item in res.json(): nav_dict[item.get('Code')] = float(str(item.get('Nav', '0')).replace(',', ''))
@@ -64,9 +71,20 @@ def fetch_etf_list_and_nav():
 
     return tickers, nav_dict
 
+def get_yahoo_crumb():
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    try:
+        session.get('https://fc.yahoo.com', timeout=5)
+        crumb = session.get('https://query1.finance.yahoo.com/v1/test/getcrumb', timeout=5).text
+        return session, crumb
+    except:
+        return session, ""
+
 def fetch_fugle_candles(symbol):
-    """Fugle 富果 API 抓取精確日 K 線 (計算報酬率、波動用)"""
-    url = f"https://api.fugle.tw/marketdata/v1.0/stock/historical/candles/{symbol}?timeframe=D"
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+    url = f"https://api.fugle.tw/marketdata/v1.0/stock/historical/candles/{symbol}?from={start_date}&to={end_date}&timeframe=D"
     try:
         res = requests.get(url, headers={"X-API-KEY": FUGLE_KEY}, timeout=5)
         if res.status_code == 200:
@@ -81,7 +99,6 @@ def fetch_fugle_candles(symbol):
     return pd.DataFrame()
 
 def fetch_finmind_dividend(symbol):
-    """FinMind API 獲取真實除息紀錄"""
     start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
     url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockDividend&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
     try:
@@ -91,12 +108,12 @@ def fetch_finmind_dividend(symbol):
     except: pass
     return []
 
-def fetch_yahoo_quote(symbol, market):
-    """Yahoo API 作為規模與淨值備援 (不使用 Crumb)"""
+def fetch_yahoo_quote(symbol, market, session, crumb):
     ticker = f"{symbol}.TW" if market == 'twse' else f"{symbol}.TWO"
     url = f"https://query2.finance.yahoo.com/v7/finance/quote?symbols={ticker}"
+    if crumb: url += f"&crumb={crumb}"
     try:
-        res = requests.get(url, headers=HEADERS, timeout=5)
+        res = session.get(url, timeout=5)
         if res.status_code == 200: return res.json().get('quoteResponse', {}).get('result', [{}])[0]
     except: pass
     return {}
@@ -116,19 +133,20 @@ def fetch_yahoo_news(symbol):
 
 def main():
     tickers, nav_dict = fetch_etf_list_and_nav()
-    if not tickers: return print("❌ 名單獲取失敗。")
+    if not tickers: 
+        send_telegram_message("❌ ETF 資料庫更新失敗：名單獲取異常。")
+        return
 
     db = {cat: [] for cat in FILE_MAP.keys()}
     news_db = {}
     search_index = []
+    yh_session, crumb = get_yahoo_crumb()
 
-    print(f"🚀 啟動 API 商業端點引擎，共計 {len(tickers)} 檔...")
+    print(f"啟動 API 量化引擎，共計 {len(tickers)} 檔...")
 
     for idx, (ticker_id, info) in enumerate(tickers.items()):
-        if idx % 30 == 0 and idx > 0: print(f"⏳ 進度: {idx} / {len(tickers)}")
-
         try:
-            # 1. 行情數據 (Fugle API)
+            # 1. 歷史與技術數據
             hist = fetch_fugle_candles(ticker_id)
             if hist.empty or len(hist) < 20: continue
 
@@ -144,10 +162,9 @@ def main():
             else:
                 cagr_1y, sharpe, mdd = None, None, None
 
-            # 2. 配息數據 (FinMind API)
+            # 2. 配息數據
             div_data = fetch_finmind_dividend(ticker_id)
             ttm_div = 0.0
-            next_div_date, next_div_amount = None, None
             now = datetime.now()
             
             for record in div_data:
@@ -156,16 +173,10 @@ def main():
                 try:
                     ex_date = datetime.strptime(ex_date_str, '%Y-%m-%d')
                     if ex_date <= now: ttm_div += amt
-                    elif ex_date > now:
-                        next_div_date = ex_date_str
-                        next_div_amount = amt
                 except: pass
 
-            dividend_rate = ttm_div if ttm_div > 0 else None
-            yield_ttm = (ttm_div / current_price) if (ttm_div and current_price) else None
-
-            # 3. 規模與折溢價 (TWSE/TPEX 優先，Yahoo 備援)
-            quote = fetch_yahoo_quote(ticker_id, info['market'])
+            # 3. 規模與次期配息預測
+            quote = fetch_yahoo_quote(ticker_id, info['market'], yh_session, crumb)
             aum_raw = quote.get('marketCap')
             if aum_raw: aum = aum_raw / 100000000
             else:
@@ -175,7 +186,16 @@ def main():
             nav = nav_dict.get(ticker_id) or quote.get('navPrice') or quote.get('regularMarketPrice')
             premium = ((current_price - nav) / nav) if nav and nav > 0 else None
 
-            # 寫入分類與資料庫
+            next_div_date, next_div_amount = None, None
+            q_ex = quote.get('exDividendDate')
+            if q_ex and q_ex > now.timestamp():
+                next_div_date = datetime.fromtimestamp(q_ex).strftime('%Y-%m-%d')
+                next_div_amount = quote.get('dividendRate') or quote.get('trailingAnnualDividendRate')
+
+            dividend_rate = ttm_div if ttm_div > 0 else None
+            yield_ttm = (ttm_div / current_price) if (ttm_div and current_price) else None
+
+            # 寫入
             category = categorize_etf(info['name'])
             db[category].append({
                 "id": ticker_id, "name": info['name'], "price": current_price, "premium": premium,
@@ -183,18 +203,13 @@ def main():
                 "yield_ttm": yield_ttm, "dividend_rate": dividend_rate,
                 "next_div_date": next_div_date, "next_div_amount": next_div_amount
             })
-            
-            # 建構極輕量全市場搜尋索引
             search_index.append({"id": ticker_id, "name": info['name'], "category": category})
             
             if vol_20d > 100: news_db[ticker_id] = fetch_yahoo_news(ticker_id)
             
-        except Exception as e: pass
-            
-        # 安全休眠，遵守 Fugle 60 requests/minute 限制
+        except Exception: pass
         time.sleep(1.0)
 
-    # 輸出所有 JSON
     for cat, data in db.items():
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
     with open("search_index.json", "w", encoding="utf-8") as f: json.dump(search_index, f, ensure_ascii=False, indent=2)
@@ -207,7 +222,7 @@ def main():
     with open("data_ipo.json", "w", encoding="utf-8") as f: json.dump(ipo_db, f, ensure_ascii=False, indent=2)
     with open("data_news.json", "w", encoding="utf-8") as f: json.dump(news_db, f, ensure_ascii=False, indent=2)
 
-    print("🎉 資料庫與搜尋引擎更新完成。")
+    send_telegram_message(f"✅ ETF 資料庫與搜尋引擎更新完成，共處理 {len(tickers)} 檔標的。")
 
 if __name__ == "__main__":
     main()
