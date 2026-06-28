@@ -3,13 +3,13 @@ import json
 import cloudscraper
 import time
 import random
+import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
 scraper = cloudscraper.create_scraper(browser={'browser': 'chrome', 'platform': 'windows', 'desktop': True})
 
 def categorize_etf(name):
-    """根據中文名稱自動分類 ETF 類型"""
     if any(k in name for k in ['正2', '正達', '倍']): return "槓桿型"
     if any(k in name for k in ['反1', '反向']): return "反向型"
     if any(k in name for k in ['高息', '高股息', '優息', '股息', '息收']): return "高股息"
@@ -19,10 +19,8 @@ def categorize_etf(name):
     return "綜合/其他"
 
 def get_all_taiwan_etfs():
-    """從官方 API 提取代號與正確中文名稱"""
     tickers = {}
     headers = {'User-Agent': 'Mozilla/5.0'}
-    print("取得官方 ETF 代號清單...")
     try:
         for item in scraper.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=10).json():
             if str(item.get('Code', '')).startswith('00'):
@@ -37,10 +35,8 @@ def get_all_taiwan_etfs():
     return tickers
 
 def get_official_nav():
-    """獲取官方每日淨值(NAV)，並清洗千分位逗號字串"""
     nav_dict = {}
     headers = {"User-Agent": "Mozilla/5.0"}
-    print("獲取官方每日淨值(NAV)...")
     try:
         for item in scraper.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=10).json():
             try: nav_dict[f"{item['Code']}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
@@ -54,10 +50,8 @@ def get_official_nav():
     return nav_dict
 
 def get_yahoo_fundamentals(tickers_list):
-    """批次獲取規模與配息資料 (包含雙重防護計算)"""
     fund_data = {}
     headers = {"User-Agent": "Mozilla/5.0"}
-    print("批次獲取規模與配息資料...")
     for i in range(0, len(tickers_list), 40):
         batch = tickers_list[i:i+40]
         url = f"https://query1.finance.yahoo.com/v7/finance/quote?symbols={','.join(batch)}"
@@ -66,17 +60,19 @@ def get_yahoo_fundamentals(tickers_list):
             for item in res:
                 sym = item.get('symbol')
                 
-                # 防護機制：如果沒有 marketCap，就用在外流通股數乘上市價
                 mcap = item.get('marketCap')
+                assets = item.get('totalAssets')
                 shares = item.get('sharesOutstanding')
                 price = item.get('regularMarketPrice')
                 
                 aum = None
-                if mcap and mcap > 0: aum = round(mcap / 100000000, 2)
+                if assets and assets > 0: aum = round(assets / 100000000, 2)
+                elif mcap and mcap > 0: aum = round(mcap / 100000000, 2)
                 elif shares and price and shares > 0: aum = round((shares * price) / 100000000, 2)
                 
                 fund_data[sym] = {
                     'aum': aum,
+                    'nav': item.get('navPrice'),
                     'yield': item.get('trailingAnnualDividendYield') or item.get('dividendYield'),
                     'dividend_rate': item.get('trailingAnnualDividendRate') or item.get('dividendRate')
                 }
@@ -85,7 +81,6 @@ def get_yahoo_fundamentals(tickers_list):
     return fund_data
 
 def fetch_yahoo_news(ticker):
-    """抓取單檔 ETF 的最新財經新聞"""
     try:
         soup = BeautifulSoup(scraper.get(f"https://tw.stock.yahoo.com/quote/{ticker}/news", timeout=5).text, 'html.parser')
         news = []
@@ -98,7 +93,6 @@ def fetch_yahoo_news(ticker):
     except: return []
 
 def fetch_yahoo_data_and_dividends(ticker):
-    """直接加總歷史除權息事件，精算配息額度"""
     url = f"https://query2.finance.yahoo.com/v8/finance/chart/{ticker}?range=1y&interval=1d&events=div"
     try:
         resp = scraper.get(url, headers={"User-Agent": "Mozilla/5.0"}, timeout=10).json()
@@ -120,7 +114,6 @@ def fetch_yahoo_data_and_dividends(ticker):
     except: return None, 0
 
 def main():
-    print("啟動全市場 ETF 掃描引擎 (終極數據修復版)...")
     etf_dict = get_all_taiwan_etfs()
     all_tickers = list(etf_dict.keys())
     
@@ -128,11 +121,8 @@ def main():
     fundamentals = get_yahoo_fundamentals(all_tickers)
     
     market_db = []
-    success_count = 0
     
     for idx, ticker in enumerate(all_tickers):
-        if idx % 20 == 0: print(f"處理進度: {idx+1} / {len(all_tickers)} ...")
-            
         df, div_total_chart = fetch_yahoo_data_and_dividends(ticker)
         if df is None or df.empty or len(df) < 20: continue
             
@@ -152,15 +142,12 @@ def main():
 
             name = etf_dict.get(ticker, "未知名稱")
             category = categorize_etf(name)
+            fund_info = fundamentals.get(ticker, {})
             
-            # 淨值與折溢價計算 (防護除以 0 的錯誤)
-            nav = official_nav.get(ticker)
+            nav = official_nav.get(ticker) or fund_info.get('nav')
             premium = ((current_price - nav) / nav) if nav and nav > 0 else None
             
-            # 整合配息資訊 (雙重驗證：用歷史紀錄算出來的，跟 Yahoo 給的，哪個有值就用哪個)
-            fund_info = fundamentals.get(ticker, {})
             final_div_rate = div_total_chart if div_total_chart > 0 else fund_info.get('dividend_rate')
-            
             final_yield = None
             if final_div_rate and current_price > 0:
                 final_yield = final_div_rate / current_price
@@ -184,19 +171,19 @@ def main():
                 "vol_20d": vol_20d,
                 "news": news_data
             })
-            success_count += 1
             time.sleep(random.uniform(0.5, 1.2))
         except Exception: continue
 
     ipo_db = [
-        {"id": "00946", "name": "群益科技高息成長", "category": "高股息", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠", "news": []},
-        {"id": "00947", "name": "台新臺灣IC設計", "category": "主題型", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱", "news": []}
+        {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
+        {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
     ]
+    
+    for ipo in ipo_db:
+        ipo['news'] = fetch_yahoo_news(ipo['id'])
 
     with open("market_data.json", "w", encoding="utf-8") as f:
         json.dump({"ipo": ipo_db, "main": market_db}, f, ensure_ascii=False, indent=2)
-        
-    print(f"量化運算完成！共寫入 {success_count} 檔有效數據。")
 
 if __name__ == "__main__":
     main()
