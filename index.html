@@ -29,13 +29,13 @@
             const [sortConfig, setSortConfig] = useState({ key: 'cagr_1y', direction: 'desc' });
             const [expandedRow, setExpandedRow] = useState(null);
 
-            // 嚴格格式化邏輯
+            // 嚴格格式化函式，統一將無效值轉為 "-"
             const fmtVal = (val, prefix = "") => {
-                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "-";
+                if (val === null || val === undefined || val === "" || val === 0 || Number.isNaN(val)) return "-";
                 return `${prefix}${Number(val).toFixed(2)}`;
             };
             const fmtPct = (val) => {
-                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "-";
+                if (val === null || val === undefined || val === "" || val === 0 || Number.isNaN(val)) return "-";
                 return `${(Number(val) * 100).toFixed(2)}%`;
             };
             const fmtText = (val) => {
