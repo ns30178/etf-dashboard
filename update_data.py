@@ -1,10 +1,13 @@
 import yfinance as yf
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 import pandas as pd
 import json
 import time
 import math
 import random
+import functools
 from bs4 import BeautifulSoup
 from datetime import datetime
 
@@ -14,6 +17,21 @@ FILE_MAP = {
     "槓桿型": "data_leverage.json", "反向型": "data_inverse.json",
     "綜合/其他": "data_other.json"
 }
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+}
+
+def get_robust_session():
+    """建立附帶自動重試與嚴格 Timeout 的安全連線池，防止 yfinance 掛機"""
+    session = requests.Session()
+    retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    session.headers.update(HEADERS)
+    session.request = functools.partial(session.request, timeout=5)
+    return session
 
 def sanitize_json(val):
     if isinstance(val, dict):
@@ -34,33 +52,49 @@ def categorize_etf(name):
     if any(k in name for k in ['50', '100', '市值', '加權', '大盤', '摩台', 'MSCI', '中型', '富時']): return "市值型"
     return "綜合/其他"
 
-def fetch_etf_list():
-    """透過 FinMind API 獲取 ETF 名單，繞過 TWSE/TPEX 對 GitHub IP 的封鎖"""
+def fetch_etf_list_and_nav():
     tickers = {}
+    nav_dict = {}
+    
+    # 1. 透過第三方 FinMind 獲取台股 ETF 名單 (破解政府 IP 封鎖)
     try:
         url = "https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo"
-        res = requests.get(url, timeout=10)
+        res = requests.get(url, headers=HEADERS, timeout=10)
         if res.status_code == 200:
             for item in res.json().get('data', []):
                 if item.get('industry_category') == 'ETF':
                     code = str(item.get('stock_id'))
-                    if code.startswith('00'):
-                        market = str(item.get('type')).lower()
-                        suffix = '.TW' if market == 'twse' else '.TWO'
-                        tickers[f"{code}{suffix}"] = str(item.get('stock_name'))
-    except:
-        pass
-    
-    # 極端備援名單
-    if not tickers:
-        core_etfs = ["0050.TW", "0056.TW", "00878.TW", "00929.TW", "00919.TW", "00713.TW", "00679B.TWO", "00687B.TWO"]
-        for t in core_etfs: tickers[t] = t.split('.')[0]
-    return tickers
+                    name = str(item.get('stock_name'))
+                    market = str(item.get('type')).lower()
+                    if market == 'twse': tickers[f"{code}.TW"] = name
+                    elif market == 'tpex': tickers[f"{code}.TWO"] = name
+    except: pass
 
-def fetch_yahoo_news(ticker_id):
+    # 備用核心清單
+    if not tickers:
+        core_etfs = ["0050.TW", "0056.TW", "00878.TW", "00929.TW", "00919.TW", "00713.TW", "00915.TW", "00939.TW", "00940.TW", "006208.TW", "00679B.TWO", "00687B.TWO", "00937B.TWO"]
+        for t in core_etfs: tickers[t] = t.split('.')[0]
+
+    # 2. 獲取官方淨值 (若 GitHub 在美國被擋，則會為空，由後方 Yahoo 淨值備援)
     try:
-        headers = {"User-Agent": "Mozilla/5.0"}
-        res = requests.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", headers=headers, timeout=5)
+        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=HEADERS, timeout=5)
+        for item in res.json():
+            try: nav_dict[f"{item.get('Code')}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
+            except: pass
+    except: pass
+
+    try:
+        res = requests.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=HEADERS, timeout=5)
+        for row in res.json().get('aaData', []):
+            try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
+            except: pass
+    except: pass
+
+    return tickers, nav_dict
+
+def fetch_yahoo_news(ticker_id, session):
+    try:
+        res = session.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", timeout=5)
         soup = BeautifulSoup(res.text, 'html.parser')
         news = []
         for a in soup.find_all('a', href=True):
@@ -72,20 +106,24 @@ def fetch_yahoo_news(ticker_id):
     except: return []
 
 def main():
-    tickers = fetch_etf_list()
+    tickers, nav_dict = fetch_etf_list_and_nav()
+    robust_session = get_robust_session()
     db = {cat: [] for cat in FILE_MAP.keys()}
     news_db = {}
-    
-    session = requests.Session()
-    session.headers.update({"User-Agent": "Mozilla/5.0"})
+
+    print(f"🚀 啟動完整量化引擎，共計掃描 {len(tickers)} 檔...")
 
     for idx, (ticker, name) in enumerate(tickers.items()):
+        if idx % 20 == 0 and idx > 0:
+            print(f"⏳ 進度: {idx} / {len(tickers)}")
+
         try:
-            tk = yf.Ticker(ticker, session=session)
+            tk = yf.Ticker(ticker, session=robust_session)
             
-            # 1. 抓取歷史股價與技術指標
+            # 1. 股價與技術指標
             hist = tk.history(period="1y")
-            if hist.empty or len(hist) < 20: continue
+            if hist.empty or len(hist) < 20:
+                continue
 
             current_price = float(hist['Close'].iloc[-1])
             vol_20d = int(hist['Volume'].tail(20).mean() / 1000)
@@ -99,39 +137,36 @@ def main():
             else:
                 cagr_1y, sharpe, mdd = None, None, None
 
-            # 2. 透過 fast_info 強制取得發行股數，無懼 Crumb 封鎖
-            fast = tk.fast_info
-            shares = fast.shares if hasattr(fast, 'shares') else None
-            aum = (shares * current_price) / 100000000 if (shares and not math.isnan(shares)) else None
+            # 2. 基本面、配息與規模 (AUM)
+            info = tk.info
+            
+            # 規模計算：首選官方總資產 -> 其次市值 -> 最終備援(股數*市價)
+            aum = info.get('totalAssets') or info.get('marketCap')
+            if aum:
+                aum = aum / 100000000
+            else:
+                try:
+                    shares = info.get('sharesOutstanding') or tk.fast_info.shares
+                    aum = (shares * current_price) / 100000000 if shares and current_price else None
+                except:
+                    aum = None
 
-            # 3. 透過 dividends 物件反推實質配息 (繞過 info 的封鎖)
-            divs = tk.dividends
-            dividend_rate = None
-            yield_ttm = None
+            # 淨值與折溢價：首選官方抓取 -> 其次 Yahoo 報價
+            nav = nav_dict.get(ticker) or info.get('navPrice')
+            premium = ((current_price - nav) / nav) if nav and nav > 0 else None
+
+            # 配息資料擷取
+            yield_ttm = info.get('trailingAnnualDividendYield')
+            dividend_rate = info.get('trailingAnnualDividendRate')
+            
             next_div_date = None
             next_div_amount = None
+            ex_div_ts = info.get('exDividendDate')
+            if ex_div_ts and ex_div_ts >= datetime.now().timestamp():
+                next_div_date = datetime.fromtimestamp(ex_div_ts).strftime('%Y-%m-%d')
+                next_div_amount = info.get('dividendRate') or info.get('lastDividendValue')
 
-            if not divs.empty:
-                now = pd.Timestamp.now(tz=divs.index.tz)
-                one_year_ago = now - pd.DateOffset(years=1)
-                
-                # 計算近 12 個月配息總額
-                past_divs = divs[(divs.index >= one_year_ago) & (divs.index <= now)]
-                if not past_divs.empty:
-                    dividend_rate = float(past_divs.sum())
-                    yield_ttm = dividend_rate / current_price
-
-                # 判斷未來已公告配息
-                future_divs = divs[divs.index > now]
-                if not future_divs.empty:
-                    next_div_date = future_divs.index[0].strftime('%Y-%m-%d')
-                    next_div_amount = float(future_divs.iloc[0])
-
-            # 4. 淨值與折溢價備援
-            info = tk.info
-            nav = info.get('navPrice')
-            premium = ((current_price - nav) / nav) if (nav and nav > 0) else None
-
+            # 資料庫匯整
             final_name = info.get('shortName', name) if name.startswith("00") else name
             category = categorize_etf(final_name)
             ticker_id = ticker.split('.')[0]
@@ -143,32 +178,36 @@ def main():
                 "next_div_date": next_div_date, "next_div_amount": next_div_amount
             })
             
+            # 新聞抓取
             if vol_20d > 100:
-                news_db[ticker_id] = fetch_yahoo_news(ticker_id)
-            
+                news_db[ticker_id] = fetch_yahoo_news(ticker_id, robust_session)
+                
         except Exception:
-            pass
+            pass # 發生無效代號直接跳過
             
-        time.sleep(random.uniform(0.1, 0.3))
+        time.sleep(random.uniform(0.1, 0.4))
 
-    # 輸出
+    # 匯出資料庫
     for cat, data in db.items():
         clean_data = sanitize_json(data)
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
             json.dump(clean_data, f, ensure_ascii=False, indent=2)
 
+    # 寫入靜態 IPO 與其新聞
     ipo_db = [
         {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
         {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
     ]
     for ipo in ipo_db:
-        news_db[ipo['id']] = fetch_yahoo_news(ipo['id'])
+        news_db[ipo['id']] = fetch_yahoo_news(ipo['id'], robust_session)
         
     with open("data_ipo.json", "w", encoding="utf-8") as f:
         json.dump(ipo_db, f, ensure_ascii=False, indent=2)
 
     with open("data_news.json", "w", encoding="utf-8") as f:
         json.dump(news_db, f, ensure_ascii=False, indent=2)
+
+    print("🎉 資料庫更新完成。")
 
 if __name__ == "__main__":
     main()
