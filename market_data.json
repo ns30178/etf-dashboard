@@ -2,12 +2,22 @@
   "ipo": [
     {
       "id": "0095X",
-      "name": "即將上市模擬",
+      "name": "某投信全球AI趨勢",
       "issueDate": "2026-08-01",
       "price": 10.0,
+      "fee": 0.6,
+      "freq": "不配息",
+      "topHoldings": "NVIDIA, MSFT",
+      "news": []
+    },
+    {
+      "id": "0096X",
+      "name": "某投信台灣價值",
+      "issueDate": "2026-08-15",
+      "price": 15.0,
       "fee": 0.35,
       "freq": "月配",
-      "topHoldings": "台積電, 聯發科",
+      "topHoldings": "長榮, 聯發科",
       "news": []
     }
   ],
