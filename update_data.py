@@ -7,6 +7,7 @@ import json
 import time
 import math
 import random
+from bs4 import BeautifulSoup
 from datetime import datetime
 
 FILE_MAP = {
@@ -17,7 +18,6 @@ FILE_MAP = {
 }
 
 def get_robust_session():
-    """建立附帶自動重試機制的連線池，設定嚴格逾時，防止無限期掛起"""
     session = requests.Session()
     retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
     adapter = HTTPAdapter(max_retries=retry)
@@ -27,7 +27,6 @@ def get_robust_session():
     return session
 
 def sanitize_json(val):
-    """遞迴過濾器：將 NaN、Inf 轉為 None，確保 JSON 寫入 null"""
     if isinstance(val, dict):
         return {k: sanitize_json(v) for k, v in val.items()}
     elif isinstance(val, list):
@@ -47,44 +46,41 @@ def categorize_etf(name):
     return "綜合/其他"
 
 def fetch_official_data():
-    """獲取官方清單與淨值，若失敗則啟用暴力備援名單"""
     tickers = {}
     nav_dict = {}
     headers = {"User-Agent": "Mozilla/5.0"}
     
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=5)
+        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=10)
         for item in res.json():
             if str(item.get('Code', '')).startswith('00'):
                 tickers[f"{item['Code']}.TW"] = item.get('Name', '')
-    except Exception as e:
-        print(f"[日誌] TWSE 名單獲取失敗: {e}")
+    except Exception:
+        pass
 
     try:
-        res = requests.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes", headers=headers, timeout=5)
+        res = requests.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes", headers=headers, timeout=10)
         for item in res.json():
             code = str(item.get('SecuritiesCompanyCode', ''))
             if code.startswith('00'):
                 tickers[f"{code}.TWO"] = item.get('CompanyName', '')
-    except Exception as e:
-        print(f"[日誌] TPEX 名單獲取失敗: {e}")
+    except Exception:
+        pass
 
-    # 強制備援機制：如果官方 API 被鎖導致名單為空，直接生成 0050~00999 避免程式結束
     if not tickers:
-        print("[警告] 官方 API 無法取得名單，啟動暴力備援清單...")
         for i in range(50, 1000):
             tickers[f"00{str(i).zfill(3)}.TW"] = "台股 ETF"
             tickers[f"00{str(i).zfill(3)}B.TWO"] = "債券 ETF"
 
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=5)
+        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=10)
         for item in res.json():
             try: nav_dict[f"{item.get('Code')}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
             except: pass
     except: pass
 
     try:
-        res = requests.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=headers, timeout=5)
+        res = requests.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=headers, timeout=10)
         for row in res.get('aaData', []):
             try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
             except: pass
@@ -92,22 +88,29 @@ def fetch_official_data():
 
     return tickers, nav_dict
 
+def fetch_yahoo_news(ticker_id, session):
+    try:
+        res = session.get(f"https://tw.stock.yahoo.com/quote/{ticker_id}/news", timeout=5)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        news = []
+        for a in soup.find_all('a', href=True):
+            title, href = a.text.strip(), a['href']
+            if len(title) > 10 and 'http' in href and ('news' in href or 'article' in href):
+                news.append({"title": title, "link": href, "date": datetime.today().strftime('%Y-%m-%d')})
+            if len(news) >= 3: break
+        return news
+    except:
+        return []
+
 def main():
     tickers, nav_dict = fetch_official_data()
     robust_session = get_robust_session()
     db = {cat: [] for cat in FILE_MAP.keys()}
-
-    print(f"啟動單線安全掃描，共 {len(tickers)} 檔...")
+    news_db = {}
 
     for idx, (ticker, name) in enumerate(tickers.items()):
-        if idx % 20 == 0 and idx > 0:
-            print(f"進度: {idx} / {len(tickers)}")
-
         try:
             tk = yf.Ticker(ticker, session=robust_session)
-            # 強制逾時設定，防止 yfinance 掛起
-            tk.session.request = lambda *args, **kwargs: robust_session.request(*args, timeout=5, **kwargs)
-            
             info = tk.info
             hist = tk.history(period="1y")
 
@@ -126,7 +129,6 @@ def main():
             else:
                 cagr_1y, sharpe, mdd = None, None, None
 
-            # 規模與淨值備援邏輯
             aum = info.get('totalAssets') or info.get('marketCap')
             if aum:
                 aum = aum / 100000000
@@ -140,11 +142,6 @@ def main():
             if nav and nav > 0:
                 premium = (current_price - nav) / nav
 
-            # 錯誤日誌追蹤
-            if aum is None: print(f"[除錯] {ticker} 缺失規模資料 (AUM)")
-            if nav is None: print(f"[除錯] {ticker} 缺失官方淨值資料 (NAV)")
-
-            # 配息處理邏輯：只抓實質數據
             yield_ttm = info.get('trailingAnnualDividendYield')
             dividend_rate = info.get('trailingAnnualDividendRate')
             
@@ -157,12 +154,12 @@ def main():
                     next_div_date = datetime.fromtimestamp(ex_div_ts).strftime('%Y-%m-%d')
                     next_div_amount = info.get('dividendRate') or info.get('lastDividendValue')
 
-            # 覆蓋備援名稱
             final_name = name if name != "台股 ETF" and name != "債券 ETF" else info.get('shortName', name)
             category = categorize_etf(final_name)
+            ticker_id = ticker.split('.')[0]
             
             db[category].append({
-                "id": ticker.split('.')[0],
+                "id": ticker_id,
                 "name": final_name,
                 "price": current_price,
                 "premium": premium,
@@ -177,18 +174,33 @@ def main():
                 "next_div_amount": next_div_amount
             })
             
-        except Exception as e:
-            pass # 逾時或無效標的直接跳過，不印出干擾日誌
+            # 日均量大於 100 張才抓取新聞
+            if vol_20d > 100:
+                news_db[ticker_id] = fetch_yahoo_news(ticker_id, robust_session)
             
-        time.sleep(random.uniform(0.2, 0.8)) # 安全休眠
+        except Exception:
+            pass
+            
+        time.sleep(random.uniform(0.2, 0.8))
 
-    # 輸出
     for cat, data in db.items():
         clean_data = sanitize_json(data)
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
             json.dump(clean_data, f, ensure_ascii=False, indent=2)
 
-    print("資料庫更新完成。")
+    ipo_db = [
+        {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
+        {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
+    ]
+    
+    for ipo in ipo_db:
+        news_db[ipo['id']] = fetch_yahoo_news(ipo['id'], robust_session)
+        
+    with open("data_ipo.json", "w", encoding="utf-8") as f:
+        json.dump(ipo_db, f, ensure_ascii=False, indent=2)
+
+    with open("data_news.json", "w", encoding="utf-8") as f:
+        json.dump(news_db, f, ensure_ascii=False, indent=2)
 
 if __name__ == "__main__":
     main()
