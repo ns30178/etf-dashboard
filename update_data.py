@@ -17,11 +17,9 @@ FILE_MAP = {
 }
 
 def get_robust_session():
-    """建立附帶自動重試機制的連線池，專剋 429 與 502 錯誤"""
+    """建立附帶自動重試機制的連線池，設定嚴格逾時，防止無限期掛起"""
     session = requests.Session()
-    # status_forcelist 鎖定 429(過多請求), 500, 502, 503, 504
-    # backoff_factor=1 代表重試間隔為 0s, 2s, 4s, 8s... 指數增加
-    retry = Retry(total=5, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
+    retry = Retry(total=3, backoff_factor=1, status_forcelist=[429, 500, 502, 503, 504])
     adapter = HTTPAdapter(max_retries=retry)
     session.mount('http://', adapter)
     session.mount('https://', adapter)
@@ -29,7 +27,7 @@ def get_robust_session():
     return session
 
 def sanitize_json(val):
-    """遞迴過濾器：將 NaN、Inf 轉為 None，確保 JSON 格式安全"""
+    """遞迴過濾器：將 NaN、Inf 轉為 None，確保 JSON 寫入 null"""
     if isinstance(val, dict):
         return {k: sanitize_json(v) for k, v in val.items()}
     elif isinstance(val, list):
@@ -49,37 +47,46 @@ def categorize_etf(name):
     return "綜合/其他"
 
 def fetch_official_data():
-    """獲取台股全市場 ETF 名單與 OpenAPI 官方淨值"""
+    """獲取官方清單與淨值，若失敗則啟用暴力備援名單"""
     tickers = {}
     nav_dict = {}
     headers = {"User-Agent": "Mozilla/5.0"}
     
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=10)
+        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/STOCK_DAY_ALL", headers=headers, timeout=5)
         for item in res.json():
             if str(item.get('Code', '')).startswith('00'):
                 tickers[f"{item['Code']}.TW"] = item.get('Name', '')
-    except: pass
+    except Exception as e:
+        print(f"[日誌] TWSE 名單獲取失敗: {e}")
 
     try:
-        res = requests.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes", headers=headers, timeout=10)
+        res = requests.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_quotes", headers=headers, timeout=5)
         for item in res.json():
             code = str(item.get('SecuritiesCompanyCode', ''))
             if code.startswith('00'):
                 tickers[f"{code}.TWO"] = item.get('CompanyName', '')
-    except: pass
+    except Exception as e:
+        print(f"[日誌] TPEX 名單獲取失敗: {e}")
+
+    # 強制備援機制：如果官方 API 被鎖導致名單為空，直接生成 0050~00999 避免程式結束
+    if not tickers:
+        print("[警告] 官方 API 無法取得名單，啟動暴力備援清單...")
+        for i in range(50, 1000):
+            tickers[f"00{str(i).zfill(3)}.TW"] = "台股 ETF"
+            tickers[f"00{str(i).zfill(3)}B.TWO"] = "債券 ETF"
 
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=10)
+        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=headers, timeout=5)
         for item in res.json():
             try: nav_dict[f"{item.get('Code')}.TW"] = float(str(item.get('Nav', '0')).replace(',', ''))
             except: pass
     except: pass
 
     try:
-        res = requests.get("https://www.tpex.org.tw/openapi/v1/tpex_mainboard_etf_nav", headers=headers, timeout=10)
-        for item in res.json():
-            try: nav_dict[f"{item.get('SecuritiesCompanyCode')}.TWO"] = float(str(item.get('Nav', '0')).replace(',', ''))
+        res = requests.get("https://www.tpex.org.tw/web/etf/g_info/fund_info_prb.php?l=zh-tw", headers=headers, timeout=5)
+        for row in res.get('aaData', []):
+            try: nav_dict[f"{row[0]}.TWO"] = float(str(row[3]).replace(',', ''))
             except: pass
     except: pass
 
@@ -90,100 +97,98 @@ def main():
     robust_session = get_robust_session()
     db = {cat: [] for cat in FILE_MAP.keys()}
 
-    print(f"🚀 啟動防封鎖單線爬蟲，共獲取 {len(tickers)} 檔清單...")
-    print("⚠️ 為徹底避開 Yahoo 防火牆限制，預計執行時間需約 5~10 分鐘，請耐心等候。")
+    print(f"啟動單線安全掃描，共 {len(tickers)} 檔...")
 
     for idx, (ticker, name) in enumerate(tickers.items()):
-        if idx % 10 == 0 and idx > 0:
-            print(f"⏳ 爬取進度: {idx} / {len(tickers)} 檔...")
+        if idx % 20 == 0 and idx > 0:
+            print(f"進度: {idx} / {len(tickers)}")
 
-        success = False
-        # 單檔標的最多嘗試解析 3 次
-        for attempt in range(3):
-            try:
-                # 將防禦型 session 注入 yfinance
-                tk = yf.Ticker(ticker, session=robust_session)
-                info = tk.info
-                hist = tk.history(period="1y")
+        try:
+            tk = yf.Ticker(ticker, session=robust_session)
+            # 強制逾時設定，防止 yfinance 掛起
+            tk.session.request = lambda *args, **kwargs: robust_session.request(*args, timeout=5, **kwargs)
+            
+            info = tk.info
+            hist = tk.history(period="1y")
 
-                if hist.empty or len(hist) < 20:
-                    success = True
-                    break
+            if hist.empty or len(hist) < 20:
+                continue
 
-                current_price = float(hist['Close'].iloc[-1])
-                vol_20d = int(hist['Volume'].tail(20).mean() / 1000)
+            current_price = float(hist['Close'].iloc[-1])
+            vol_20d = int(hist['Volume'].tail(20).mean() / 1000)
 
-                if len(hist) >= 200:
-                    cagr_1y = float((current_price - hist['Close'].iloc[0]) / hist['Close'].iloc[0])
-                    max_p = hist['Close'].cummax()
-                    mdd = float(((hist['Close'] - max_p) / max_p).min())
-                    daily_ret = hist['Close'].pct_change().dropna()
-                    sharpe = float((daily_ret.mean() / daily_ret.std()) * (252**0.5)) if daily_ret.std() != 0 else None
-                else:
-                    cagr_1y, sharpe, mdd = None, None, None
+            if len(hist) >= 200:
+                cagr_1y = float((current_price - hist['Close'].iloc[0]) / hist['Close'].iloc[0])
+                max_p = hist['Close'].cummax()
+                mdd = float(((hist['Close'] - max_p) / max_p).min())
+                daily_ret = hist['Close'].pct_change().dropna()
+                sharpe = float((daily_ret.mean() / daily_ret.std()) * (252**0.5)) if daily_ret.std() != 0 else None
+            else:
+                cagr_1y, sharpe, mdd = None, None, None
 
-                # 規模備援計算
-                aum = info.get('totalAssets') or info.get('marketCap')
-                if aum:
-                    aum = aum / 100000000
-                else:
-                    shares = info.get('sharesOutstanding')
-                    if shares and current_price:
-                        aum = (shares * current_price) / 100000000
+            # 規模與淨值備援邏輯
+            aum = info.get('totalAssets') or info.get('marketCap')
+            if aum:
+                aum = aum / 100000000
+            else:
+                shares = info.get('sharesOutstanding')
+                if shares and current_price:
+                    aum = (shares * current_price) / 100000000
+            
+            nav = nav_dict.get(ticker)
+            premium = None
+            if nav and nav > 0:
+                premium = (current_price - nav) / nav
 
-                # 折溢價計算
-                nav = nav_dict.get(ticker)
-                premium = ((current_price - nav) / nav) if nav and nav > 0 else None
+            # 錯誤日誌追蹤
+            if aum is None: print(f"[除錯] {ticker} 缺失規模資料 (AUM)")
+            if nav is None: print(f"[除錯] {ticker} 缺失官方淨值資料 (NAV)")
 
-                # 實質配息與未來已公告配息
-                yield_ttm = info.get('trailingAnnualDividendYield')
-                dividend_rate = info.get('trailingAnnualDividendRate')
-                
-                next_div_date = None
-                next_div_amount = None
-                
-                ex_div_ts = info.get('exDividendDate')
-                if ex_div_ts is not None and ex_div_ts >= datetime.now().timestamp():
+            # 配息處理邏輯：只抓實質數據
+            yield_ttm = info.get('trailingAnnualDividendYield')
+            dividend_rate = info.get('trailingAnnualDividendRate')
+            
+            next_div_date = None
+            next_div_amount = None
+            
+            ex_div_ts = info.get('exDividendDate')
+            if ex_div_ts:
+                if ex_div_ts >= datetime.now().timestamp():
                     next_div_date = datetime.fromtimestamp(ex_div_ts).strftime('%Y-%m-%d')
                     next_div_amount = info.get('dividendRate') or info.get('lastDividendValue')
 
-                category = categorize_etf(name)
-                db[category].append({
-                    "id": ticker.split('.')[0],
-                    "name": name,
-                    "price": current_price,
-                    "premium": premium,
-                    "aum": aum,
-                    "cagr_1y": cagr_1y,
-                    "sharpe": sharpe,
-                    "mdd": mdd,
-                    "vol_20d": vol_20d,
-                    "yield_ttm": yield_ttm,
-                    "dividend_rate": dividend_rate,
-                    "next_div_date": next_div_date,
-                    "next_div_amount": next_div_amount
-                })
-                
-                success = True
-                break  # 解析成功，跳出重試迴圈
+            # 覆蓋備援名稱
+            final_name = name if name != "台股 ETF" and name != "債券 ETF" else info.get('shortName', name)
+            category = categorize_etf(final_name)
+            
+            db[category].append({
+                "id": ticker.split('.')[0],
+                "name": final_name,
+                "price": current_price,
+                "premium": premium,
+                "aum": aum,
+                "cagr_1y": cagr_1y,
+                "sharpe": sharpe,
+                "mdd": mdd,
+                "vol_20d": vol_20d,
+                "yield_ttm": yield_ttm,
+                "dividend_rate": dividend_rate,
+                "next_div_date": next_div_date,
+                "next_div_amount": next_div_amount
+            })
+            
+        except Exception as e:
+            pass # 逾時或無效標的直接跳過，不印出干擾日誌
+            
+        time.sleep(random.uniform(0.2, 0.8)) # 安全休眠
 
-            except Exception as e:
-                # 如果遇到 JSON Decode 或其他怪異錯誤，休息 2 秒後重試
-                time.sleep(2)
-
-        if not success:
-            print(f"[錯誤] {ticker} ({name}) 嘗試 3 次仍被阻擋或查無資料，已跳過。")
-
-        # 標的與標的之間加入隨機的安全休眠，完全模擬真實人類行為
-        time.sleep(random.uniform(0.5, 1.5))
-
-    # 清洗資料並寫入 JSON
+    # 輸出
     for cat, data in db.items():
         clean_data = sanitize_json(data)
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
             json.dump(clean_data, f, ensure_ascii=False, indent=2)
 
-    print("🎉 資料庫更新與過濾完成。")
+    print("資料庫更新完成。")
 
 if __name__ == "__main__":
     main()
