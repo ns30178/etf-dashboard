@@ -1,75 +1,51 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <title>ETF Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans">
-    <div id="root"></div>
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-        const FILE_MAP = {
-            "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
-            "主題型": "data_theme.json", "債券型": "data_bond.json",
-            "綜合/其他": "data_other.json", "槓桿型": "data_leverage.json",
-            "反向型": "data_inverse.json"
-        };
-        const CATEGORIES = Object.keys(FILE_MAP);
+name: Daily ETF Update
 
-        function ETFDashboard() {
-            const [activeTab, setActiveTab] = useState('高股息');
-            const [data, setData] = useState([]);
-            const [loading, setLoading] = useState(true);
+on:
+  schedule:
+    - cron: '30 10 * * 1-5' # 10:30 UTC = 台灣時間 18:30
+  repository_dispatch:
+    types: [trigger-update] # 開放外部 API 觸發點
+  workflow_dispatch:
 
-            // 【格式化核心】確保無數據時顯示 "-"
-            const fmtVal = (val, prefix = "") => (val === null || val === undefined || val === 0 || isNaN(val)) ? "-" : `${prefix}${val.toFixed(2)}`;
-            const fmtPct = (val) => (val === null || val === undefined || val === 0 || isNaN(val)) ? "-" : `${(val * 100).toFixed(2)}%`;
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-            useEffect(() => {
-                setLoading(true);
-                fetch(`./${FILE_MAP[activeTab]}?t=` + new Date().getTime())
-                    .then(res => res.json())
-                    .then(d => { setData(d); setLoading(false); })
-                    .catch(() => { setData([]); setLoading(false); });
-            }, [activeTab]);
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-            return (
-                <div className="p-4">
-                    <div className="flex gap-2 mb-4 overflow-x-auto">
-                        {CATEGORIES.map(cat => (
-                            <button key={cat} onClick={() => setActiveTab(cat)} className={`px-4 py-2 font-bold ${activeTab === cat ? 'bg-blue-600 text-white' : 'bg-slate-200'}`}>{cat}</button>
-                        ))}
-                    </div>
-                    <table className="w-full text-sm bg-white border text-center">
-                        <thead className="bg-slate-100">
-                            <tr>
-                                <th className="p-2">代號</th><th className="p-2">市價</th>
-                                <th className="p-2">折溢價</th><th className="p-2">規模(億)</th>
-                                <th className="p-2">殖利率</th><th className="p-2">配息額</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((row, idx) => (
-                                <tr key={idx} className="border-b">
-                                    <td className="p-2 font-bold">{row.id}</td>
-                                    <td className="p-2">{fmtVal(row.price)}</td>
-                                    <td className="p-2">{fmtPct(row.premium)}</td>
-                                    <td className="p-2">{fmtVal(row.aum)}</td>
-                                    <td className="p-2">{fmtPct(row.yield_ttm)}</td>
-                                    <td className="p-2">{fmtVal(row.dividend_rate, "$")}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            );
-        }
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ETFDashboard />);
-    </script>
-</body>
-</html>
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Scraper Engine
+        run: python update_data.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Action"
+          git add data_*.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update dynamic data" && git push)
+
+      - name: Telegram Status Notification
+        if: always()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          if [ "$JOB_STATUS" == "success" ]; then
+            MSG="✅ 台股全市場 ETF 數據庫與新聞動態更新成功！%0A執行時間：$(date +'%Y-%m-%d %H:%M:%S')"
+          else
+            MSG="❌ 台股 ETF 數據更新發生非預期失敗，請即刻前往 GitHub Actions 查看錯誤日誌。"
+          fi
+          curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TG_CHAT_ID}" \
+            -d text="$MSG"
