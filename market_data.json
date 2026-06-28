@@ -3,7 +3,6 @@
     {
       "id": "00946",
       "name": "群益科技高息成長",
-      "category": "高股息",
       "issueDate": "2026-05-09",
       "price": 10.0,
       "fee": 0.3,
@@ -14,7 +13,6 @@
     {
       "id": "00947",
       "name": "台新臺灣IC設計",
-      "category": "主題型",
       "issueDate": "2026-06-12",
       "price": 15.0,
       "fee": 0.4,
@@ -109,8 +107,8 @@
       "cagr_1y": 1.1372304081022142,
       "sharpe": 3.293919125516631,
       "mdd": -0.10844119391607741,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.013191076819864072,
+      "dividend_rate": 1.3599999999999999,
       "vol_20d": 133718,
       "news": [
         {
@@ -140,8 +138,8 @@
       "cagr_1y": 0.9133647117175002,
       "sharpe": 2.8696668409899853,
       "mdd": -0.10505491822630494,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.02106002151119751,
+      "dividend_rate": 3.0,
       "vol_20d": 93,
       "news": []
     },
@@ -155,8 +153,8 @@
       "cagr_1y": -0.676886177083146,
       "sharpe": -0.008508318951138748,
       "mdd": -0.8658389874193276,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01978547904604365,
+      "dividend_rate": 1.199,
       "vol_20d": 34981,
       "news": [
         {
@@ -186,8 +184,8 @@
       "cagr_1y": 1.266990291262136,
       "sharpe": 3.0760059512501967,
       "mdd": -0.10758076058857081,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01284796573875803,
+      "dividend_rate": 3.0,
       "vol_20d": 28,
       "news": []
     },
@@ -201,8 +199,8 @@
       "cagr_1y": 0.45901074119000873,
       "sharpe": 2.410447334800524,
       "mdd": -0.0853938877974433,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.029634897841539755,
+      "dividend_rate": 1.25,
       "vol_20d": 1166,
       "news": []
     },
@@ -216,8 +214,8 @@
       "cagr_1y": 0.4848484414788034,
       "sharpe": 2.222846541737349,
       "mdd": -0.08085499137190626,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06993197175211156,
+      "dividend_rate": 3.598,
       "vol_20d": 54441,
       "news": [
         {
@@ -277,8 +275,8 @@
       "cagr_1y": 1.1159013492835803,
       "sharpe": 3.2044726460845947,
       "mdd": -0.10531695480329943,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.012437152886769932,
+      "dividend_rate": 2.35,
       "vol_20d": 20,
       "news": []
     },
@@ -292,8 +290,8 @@
       "cagr_1y": 0.9491227802477384,
       "sharpe": 3.0282564627971924,
       "mdd": -0.10432148409011834,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01466696689810995,
+      "dividend_rate": 3.259,
       "vol_20d": 28,
       "news": []
     },
@@ -352,8 +350,8 @@
       "cagr_1y": 1.1142603518346936,
       "sharpe": 3.2140284637308447,
       "mdd": -0.10585103136427859,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01858818624518912,
+      "dividend_rate": 4.437,
       "vol_20d": 4273,
       "news": [
         {
@@ -1319,8 +1317,8 @@
       "cagr_1y": 1.2779242321286302,
       "sharpe": 3.219288509591289,
       "mdd": -0.11333926928020452,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0526383547057852,
+      "dividend_rate": 4.09,
       "vol_20d": 601,
       "news": []
     },
@@ -1334,8 +1332,8 @@
       "cagr_1y": 1.0076524045814832,
       "sharpe": 3.147445632147243,
       "mdd": -0.10260018123966774,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.021076233904927816,
+      "dividend_rate": 1.88,
       "vol_20d": 1839,
       "news": []
     },
@@ -1379,8 +1377,8 @@
       "cagr_1y": 0.39537361395657883,
       "sharpe": 2.3118401585989408,
       "mdd": -0.09090906182567371,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06375924657927401,
+      "dividend_rate": 2.5,
       "vol_20d": 1388,
       "news": [
         {
@@ -1400,8 +1398,8 @@
       "cagr_1y": 0.1395998153537395,
       "sharpe": 1.448406183975781,
       "mdd": -0.050243101936190686,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05185790166881714,
+      "dividend_rate": 1.27,
       "vol_20d": 106,
       "news": []
     },
@@ -1496,8 +1494,8 @@
       "cagr_1y": 0.06610169637640413,
       "sharpe": 1.25418872477417,
       "mdd": -0.03072033630760524,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06571276867258345,
+      "dividend_rate": 1.24,
       "vol_20d": 282,
       "news": [
         {
@@ -1527,8 +1525,8 @@
       "cagr_1y": 0.12223760453864686,
       "sharpe": 1.7548231138226287,
       "mdd": -0.05762305203718803,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.048,
+      "dividend_rate": 0.78,
       "vol_20d": 141,
       "news": []
     },
@@ -1542,8 +1540,8 @@
       "cagr_1y": 0.0667490669552445,
       "sharpe": 0.5672309161540999,
       "mdd": -0.14198164951367967,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.09327925716396712,
+      "dividend_rate": 0.805,
       "vol_20d": 43319,
       "news": [
         {
@@ -1563,8 +1561,8 @@
       "cagr_1y": 0.18588474017171294,
       "sharpe": 1.6200313540242515,
       "mdd": -0.062037008780020254,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05599329278392314,
+      "dividend_rate": 3.34,
       "vol_20d": 10023,
       "news": [
         {
@@ -1594,8 +1592,8 @@
       "cagr_1y": 0.17803838549243806,
       "sharpe": 1.335692280839539,
       "mdd": -0.06688486688302912,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.022262443054640358,
+      "dividend_rate": 0.492,
       "vol_20d": 237,
       "news": []
     },
@@ -1640,8 +1638,8 @@
       "cagr_1y": 0.07256894189970958,
       "sharpe": 1.1158589594493507,
       "mdd": -0.050257774719028626,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03815967592623361,
+      "dividend_rate": 0.564,
       "vol_20d": 193,
       "news": []
     },
@@ -1655,8 +1653,8 @@
       "cagr_1y": 1.0669746826051627,
       "sharpe": 3.0831670417649617,
       "mdd": -0.08610437922375237,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.02986432489115174,
+      "dividend_rate": 1.871,
       "vol_20d": 138,
       "news": []
     },
@@ -1670,8 +1668,8 @@
       "cagr_1y": 0.28280542498272815,
       "sharpe": 1.378213031226174,
       "mdd": -0.16401085846998464,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04656084593433676,
+      "dividend_rate": 1.3200000000000003,
       "vol_20d": 302,
       "news": []
     },
@@ -1685,8 +1683,8 @@
       "cagr_1y": 0.33761340081314134,
       "sharpe": 2.2664291804717895,
       "mdd": -0.08905012834090469,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0317108967049805,
+      "dividend_rate": 2.808,
       "vol_20d": 868,
       "news": []
     },
@@ -1700,8 +1698,8 @@
       "cagr_1y": 0.8837030776482735,
       "sharpe": 2.23145944776259,
       "mdd": -0.11597937992293395,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.02246406476995366,
+      "dividend_rate": 1.641,
       "vol_20d": 1013,
       "news": []
     },
@@ -1715,8 +1713,8 @@
       "cagr_1y": 2.3138686131386863,
       "sharpe": 3.230311859451797,
       "mdd": -0.17365273169374282,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.011013215859030838,
+      "dividend_rate": 1.25,
       "vol_20d": 4980,
       "news": []
     },
@@ -1730,8 +1728,8 @@
       "cagr_1y": 0.30012657419662503,
       "sharpe": 1.900907154053332,
       "mdd": -0.09525386697062702,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.016233766635888994,
+      "dividend_rate": 0.5,
       "vol_20d": 123,
       "news": []
     },
@@ -1775,8 +1773,8 @@
       "cagr_1y": 0.3993336172417052,
       "sharpe": 2.137477118482255,
       "mdd": -0.06532662078076144,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.030612245295157988,
+      "dividend_rate": 0.9,
       "vol_20d": 108,
       "news": []
     },
@@ -1903,8 +1901,8 @@
       "cagr_1y": 0.4818120841535301,
       "sharpe": 1.850142869824361,
       "mdd": -0.18360101995263972,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06325301059463201,
+      "dividend_rate": 4.2,
       "vol_20d": 398,
       "news": [
         {
@@ -1929,8 +1927,8 @@
       "cagr_1y": 0.05153952338624609,
       "sharpe": 0.819390122124884,
       "mdd": -0.05323660203028196,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.053469127814151154,
+      "dividend_rate": 0.84,
       "vol_20d": 40,
       "news": []
     },
@@ -1944,8 +1942,8 @@
       "cagr_1y": 0.09969779505638811,
       "sharpe": 1.1297202623653964,
       "mdd": -0.06791774798998293,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04334554556636321,
+      "dividend_rate": 1.42,
       "vol_20d": 81,
       "news": []
     },
@@ -1974,8 +1972,8 @@
       "cagr_1y": 1.3166302049584784,
       "sharpe": 2.462560517678429,
       "mdd": -0.20570110901299501,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.09404389014628188,
+      "dividend_rate": 9.0,
       "vol_20d": 12381,
       "news": [
         {
@@ -2000,8 +1998,8 @@
       "cagr_1y": 1.0236728671207889,
       "sharpe": 3.185829970852739,
       "mdd": -0.10565474399633608,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03350368992339412,
+      "dividend_rate": 2.9499999999999997,
       "vol_20d": 872,
       "news": []
     },
@@ -2015,8 +2013,8 @@
       "cagr_1y": 0.4909702140388072,
       "sharpe": 2.043902927380714,
       "mdd": -0.11612359440990361,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.023943661971830985,
+      "dividend_rate": 1.7,
       "vol_20d": 13,
       "news": []
     },
@@ -2116,8 +2114,8 @@
       "cagr_1y": 0.5635754763470991,
       "sharpe": 2.618030354547888,
       "mdd": -0.09375,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05747477996391723,
+      "dividend_rate": 1.88,
       "vol_20d": 67700,
       "news": [
         {
@@ -2147,8 +2145,8 @@
       "cagr_1y": 1.22175389074607,
       "sharpe": 3.045541763446535,
       "mdd": -0.09736359719466914,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06072106173953523,
+      "dividend_rate": 3.2,
       "vol_20d": 12563,
       "news": [
         {
@@ -2178,8 +2176,8 @@
       "cagr_1y": 0.11406844437366223,
       "sharpe": 0.8368901459419609,
       "mdd": -0.10232843796091337,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06825938744292763,
+      "dividend_rate": 1.0,
       "vol_20d": 13397,
       "news": []
     },
@@ -2214,8 +2212,8 @@
       "cagr_1y": 1.1404663689849828,
       "sharpe": 2.816559847280146,
       "mdd": -0.12577161339838824,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.08405473009127043,
+      "dividend_rate": 3.01,
       "vol_20d": 25593,
       "news": [
         {
@@ -2240,8 +2238,8 @@
       "cagr_1y": 1.5209789455829874,
       "sharpe": 3.473240437136473,
       "mdd": -0.09787528929118379,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01072584415170997,
+      "dividend_rate": 0.464,
       "vol_20d": 2740,
       "news": [
         {
@@ -2282,8 +2280,8 @@
       "cagr_1y": 1.3666834540465094,
       "sharpe": 3.070626694943911,
       "mdd": -0.10444703519454397,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.038626610706856884,
+      "dividend_rate": 1.8000000000000003,
       "vol_20d": 1978,
       "news": [
         {
@@ -2324,8 +2322,8 @@
       "cagr_1y": 0.7057692281828359,
       "sharpe": 2.2793497441796937,
       "mdd": -0.11535902001847363,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.11086057618700017,
+      "dividend_rate": 2.95,
       "vol_20d": 13241,
       "news": []
     },
@@ -2384,8 +2382,8 @@
       "cagr_1y": 0.4662005444465217,
       "sharpe": 2.159554495760732,
       "mdd": -0.09688122546202896,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05431902249145002,
+      "dividend_rate": 1.0249999999999997,
       "vol_20d": 9118,
       "news": [
         {
@@ -2405,8 +2403,8 @@
       "cagr_1y": 1.2600000381469727,
       "sharpe": 2.8018871360742805,
       "mdd": -0.16940671367642615,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05752212292287839,
+      "dividend_rate": 2.6,
       "vol_20d": 519,
       "news": []
     },
@@ -2450,8 +2448,8 @@
       "cagr_1y": 1.3844836052347742,
       "sharpe": 3.1086613801107643,
       "mdd": -0.12335526470579931,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.061483254710717715,
+      "dividend_rate": 2.57,
       "vol_20d": 2312,
       "news": [
         {
@@ -2471,8 +2469,8 @@
       "cagr_1y": 0.9963098786933324,
       "sharpe": 3.079731127869207,
       "mdd": -0.09749028076043931,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04436229330298498,
+      "dividend_rate": 1.2,
       "vol_20d": 1893,
       "news": [
         {
@@ -2492,23 +2490,23 @@
       "cagr_1y": 0.08839402786221992,
       "sharpe": 0.7213273326363268,
       "mdd": -0.09508817493701877,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.059950406095002046,
+      "dividend_rate": 0.967,
       "vol_20d": 2501,
       "news": []
     },
     {
       "id": "00908",
       "name": "富邦入息REITs+",
-      "category": "REITs",
+      "category": "綜合/其他",
       "price": 15.069999694824219,
       "premium": null,
       "aum": null,
       "cagr_1y": 0.18474837880992695,
       "sharpe": 1.6886068912892904,
       "mdd": -0.08758623846646013,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03808891915221072,
+      "dividend_rate": 0.574,
       "vol_20d": 163,
       "news": [
         {
@@ -2528,8 +2526,8 @@
       "cagr_1y": 0.5466667113265371,
       "sharpe": 1.2579571927646507,
       "mdd": -0.3169260784423449,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.057821697237047574,
+      "dividend_rate": 2.75,
       "vol_20d": 2056,
       "news": [
         {
@@ -2590,8 +2588,8 @@
       "cagr_1y": 1.6588425488662584,
       "sharpe": 3.133529474470064,
       "mdd": -0.11105388355531345,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04109589231985861,
+      "dividend_rate": 2.7,
       "vol_20d": 496,
       "news": [
         {
@@ -2611,8 +2609,8 @@
       "cagr_1y": 0.8170865218662476,
       "sharpe": 2.7421675562774017,
       "mdd": -0.09154385366537574,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.056057865668851625,
+      "dividend_rate": 1.8599999999999999,
       "vol_20d": 1055,
       "news": []
     },
@@ -2626,8 +2624,8 @@
       "cagr_1y": 1.650356665429774,
       "sharpe": 3.199515093269241,
       "mdd": -0.16363635207667496,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04807692307692308,
+      "dividend_rate": 2.5,
       "vol_20d": 2900,
       "news": [
         {
@@ -2652,8 +2650,8 @@
       "cagr_1y": 0.4354259828105972,
       "sharpe": 2.41316125271996,
       "mdd": -0.08212564021722889,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.045923151423945166,
+      "dividend_rate": 1.47,
       "vol_20d": 6753,
       "news": [
         {
@@ -2673,8 +2671,8 @@
       "cagr_1y": 0.08337006542954593,
       "sharpe": 0.5264035775493208,
       "mdd": -0.2145826956697514,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.07817589746540853,
+      "dividend_rate": 1.92,
       "vol_20d": 7764,
       "news": []
     },
@@ -2688,8 +2686,8 @@
       "cagr_1y": 0.04470591825597427,
       "sharpe": 0.312695829935655,
       "mdd": -0.3732704156184746,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.31531530447898715,
+      "dividend_rate": 7.0,
       "vol_20d": 940,
       "news": []
     },
@@ -2703,8 +2701,8 @@
       "cagr_1y": 0.4368080802606663,
       "sharpe": 2.1047422289405593,
       "mdd": -0.09736731692402456,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.09518459185586003,
+      "dividend_rate": 2.965,
       "vol_20d": 90232,
       "news": [
         {
@@ -2729,8 +2727,8 @@
       "cagr_1y": 0.374244497973165,
       "sharpe": 2.058245425583027,
       "mdd": -0.10487804405277464,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.09675236981296821,
+      "dividend_rate": 2.8600000000000003,
       "vol_20d": 167233,
       "news": [
         {
@@ -2781,8 +2779,8 @@
       "cagr_1y": 0.350210935051503,
       "sharpe": 1.8382343172290712,
       "mdd": -0.0744210870751996,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04352678645554248,
+      "dividend_rate": 0.9750000000000001,
       "vol_20d": 526,
       "news": [
         {
@@ -2802,8 +2800,8 @@
       "cagr_1y": 0.9115941177001762,
       "sharpe": 2.7636370804101746,
       "mdd": -0.15825757634624685,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.08213292962003996,
+      "dividend_rate": 3.25,
       "vol_20d": 12322,
       "news": [
         {
@@ -2833,8 +2831,8 @@
       "cagr_1y": 0.9562946222190086,
       "sharpe": 2.8050007152620746,
       "mdd": -0.15327796836912835,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06393880477142849,
+      "dividend_rate": 2.633,
       "vol_20d": 6074,
       "news": [
         {
@@ -2880,8 +2878,8 @@
       "cagr_1y": 0.20270276462458164,
       "sharpe": 1.3321486247990963,
       "mdd": -0.11383748407985392,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06117353133564168,
+      "dividend_rate": 1.47,
       "vol_20d": 806,
       "news": [
         {
@@ -2906,8 +2904,8 @@
       "cagr_1y": 1.3253504335151443,
       "sharpe": 2.961557845508529,
       "mdd": -0.11636777350623523,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05752323338366894,
+      "dividend_rate": 2.29,
       "vol_20d": 19528,
       "news": [
         {
@@ -2927,8 +2925,8 @@
       "cagr_1y": 0.7169053165947193,
       "sharpe": 2.3278086924824706,
       "mdd": -0.0936087689277265,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04405874633968582,
+      "dividend_rate": 1.32,
       "vol_20d": 39762,
       "news": [
         {
@@ -2953,8 +2951,8 @@
       "cagr_1y": 0.4355972229093119,
       "sharpe": 1.9487238985767077,
       "mdd": -0.09590510940278714,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04192495843426905,
+      "dividend_rate": 1.028,
       "vol_20d": 1542,
       "news": []
     },
@@ -2968,8 +2966,8 @@
       "cagr_1y": 0.23826708636598315,
       "sharpe": 1.4026110211832008,
       "mdd": -0.09452410657378765,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04081632743849523,
+      "dividend_rate": 0.7,
       "vol_20d": 1580,
       "news": []
     },
@@ -2983,8 +2981,8 @@
       "cagr_1y": 0.5065862676964954,
       "sharpe": 2.047122099241588,
       "mdd": -0.11256544132277457,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06036429704720205,
+      "dividend_rate": 1.657,
       "vol_20d": 4298,
       "news": [
         {
@@ -3014,8 +3012,8 @@
       "cagr_1y": 1.7361563454312254,
       "sharpe": 3.4811405587491238,
       "mdd": -0.11437101315776495,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03316326573642115,
+      "dividend_rate": 1.95,
       "vol_20d": 19052,
       "news": []
     },
@@ -3029,8 +3027,8 @@
       "cagr_1y": 0.42036914040308676,
       "sharpe": 2.1151073918094183,
       "mdd": -0.08019938750514648,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04186717859730942,
+      "dividend_rate": 0.8699999999999999,
       "vol_20d": 2436,
       "news": [
         {
@@ -3060,8 +3058,8 @@
       "cagr_1y": 0.675225513203856,
       "sharpe": 3.27629495662914,
       "mdd": -0.084221203679296,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.028997515231925387,
+      "dividend_rate": 0.7000000000000001,
       "vol_20d": 2104,
       "news": [
         {
@@ -3091,8 +3089,8 @@
       "cagr_1y": 0.5424835922313153,
       "sharpe": 2.556257231274218,
       "mdd": -0.10287077655444071,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04011299478253935,
+      "dividend_rate": 0.8519999999999999,
       "vol_20d": 5740,
       "news": [
         {
@@ -3112,8 +3110,8 @@
       "cagr_1y": 0.3711111280653212,
       "sharpe": 2.0984979362981857,
       "mdd": -0.07267144369300162,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04213938359562725,
+      "dividend_rate": 0.5199999999999999,
       "vol_20d": 28432,
       "news": [
         {
@@ -3158,8 +3156,8 @@
       "cagr_1y": 0.5834553003208423,
       "sharpe": 2.2194140661367783,
       "mdd": -0.08586521066502724,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04036061182949484,
+      "dividend_rate": 0.8729999999999999,
       "vol_20d": 296,
       "news": [
         {
@@ -3179,8 +3177,8 @@
       "cagr_1y": 0.5496403961631828,
       "sharpe": 2.640796173985621,
       "mdd": -0.06649615978410375,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.030083564180950536,
+      "dividend_rate": 0.6480000000000001,
       "vol_20d": 888,
       "news": []
     },
@@ -3194,8 +3192,8 @@
       "cagr_1y": 0.08208958304361323,
       "sharpe": 1.7830754782720657,
       "mdd": -0.023809485192973406,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06999999999999999,
+      "dividend_rate": 1.015,
       "vol_20d": 7025,
       "news": [
         {
@@ -3225,8 +3223,8 @@
       "cagr_1y": 0.6328556690104414,
       "sharpe": 2.3748825441440027,
       "mdd": -0.10360784419591275,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04253882391289664,
+      "dividend_rate": 0.6300000000000001,
       "vol_20d": 5660,
       "news": [
         {
@@ -3256,8 +3254,8 @@
       "cagr_1y": 1.8241840495276764,
       "sharpe": 2.8732674905248943,
       "mdd": -0.15369799352206778,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.010506960945796428,
+      "dividend_rate": 0.4,
       "vol_20d": 10771,
       "news": [
         {
@@ -3298,8 +3296,8 @@
       "cagr_1y": 1.4097969357315794,
       "sharpe": 2.358609791382766,
       "mdd": -0.18164062657645752,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.007932573098403208,
+      "dividend_rate": 0.16,
       "vol_20d": 4444,
       "news": []
     },
@@ -3313,8 +3311,8 @@
       "cagr_1y": 0.8883035309264831,
       "sharpe": 2.5054481696679103,
       "mdd": -0.11726863133336983,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0323660712907737,
+      "dividend_rate": 0.58,
       "vol_20d": 4184,
       "news": [
         {
@@ -3334,8 +3332,8 @@
       "cagr_1y": 0.06607933772149559,
       "sharpe": 1.3270960602318236,
       "mdd": -0.02755106658252275,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.07603305545418933,
+      "dividend_rate": 0.7359999999999998,
       "vol_20d": 32780,
       "news": [
         {
@@ -3380,8 +3378,8 @@
       "cagr_1y": 0.3329646284937421,
       "sharpe": 1.7139184862924173,
       "mdd": -0.1209857986573491,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05684647212924448,
+      "dividend_rate": 0.685,
       "vol_20d": 562,
       "news": []
     },
@@ -3395,8 +3393,8 @@
       "cagr_1y": 0.2756315027958741,
       "sharpe": 1.490567680369493,
       "mdd": -0.0893824323056519,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06290040740833312,
+      "dividend_rate": 1.08,
       "vol_20d": 698,
       "news": []
     },
@@ -3410,8 +3408,8 @@
       "cagr_1y": 0.3542795904593714,
       "sharpe": 1.8980265996503423,
       "mdd": -0.07201189664436211,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06560000000000002,
+      "dividend_rate": 0.8200000000000002,
       "vol_20d": 8724,
       "news": [
         {
@@ -3441,8 +3439,8 @@
       "cagr_1y": 0.5191489694128227,
       "sharpe": 1.8493507539187963,
       "mdd": -0.12820509984062342,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03081232550614696,
+      "dividend_rate": 0.44,
       "vol_20d": 2384,
       "news": []
     },
@@ -3456,8 +3454,8 @@
       "cagr_1y": 0.26673430081307026,
       "sharpe": 2.4907393291269098,
       "mdd": -0.0424710578251409,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0574059257917673,
+      "dividend_rate": 0.7169999999999999,
       "vol_20d": 1436,
       "news": []
     },
@@ -3471,8 +3469,8 @@
       "cagr_1y": 0.3714859232022162,
       "sharpe": 1.9754151343004072,
       "mdd": -0.0757780721105555,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.07093704325213278,
+      "dividend_rate": 0.9689999999999999,
       "vol_20d": 3684,
       "news": []
     },
@@ -3517,8 +3515,8 @@
       "cagr_1y": 0.1852123510180578,
       "sharpe": 1.0997706687264797,
       "mdd": -0.174768538064794,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.061766520507295815,
+      "dividend_rate": 1.0,
       "vol_20d": 482,
       "news": [
         {
@@ -3538,8 +3536,8 @@
       "cagr_1y": 0.33449237700536055,
       "sharpe": 1.801680845896443,
       "mdd": -0.132352894605144,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.043251692386717264,
+      "dividend_rate": 0.8300000000000001,
       "vol_20d": 179,
       "news": []
     },
@@ -3605,8 +3603,8 @@
       "cagr_1y": 0.9034267607348025,
       "sharpe": 2.4181414953859006,
       "mdd": -0.13285199291760846,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.026623022478514755,
+      "dividend_rate": 0.48800000000000004,
       "vol_20d": 8478,
       "news": []
     },
@@ -3620,8 +3618,8 @@
       "cagr_1y": 1.038834913701272,
       "sharpe": 2.98291192917338,
       "mdd": -0.10733775188944919,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.055238095238095246,
+      "dividend_rate": 1.1600000000000001,
       "vol_20d": 4953,
       "news": []
     },
@@ -3635,8 +3633,8 @@
       "cagr_1y": 1.0,
       "sharpe": 3.0208866684894997,
       "mdd": -0.10446921629813458,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.054231433863344565,
+      "dividend_rate": 1.256,
       "vol_20d": 1231,
       "news": [
         {
@@ -3687,8 +3685,8 @@
       "cagr_1y": 0.9671814523723447,
       "sharpe": 3.076666445720106,
       "mdd": -0.12068254028351152,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04779195337209508,
+      "dividend_rate": 1.4609999999999999,
       "vol_20d": 965,
       "news": []
     },
@@ -3702,8 +3700,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.08507350003923857,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.005767012636679568,
+      "dividend_rate": 0.1,
       "vol_20d": 929,
       "news": []
     },
@@ -3717,8 +3715,8 @@
       "cagr_1y": 1.0959147337258361,
       "sharpe": 2.925248307163566,
       "mdd": -0.11313715860691298,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04983050766911736,
+      "dividend_rate": 1.176,
       "vol_20d": 12328,
       "news": [
         {
@@ -3912,8 +3910,8 @@
       "cagr_1y": 1.7415215642286985,
       "sharpe": 3.31230087872109,
       "mdd": -0.09142475254903436,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.034770979782869624,
+      "dividend_rate": 1.04,
       "vol_20d": 268697,
       "news": [
         {
@@ -3943,8 +3941,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.05979199156535392,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.029532404626110762,
+      "dividend_rate": 0.36000000000000004,
       "vol_20d": 4178,
       "news": [
         {
@@ -3979,8 +3977,8 @@
       "cagr_1y": 1.1642202732268263,
       "sharpe": 2.6786362496330436,
       "mdd": -0.13409701823831421,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06727426832279616,
+      "dividend_rate": 1.5870000000000002,
       "vol_20d": 40042,
       "news": [
         {
@@ -4010,8 +4008,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.04479065410354804,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03110668078827317,
+      "dividend_rate": 0.312,
       "vol_20d": 990,
       "news": []
     },
@@ -4066,8 +4064,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.03567983506676134,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03529411830704106,
+      "dividend_rate": 0.36,
       "vol_20d": 1160,
       "news": []
     },
@@ -4081,8 +4079,8 @@
       "cagr_1y": 0.6156155915348849,
       "sharpe": 2.633931424985994,
       "mdd": -0.07943928704378495,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.040024784661040265,
+      "dividend_rate": 0.646,
       "vol_20d": 8630,
       "news": [
         {
@@ -4112,8 +4110,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.0157480167140813,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01674876910237915,
+      "dividend_rate": 0.17,
       "vol_20d": 12906,
       "news": []
     },
@@ -4158,8 +4156,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.026923052234761612,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03731778439490383,
+      "dividend_rate": 0.38399999999999995,
       "vol_20d": 7471,
       "news": []
     },
@@ -4321,8 +4319,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.1132232062844771,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.026860463924830952,
+      "dividend_rate": 0.462,
       "vol_20d": 10925,
       "news": []
     },
@@ -4396,8 +4394,8 @@
       "cagr_1y": 0.091487716795897,
       "sharpe": 0.9889439452565773,
       "mdd": -0.06964288439069476,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.040816325736214666,
+      "dividend_rate": 1.12,
       "vol_20d": 41394,
       "news": [
         {
@@ -4417,8 +4415,8 @@
       "cagr_1y": 0.09139584443066226,
       "sharpe": 0.9595916023197928,
       "mdd": -0.0766087822848945,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.039313243307906476,
+      "dividend_rate": 1.122,
       "vol_20d": 29470,
       "news": [
         {
@@ -4453,8 +4451,8 @@
       "cagr_1y": 0.09541188188679141,
       "sharpe": 1.9137979939398757,
       "mdd": -0.02777778526109798,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.024393145855157162,
+      "dividend_rate": 1.025,
       "vol_20d": 278,
       "news": [
         {
@@ -4474,8 +4472,8 @@
       "cagr_1y": 0.09246786502979634,
       "sharpe": 1.4973391854332192,
       "mdd": -0.04190792496773494,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.029400223963782612,
+      "dividend_rate": 1.049,
       "vol_20d": 264,
       "news": []
     },
@@ -4489,8 +4487,8 @@
       "cagr_1y": 0.09356722985502477,
       "sharpe": 0.9714485509495996,
       "mdd": -0.077049192835073,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03686497316802894,
+      "dividend_rate": 1.1030000000000002,
       "vol_20d": 2935,
       "news": []
     },
@@ -4504,8 +4502,8 @@
       "cagr_1y": 0.08760228077026123,
       "sharpe": 1.5070627418466753,
       "mdd": -0.04183648079526434,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03400222864218789,
+      "dividend_rate": 1.22,
       "vol_20d": 449,
       "news": []
     },
@@ -4519,8 +4517,8 @@
       "cagr_1y": 0.08001383438836511,
       "sharpe": 1.6795659891467674,
       "mdd": -0.02784813473075994,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03656189829513131,
+      "dividend_rate": 1.1400000000000001,
       "vol_20d": 3294,
       "news": [
         {
@@ -4545,8 +4543,8 @@
       "cagr_1y": 0.09047004231354147,
       "sharpe": 1.0990768666120554,
       "mdd": -0.06295334803583491,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05403011685002631,
+      "dividend_rate": 1.83,
       "vol_20d": 10130,
       "news": []
     },
@@ -4560,8 +4558,8 @@
       "cagr_1y": 0.08110497311888225,
       "sharpe": 0.9343071191215804,
       "mdd": -0.06466205925428459,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05512367353989588,
+      "dividend_rate": 2.028,
       "vol_20d": 3757,
       "news": [
         {
@@ -4581,8 +4579,8 @@
       "cagr_1y": 0.06378674824600201,
       "sharpe": 0.7374846868564867,
       "mdd": -0.0784073890857836,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05387055759327461,
+      "dividend_rate": 1.698,
       "vol_20d": 153,
       "news": []
     },
@@ -4596,8 +4594,8 @@
       "cagr_1y": 0.10232709295329853,
       "sharpe": 1.338357962877894,
       "mdd": -0.05964210533158398,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.054135335479330256,
+      "dividend_rate": 1.872,
       "vol_20d": 3956,
       "news": []
     },
@@ -4611,8 +4609,8 @@
       "cagr_1y": 0.0893398159310397,
       "sharpe": 1.1012159015132432,
       "mdd": -0.05421027001737189,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05782596412042438,
+      "dividend_rate": 2.08,
       "vol_20d": 5559,
       "news": [
         {
@@ -4632,8 +4630,8 @@
       "cagr_1y": 0.09609702918406077,
       "sharpe": 1.592296651980052,
       "mdd": -0.04659386680823007,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06223818414008136,
+      "dividend_rate": 2.08,
       "vol_20d": 246,
       "news": []
     },
@@ -4647,8 +4645,8 @@
       "cagr_1y": 0.0771097492204246,
       "sharpe": 1.437231098507714,
       "mdd": -0.03936044843195772,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06408009890139586,
+      "dividend_rate": 2.56,
       "vol_20d": 155,
       "news": [
         {
@@ -4668,8 +4666,8 @@
       "cagr_1y": 0.13169013455471704,
       "sharpe": 2.063719134354067,
       "mdd": -0.03491280182839095,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03982576304628863,
+      "dividend_rate": 0.64,
       "vol_20d": 210,
       "news": []
     },
@@ -4683,8 +4681,8 @@
       "cagr_1y": 0.09587509822473053,
       "sharpe": 1.2417906737081505,
       "mdd": -0.04878045271257393,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05386571761033858,
+      "dividend_rate": 2.1180000000000003,
       "vol_20d": 2957,
       "news": [
         {
@@ -4704,8 +4702,8 @@
       "cagr_1y": 0.06861067916770677,
       "sharpe": 1.525645956702488,
       "mdd": -0.03195393428369717,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06359015334613131,
+      "dividend_rate": 2.3770000000000002,
       "vol_20d": 134,
       "news": [
         {
@@ -4735,8 +4733,8 @@
       "cagr_1y": 0.0996668004487961,
       "sharpe": 1.2919514846816513,
       "mdd": -0.0509536483109051,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04561983566956398,
+      "dividend_rate": 1.656,
       "vol_20d": 615,
       "news": []
     },
@@ -4750,8 +4748,8 @@
       "cagr_1y": 0.13569421001994691,
       "sharpe": 1.924848956764601,
       "mdd": -0.049230780968299276,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0504785437113201,
+      "dividend_rate": 1.635,
       "vol_20d": 118,
       "news": []
     },
@@ -4765,8 +4763,8 @@
       "cagr_1y": 0.07394477647671972,
       "sharpe": 0.897553496414832,
       "mdd": -0.06668584293578401,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.046690307118074016,
+      "dividend_rate": 1.58,
       "vol_20d": 102,
       "news": []
     },
@@ -4780,8 +4778,8 @@
       "cagr_1y": 0.08375547082458783,
       "sharpe": 0.959475466406355,
       "mdd": -0.062292092075972805,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.051729510505039045,
+      "dividend_rate": 1.66,
       "vol_20d": 8569,
       "news": []
     },
@@ -4795,8 +4793,8 @@
       "cagr_1y": 0.06752517322787005,
       "sharpe": 0.7810009899598592,
       "mdd": -0.0804402610661212,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.047131506940021495,
+      "dividend_rate": 1.602,
       "vol_20d": 133,
       "news": []
     },
@@ -4810,8 +4808,8 @@
       "cagr_1y": 0.10121583915441337,
       "sharpe": 1.1869844911256264,
       "mdd": -0.06121247650756041,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.051954643008180944,
+      "dividend_rate": 1.741,
       "vol_20d": 129,
       "news": []
     },
@@ -4825,8 +4823,8 @@
       "cagr_1y": 0.12351297047126661,
       "sharpe": 1.667074151454964,
       "mdd": -0.07264955075416546,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05935845418157816,
+      "dividend_rate": 1.906,
       "vol_20d": 222,
       "news": [
         {
@@ -4846,8 +4844,8 @@
       "cagr_1y": 0.1298283959197473,
       "sharpe": 1.5009141837054438,
       "mdd": -0.04910296980841863,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04425450963861305,
+      "dividend_rate": 2.3299999999999996,
       "vol_20d": 104,
       "news": []
     },
@@ -4861,8 +4859,8 @@
       "cagr_1y": 0.11133205514429377,
       "sharpe": 1.2246881743489249,
       "mdd": -0.05767524557241244,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04364937269045336,
+      "dividend_rate": 2.44,
       "vol_20d": 107,
       "news": []
     },
@@ -4876,8 +4874,8 @@
       "cagr_1y": 0.10369915356442466,
       "sharpe": 1.4057300050668087,
       "mdd": -0.057450641276626434,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.052014653468279534,
+      "dividend_rate": 2.84,
       "vol_20d": 133,
       "news": []
     },
@@ -4891,8 +4889,8 @@
       "cagr_1y": 0.09424568073061831,
       "sharpe": 1.1264029982428443,
       "mdd": -0.05936709566611496,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.046844797774420195,
+      "dividend_rate": 1.6480000000000001,
       "vol_20d": 670,
       "news": []
     },
@@ -4906,8 +4904,8 @@
       "cagr_1y": 0.08508208803815105,
       "sharpe": 0.9006539068524771,
       "mdd": -0.07595372626793206,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04500703150364459,
+      "dividend_rate": 1.28,
       "vol_20d": 6589,
       "news": [
         {
@@ -4927,8 +4925,8 @@
       "cagr_1y": 0.04674795124785956,
       "sharpe": 0.48602585196411574,
       "mdd": -0.10166981821517185,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.08135922330097087,
+      "dividend_rate": 4.1899999999999995,
       "vol_20d": 682,
       "news": [
         {
@@ -4948,8 +4946,8 @@
       "cagr_1y": 0.09491841863552099,
       "sharpe": 1.2052621499057328,
       "mdd": -0.05237409193738759,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05081728211602806,
+      "dividend_rate": 1.7410000000000005,
       "vol_20d": 3893,
       "news": []
     },
@@ -4963,8 +4961,8 @@
       "cagr_1y": 0.10489713464127778,
       "sharpe": 1.3693643415660552,
       "mdd": -0.05307105233544879,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04952120486406788,
+      "dividend_rate": 1.81,
       "vol_20d": 1170,
       "news": []
     },
@@ -4978,8 +4976,8 @@
       "cagr_1y": 0.08867804447580085,
       "sharpe": 1.0333518406788824,
       "mdd": -0.06102588146277454,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.049443942812334225,
+      "dividend_rate": 1.6450000000000005,
       "vol_20d": 107,
       "news": []
     },
@@ -4993,8 +4991,8 @@
       "cagr_1y": 0.10196446800376545,
       "sharpe": 1.1587132778361353,
       "mdd": -0.061996093037461876,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04742501394350644,
+      "dividend_rate": 1.6760000000000006,
       "vol_20d": 112,
       "news": []
     },
@@ -5008,8 +5006,8 @@
       "cagr_1y": 0.08549907807888105,
       "sharpe": 0.8707814112014741,
       "mdd": -0.0782404254527407,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04278279018238277,
+      "dividend_rate": 1.233,
       "vol_20d": 383,
       "news": []
     },
@@ -5023,8 +5021,8 @@
       "cagr_1y": 0.08755751710680712,
       "sharpe": 1.443415527915132,
       "mdd": -0.04808947829777445,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04819915468486972,
+      "dividend_rate": 1.8199999999999998,
       "vol_20d": 182,
       "news": []
     },
@@ -5038,8 +5036,8 @@
       "cagr_1y": 0.048175172014656514,
       "sharpe": 0.6055355720338189,
       "mdd": -0.07072040229549974,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.066155990439614,
+      "dividend_rate": 1.9000000000000001,
       "vol_20d": 178,
       "news": [
         {
@@ -5059,8 +5057,8 @@
       "cagr_1y": 0.08573416405727555,
       "sharpe": 1.0592413971742745,
       "mdd": -0.06375630266699335,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06393861752227735,
+      "dividend_rate": 2.0,
       "vol_20d": 203,
       "news": []
     },
@@ -5074,8 +5072,8 @@
       "cagr_1y": 0.10531191275252783,
       "sharpe": 1.4064694695631308,
       "mdd": -0.0556167531590462,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04708018879286951,
+      "dividend_rate": 1.6849999999999998,
       "vol_20d": 83,
       "news": []
     },
@@ -5089,8 +5087,8 @@
       "cagr_1y": 0.1156030420712799,
       "sharpe": 1.5823995088471492,
       "mdd": -0.05499996858484605,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.045822103263479845,
+      "dividend_rate": 1.5299999999999998,
       "vol_20d": 40,
       "news": []
     },
@@ -5104,8 +5102,8 @@
       "cagr_1y": 0.11417056884269863,
       "sharpe": 1.3584540281709037,
       "mdd": -0.05892746533812392,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05003013817757726,
+      "dividend_rate": 1.66,
       "vol_20d": 23,
       "news": []
     },
@@ -5119,8 +5117,8 @@
       "cagr_1y": 0.11195378554279359,
       "sharpe": 1.4352781354424524,
       "mdd": -0.05426351574634628,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04936667602479566,
+      "dividend_rate": 1.52,
       "vol_20d": 75,
       "news": []
     },
@@ -5134,8 +5132,8 @@
       "cagr_1y": 0.08702326421863216,
       "sharpe": 0.9745105013677409,
       "mdd": -0.06481665824207108,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.049203468289819446,
+      "dividend_rate": 2.44,
       "vol_20d": 115,
       "news": []
     },
@@ -5149,8 +5147,8 @@
       "cagr_1y": 0.09360079596375141,
       "sharpe": 1.8505773103887764,
       "mdd": -0.028596213241971005,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04034934497816594,
+      "dividend_rate": 2.31,
       "vol_20d": 104,
       "news": []
     },
@@ -5164,8 +5162,8 @@
       "cagr_1y": 0.09853895670428825,
       "sharpe": 1.1088955384508796,
       "mdd": -0.05543768886421514,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05372718532702089,
+      "dividend_rate": 1.737,
       "vol_20d": 181,
       "news": []
     },
@@ -5179,8 +5177,8 @@
       "cagr_1y": 0.10140348735608552,
       "sharpe": 1.1656274565712963,
       "mdd": -0.05501720042120268,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0504619315323198,
+      "dividend_rate": 1.5839999999999999,
       "vol_20d": 195,
       "news": []
     },
@@ -5194,8 +5192,8 @@
       "cagr_1y": 0.08526522637492102,
       "sharpe": 0.9070054585284233,
       "mdd": -0.07793123950637303,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04598117166586043,
+      "dividend_rate": 1.27,
       "vol_20d": 8125,
       "news": []
     },
@@ -5209,8 +5207,8 @@
       "cagr_1y": 0.08211350297273322,
       "sharpe": 1.0266522341202102,
       "mdd": -0.07502404977623359,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06928406588590179,
+      "dividend_rate": 2.1,
       "vol_20d": 296,
       "news": [
         {
@@ -5230,8 +5228,8 @@
       "cagr_1y": 0.10564714365469535,
       "sharpe": 1.444186366912503,
       "mdd": -0.05463246179689545,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04335724723552106,
+      "dividend_rate": 1.5110000000000001,
       "vol_20d": 101,
       "news": []
     },
@@ -5245,8 +5243,8 @@
       "cagr_1y": 0.0979805857015473,
       "sharpe": 1.1269436342963917,
       "mdd": -0.05540720621291461,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.055177110569569636,
+      "dividend_rate": 1.62,
       "vol_20d": 20,
       "news": []
     },
@@ -5260,8 +5258,8 @@
       "cagr_1y": 0.0960714476449149,
       "sharpe": 1.1176859926383684,
       "mdd": -0.0584082061532928,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04555229637251383,
+      "dividend_rate": 1.3980000000000004,
       "vol_20d": 101,
       "news": []
     },
@@ -5275,8 +5273,8 @@
       "cagr_1y": 0.07212757376268103,
       "sharpe": 0.8437049104514118,
       "mdd": -0.08042980745653469,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.046315077874697776,
+      "dividend_rate": 1.37,
       "vol_20d": 103,
       "news": []
     },
@@ -5290,8 +5288,8 @@
       "cagr_1y": 0.058803519298095706,
       "sharpe": 0.7207493128916288,
       "mdd": -0.08407215154296403,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.08507223218146007,
+      "dividend_rate": 2.65,
       "vol_20d": 202,
       "news": [
         {
@@ -5321,8 +5319,8 @@
       "cagr_1y": 0.1113401968606615,
       "sharpe": 1.383825865816343,
       "mdd": -0.0620249025854578,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04452690145967019,
+      "dividend_rate": 1.44,
       "vol_20d": 96,
       "news": []
     },
@@ -5336,8 +5334,8 @@
       "cagr_1y": 0.10433072024063632,
       "sharpe": 1.9263272304993235,
       "mdd": -0.04378283927285587,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04477124203302286,
+      "dividend_rate": 1.5070000000000001,
       "vol_20d": 117,
       "news": [
         {
@@ -5357,8 +5355,8 @@
       "cagr_1y": 0.09680335039938708,
       "sharpe": 1.7625287219027137,
       "mdd": -0.04296136786536396,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04841902809230414,
+      "dividend_rate": 1.7610000000000001,
       "vol_20d": 108,
       "news": []
     },
@@ -5372,8 +5370,8 @@
       "cagr_1y": 0.08579756127883713,
       "sharpe": 1.081813301579384,
       "mdd": -0.0665420817437573,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05370157331754582,
+      "dividend_rate": 1.4,
       "vol_20d": 333,
       "news": []
     },
@@ -5387,8 +5385,8 @@
       "cagr_1y": 0.0967844157827691,
       "sharpe": 1.5749504295435397,
       "mdd": -0.04339191299287465,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05547570995143636,
+      "dividend_rate": 1.9300000000000002,
       "vol_20d": 325,
       "news": []
     },
@@ -5402,8 +5400,8 @@
       "cagr_1y": 0.09149002317625231,
       "sharpe": 1.8573552475714445,
       "mdd": -0.02589166662467308,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04310803408905887,
+      "dividend_rate": 1.62,
       "vol_20d": 299,
       "news": []
     },
@@ -5417,8 +5415,8 @@
       "cagr_1y": 0.09362858853309995,
       "sharpe": 1.088623995009597,
       "mdd": -0.055883329845465034,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04895204329213934,
+      "dividend_rate": 1.378,
       "vol_20d": 1131,
       "news": []
     },
@@ -5432,8 +5430,8 @@
       "cagr_1y": 0.08103447576576486,
       "sharpe": 1.7285713943903787,
       "mdd": -0.028615986301227123,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.040935673676874444,
+      "dividend_rate": 1.54,
       "vol_20d": 11,
       "news": []
     },
@@ -5447,8 +5445,8 @@
       "cagr_1y": 0.09107633684830024,
       "sharpe": 0.9645079739994196,
       "mdd": -0.07525562761441322,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03983979879240383,
+      "dividend_rate": 0.9450000000000001,
       "vol_20d": 2648,
       "news": []
     },
@@ -5462,8 +5460,8 @@
       "cagr_1y": 0.20659184346960907,
       "sharpe": 1.5088980066161342,
       "mdd": -0.10732831303322253,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.07885103160655697,
+      "dividend_rate": 2.8,
       "vol_20d": 633,
       "news": []
     },
@@ -5477,8 +5475,8 @@
       "cagr_1y": 0.06466762596110978,
       "sharpe": 1.1380433478792658,
       "mdd": -0.03760118547934866,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06012735463883236,
+      "dividend_rate": 2.455,
       "vol_20d": 3026,
       "news": []
     },
@@ -5492,8 +5490,8 @@
       "cagr_1y": 0.08619225619709839,
       "sharpe": 1.7645482773887724,
       "mdd": -0.029685118122184335,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.045471154726047285,
+      "dividend_rate": 1.7419999999999998,
       "vol_20d": 130,
       "news": []
     },
@@ -5507,8 +5505,8 @@
       "cagr_1y": 0.09616031216485299,
       "sharpe": 1.0753423401424012,
       "mdd": -0.050806152212112494,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05207687809700281,
+      "dividend_rate": 1.68,
       "vol_20d": 431,
       "news": [
         {
@@ -5528,8 +5526,8 @@
       "cagr_1y": 0.09249324086527663,
       "sharpe": 1.0695403138473198,
       "mdd": -0.05395686785001562,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0487730084178437,
+      "dividend_rate": 1.5899999999999999,
       "vol_20d": 341,
       "news": []
     },
@@ -5543,8 +5541,8 @@
       "cagr_1y": 0.07645830836300813,
       "sharpe": 1.4227927841257293,
       "mdd": -0.03087078401650821,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.0483592403876958,
+      "dividend_rate": 2.24,
       "vol_20d": 1558,
       "news": []
     },
@@ -5558,8 +5556,8 @@
       "cagr_1y": 0.09221805029214736,
       "sharpe": 1.054643963507558,
       "mdd": -0.06584613506610577,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.048336471139289364,
+      "dividend_rate": 1.5399999999999998,
       "vol_20d": 80,
       "news": []
     },
@@ -5573,8 +5571,8 @@
       "cagr_1y": 0.10839694923235044,
       "sharpe": 1.4801170526940284,
       "mdd": -0.06594517672356075,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.050275480508657815,
+      "dividend_rate": 1.46,
       "vol_20d": 19,
       "news": []
     },
@@ -5614,8 +5612,8 @@
       "cagr_1y": 0.11901258372234626,
       "sharpe": 1.5493216664414509,
       "mdd": -0.05876621788238471,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06437273447402868,
+      "dividend_rate": 1.9549999999999996,
       "vol_20d": 307,
       "news": []
     },
@@ -5665,8 +5663,8 @@
       "cagr_1y": 1.2730099135869055,
       "sharpe": 3.1631460171177497,
       "mdd": -0.10985913482206817,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06238030225970982,
+      "dividend_rate": 2.2800000000000002,
       "vol_20d": 6486,
       "news": []
     },
@@ -5680,8 +5678,8 @@
       "cagr_1y": 0.09413318654482816,
       "sharpe": 1.1445678690667946,
       "mdd": -0.055638665670714606,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.051499548210853736,
+      "dividend_rate": 1.7000000000000002,
       "vol_20d": 317,
       "news": []
     },
@@ -5695,8 +5693,8 @@
       "cagr_1y": 1.458051589135675,
       "sharpe": 2.890986012884372,
       "mdd": -0.11405706416963972,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01816680337835369,
+      "dividend_rate": 0.66,
       "vol_20d": 723,
       "news": []
     },
@@ -5710,8 +5708,8 @@
       "cagr_1y": 0.09291341125178017,
       "sharpe": 1.0059431432539512,
       "mdd": -0.07632508500507167,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.038256483834430324,
+      "dividend_rate": 0.531,
       "vol_20d": 4941,
       "news": []
     },
@@ -5725,8 +5723,8 @@
       "cagr_1y": 0.09543004782920206,
       "sharpe": 1.3624704689868545,
       "mdd": -0.055355053159594006,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.053680984107689594,
+      "dividend_rate": 0.8749999999999998,
       "vol_20d": 13131,
       "news": [
         {
@@ -5751,8 +5749,8 @@
       "cagr_1y": 0.09084356447570706,
       "sharpe": 1.1615055505882508,
       "mdd": -0.0540716549237365,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.057105088794768076,
+      "dividend_rate": 0.8639999999999998,
       "vol_20d": 79097,
       "news": [
         {
@@ -5782,8 +5780,8 @@
       "cagr_1y": 0.09602398651892274,
       "sharpe": 1.1272536493928629,
       "mdd": -0.05533061482522148,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04852840634229337,
+      "dividend_rate": 0.7090000000000001,
       "vol_20d": 2924,
       "news": [
         {
@@ -5808,8 +5806,8 @@
       "cagr_1y": 0.09897609662511041,
       "sharpe": 1.2365942478993124,
       "mdd": -0.04928126832812272,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05590062200101013,
+      "dividend_rate": 0.5399999999999999,
       "vol_20d": 10698,
       "news": [
         {
@@ -5834,8 +5832,8 @@
       "cagr_1y": 0.0904943398158531,
       "sharpe": 1.2592054130263517,
       "mdd": -0.048864421968009705,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05432356985431527,
+      "dividend_rate": 0.7789999999999999,
       "vol_20d": 5298,
       "news": [
         {
@@ -5886,8 +5884,8 @@
       "cagr_1y": 0.08267718161451057,
       "sharpe": 1.0862856889756614,
       "mdd": -0.06263345925227998,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06065454545454546,
+      "dividend_rate": 0.8340000000000001,
       "vol_20d": 1505,
       "news": [
         {
@@ -5917,8 +5915,8 @@
       "cagr_1y": 0.11411767847397748,
       "sharpe": 1.5605020273142296,
       "mdd": -0.050829948894336355,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05343188867287712,
+      "dividend_rate": 0.5059999999999999,
       "vol_20d": 885,
       "news": []
     },
@@ -5932,8 +5930,8 @@
       "cagr_1y": 0.09507456138626018,
       "sharpe": 1.291528437900258,
       "mdd": -0.04663210643045322,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.057635980733784516,
+      "dividend_rate": 0.5509999999999999,
       "vol_20d": 2274,
       "news": [
         {
@@ -5958,8 +5956,8 @@
       "cagr_1y": 0.09677413447832844,
       "sharpe": 1.2425801922207873,
       "mdd": -0.04735371641776276,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05546218591106454,
+      "dividend_rate": 0.7920000000000003,
       "vol_20d": 1012,
       "news": [
         {
@@ -5979,8 +5977,8 @@
       "cagr_1y": 0.0901639884312828,
       "sharpe": 1.156314045361353,
       "mdd": -0.060988423737845666,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04253490678320547,
+      "dividend_rate": 0.39600000000000013,
       "vol_20d": 700,
       "news": []
     },
@@ -5994,8 +5992,8 @@
       "cagr_1y": 0.09523817435493234,
       "sharpe": 1.3362744468020362,
       "mdd": -0.0389064013306113,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.054718980201600466,
+      "dividend_rate": 0.5159999999999999,
       "vol_20d": 3717,
       "news": [
         {
@@ -6030,8 +6028,8 @@
       "cagr_1y": 0.0913242203005032,
       "sharpe": 1.1580246303777701,
       "mdd": -0.04870459398277931,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.06328451605070715,
+      "dividend_rate": 0.6050000000000001,
       "vol_20d": 2284,
       "news": [
         {
@@ -6056,8 +6054,8 @@
       "cagr_1y": 0.09152535943821796,
       "sharpe": 1.1935064390984136,
       "mdd": -0.04722793110437251,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.059316771123294094,
+      "dividend_rate": 0.573,
       "vol_20d": 575,
       "news": [
         {
@@ -6077,8 +6075,8 @@
       "cagr_1y": 0.028999996185302735,
       "sharpe": 0.8065449955435526,
       "mdd": -0.044180448053879114,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.04985422759006685,
+      "dividend_rate": 1.026,
       "vol_20d": 989,
       "news": [
         {
@@ -6139,8 +6137,8 @@
       "cagr_1y": 0.0477272803625783,
       "sharpe": 0.9632290357210209,
       "mdd": -0.04726898543082235,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.08600867429861238,
+      "dividend_rate": 0.7929999999999999,
       "vol_20d": 12577,
       "news": [
         {
@@ -6170,8 +6168,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.040337740274937334,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.05871029642381323,
+      "dividend_rate": 0.6100000000000001,
       "vol_20d": 6258,
       "news": []
     },
@@ -6185,8 +6183,8 @@
       "cagr_1y": 0.08942199432953785,
       "sharpe": 1.155254515166863,
       "mdd": -0.04822832465326992,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.055655656930787674,
+      "dividend_rate": 0.5559999999999999,
       "vol_20d": 100,
       "news": []
     },
@@ -6200,8 +6198,8 @@
       "cagr_1y": 0.09754436016779464,
       "sharpe": 1.034984274985654,
       "mdd": -0.08253016914160466,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.03213175855171428,
+      "dividend_rate": 0.517,
       "vol_20d": 403,
       "news": []
     },
@@ -6215,8 +6213,8 @@
       "cagr_1y": 0.12525243469514596,
       "sharpe": 1.4911272148110337,
       "mdd": -0.060961256784028986,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.038479954232761834,
+      "dividend_rate": 0.643,
       "vol_20d": 2101,
       "news": []
     },
@@ -6230,8 +6228,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.024461838891192203,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.005714285903652932,
+      "dividend_rate": 0.0592,
       "vol_20d": 829,
       "news": []
     },
@@ -6245,8 +6243,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.05252918053305757,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.02231075705688126,
+      "dividend_rate": 0.224,
       "vol_20d": 32,
       "news": []
     },
@@ -6260,8 +6258,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.023333358764648437,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.006044324911003742,
+      "dividend_rate": 0.09,
       "vol_20d": 1202,
       "news": []
     },
@@ -6290,8 +6288,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.024426709080928918,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.01540785451136918,
+      "dividend_rate": 0.306,
       "vol_20d": 1133,
       "news": []
     },
@@ -6320,8 +6318,8 @@
       "cagr_1y": null,
       "sharpe": null,
       "mdd": -0.04773710751096903,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.024206110669415352,
+      "dividend_rate": 0.404,
       "vol_20d": 5714,
       "news": []
     },
@@ -6335,8 +6333,8 @@
       "cagr_1y": 1.2643564332128683,
       "sharpe": 2.5428556806584797,
       "mdd": -0.1303157605622944,
-      "yield_ttm": null,
-      "dividend_rate": null,
+      "yield_ttm": 0.016834280099348925,
+      "dividend_rate": 0.77,
       "vol_20d": 264,
       "news": []
     },
