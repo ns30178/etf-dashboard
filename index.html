@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全市場 ETF 動態追蹤儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin="anonymous" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin="anonymous" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script crossorigin="anonymous" src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; } 
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
     
@@ -20,7 +23,6 @@
             errBox.innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">' +
                 '⚠️ 系統載入失敗<br><br>' +
                 '錯誤原因: ' + realError + '<br>行數: ' + line + '<br><br>' +
-                '這通常是因為 GitHub 伺服器剛剛發布時卡住，導致手機暫存了損壞的檔案。<br>' +
                 '<button onclick="window.location.reload(true)" style="margin-top:10px; padding:8px 16px; background:#dc2626; color:white; border-radius:4px; border:none; font-weight:bold; cursor:pointer;">🔄 點我強制清除快取並重新整理</button>' +
                 '</div>';
             var fallbackUI = document.getElementById('fallback-ui');
@@ -29,13 +31,12 @@
     </script>
 
     <div id="root">
-        <div id="fallback-ui" style="text-align: center; padding: 50px; font-size: 18px; font-weight: bold; color: #2563eb;">
-            ⏳ 正在連接伺服器與啟動儀表板引擎...<br>
-            <span style="font-size: 14px; color: #64748b; margin-top: 10px; display: inline-block;">(若卡在此畫面，代表您的瀏覽器快取未更新，請重新整理)</span>
+        <div id="fallback-ui" style="text-align: center; padding: 50px; font-weight: bold; color: #2563eb;">
+            ⏳ 正在連接伺服器與啟動儀表板引擎...
         </div>
     </div>
 
-    <script type="text/babel" data-presets="react,env">
+    <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
         const FILE_MAP = {
             "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -222,7 +223,11 @@
                             {showDropdown && searchQuery && (
                                 <div className="absolute top-11 left-0 w-full bg-white border shadow-lg rounded-lg max-h-60 overflow-y-auto z-50">
                                     {filteredSearch.length > 0 ? filteredSearch.map(item => (
-                                        <div key={item.id} onClick={() => handleSelectSearchResult(item)} className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-0 flex justify-between items-center transition-colors">
+                                        <div 
+                                            key={item.id} 
+                                            onClick={() => handleSelectSearchResult(item)} 
+                                            className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-0 flex justify-between items-center transition-colors"
+                                        >
                                             <span className="font-bold text-slate-800">{item.id} {item.name}</span>
                                             <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded">{item.category}</span>
                                         </div>
@@ -237,14 +242,22 @@
 
                     <div className="flex overflow-x-auto gap-2 mb-4 pb-2 border-b-2 border-slate-200 hide-scrollbar z-40 relative">
                         {TABS.map(cat => (
-                            <button key={cat} onClick={() => { setActiveTab(cat); setExpandedRow(null); }} className={`whitespace-nowrap px-4 py-2 text-sm md:text-base font-bold rounded-t-lg transition-colors ${activeTab === cat ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}>
+                            <button 
+                                key={cat} 
+                                onClick={() => { setActiveTab(cat); setExpandedRow(null); }} 
+                                className={`whitespace-nowrap px-4 py-2 text-sm md:text-base font-bold rounded-t-lg transition-colors ${activeTab === cat ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
+                            >
                                 {cat}
                             </button>
                         ))}
                     </div>
 
                     <div className="bg-white rounded-lg shadow border border-slate-200 w-full relative z-30">
-                        {loading && <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center font-bold text-blue-600">資料載入中...</div>}
+                        {loading && (
+                            <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center font-bold text-blue-600">
+                                資料載入中...
+                            </div>
+                        )}
                         <div className="p-2 bg-blue-50 text-blue-800 text-xs font-semibold border-b border-blue-100 flex justify-between">
                             <span>當前板塊：{activeTab} ({sortedData.length} 檔)</span>
                             {!isIPO && <span>👆 點選欄位標頭可即時排序</span>}
@@ -256,8 +269,10 @@
                                         <th className="px-2 py-3 sticky left-0 bg-slate-100 z-30 border-r w-10 text-center">⭐</th>
                                         <th className="px-4 py-3 sticky left-10 bg-slate-100 z-30 border-r min-w-[200px]">代號 / 中文名稱</th>
                                         {isIPO ? [
-                                            { key: 'issueDate', label: '掛牌日' }, { key: 'price', label: '發行價' },
-                                            { key: 'fee', label: '經管費' }, { key: 'freq', label: '配息頻率' },
+                                            { key: 'issueDate', label: '掛牌日' }, 
+                                            { key: 'price', label: '發行價' },
+                                            { key: 'fee', label: '經管費' }, 
+                                            { key: 'freq', label: '配息頻率' },
                                             { key: 'topHoldings', label: '前十大成分股' }
                                         ].map(col => <th key={col.key} className="px-4 py-3">{col.label}</th>) : 
                                         [
@@ -269,7 +284,12 @@
                                             { key: 'vol_20d', label: '日均量(張)' }
                                         ].map(col => (
                                             <th key={col.key} className="px-4 py-3 cursor-pointer hover:bg-slate-200 select-none" onClick={() => requestSort(col.key)}>
-                                                <span className="flex items-center gap-1">{col.label} <span className="text-blue-600 font-black">{sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</span></span>
+                                                <span className="flex items-center gap-1">
+                                                    {col.label} 
+                                                    <span className="text-blue-600 font-black">
+                                                        {sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
+                                                    </span>
+                                                </span>
                                             </th>
                                         ))}
                                     </tr>
@@ -278,20 +298,35 @@
                                     {sortedData.map((row, idx) => {
                                         if (!row || !row.id) return null;
                                         const isFav = favorites.includes(row.id);
+                                        const isExpanded = expandedRow === row.id;
+
                                         return (
                                         <React.Fragment key={row.id || idx}>
-                                            <tr className={`hover:bg-blue-50 cursor-pointer ${expandedRow === row.id ? 'bg-blue-50' : 'bg-white'}`} onClick={() => setExpandedRow(expandedRow === row.id ? null : row.id)}>
-                                                <td className="px-2 py-3 sticky left-0 z-10 border-r border-slate-100 bg-inherit text-center text-lg" onClick={(e) => { e.stopPropagation(); toggleFavorite(row.id); }}>
-                                                    <span className={isFav ? "text-yellow-400 drop-shadow-sm" : "text-slate-300 hover:text-yellow-300"}>{isFav ? '★' : '☆'}</span>
+                                            <tr 
+                                                className={`hover:bg-blue-50 cursor-pointer ${isExpanded ? 'bg-blue-50' : 'bg-white'}`} 
+                                                onClick={() => setExpandedRow(isExpanded ? null : row.id)}
+                                            >
+                                                <td 
+                                                    className="px-2 py-3 sticky left-0 z-10 border-r border-slate-100 bg-inherit text-center text-lg" 
+                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite(row.id); }}
+                                                >
+                                                    <span className={isFav ? "text-yellow-400 drop-shadow-sm" : "text-slate-300 hover:text-yellow-300"}>
+                                                        {isFav ? '★' : '☆'}
+                                                    </span>
                                                 </td>
                                                 <td className="px-4 py-3 sticky left-10 z-10 border-r border-slate-100 bg-inherit">
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex items-center gap-2">
-                                                            <span className="text-blue-400 text-lg">{expandedRow === row.id ? '▼' : '▶'}</span>
-                                                            <div><div className="font-bold text-slate-800 text-base">{row.id}</div><div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div></div>
+                                                            <span className="text-blue-400 text-lg">{isExpanded ? '▼' : '▶'}</span>
+                                                            <div>
+                                                                <div className="font-bold text-slate-800 text-base">{row.id}</div>
+                                                                <div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div>
+                                                            </div>
                                                         </div>
                                                         {row.freq && row.freq !== "" && row.freq !== "-" && !isIPO && (
-                                                            <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-800 border border-purple-200 font-bold whitespace-nowrap">{row.freq}</span>
+                                                            <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-800 border border-purple-200 font-bold whitespace-nowrap">
+                                                                {row.freq}
+                                                            </span>
                                                         )}
                                                     </div>
                                                 </td>
@@ -301,17 +336,4 @@
                                                         <td className="px-4 py-3">{fmtVal(row.price, "$")}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.fee, "")}%</td>
                                                         <td className="px-4 py-3">{fmtText(row.freq)}</td>
-                                                        <td className="px-4 py-3 text-xs text-slate-500 whitespace-normal min-w-[200px]">{fmtText(row.topHoldings)}</td>
-                                                    </React.Fragment>
-                                                ) : (
-                                                    <React.Fragment>
-                                                        <td className="px-4 py-3 font-semibold">{fmtVal(row.price)}</td>
-                                                        <td className={`px-4 py-3 ${getReturnColor(row.ytd)}`}>{fmtPct(row.ytd)}</td>
-                                                        <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
-                                                        <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
-                                                        <td className="px-4 py-3 text-green-600 font-bold">{fmtPct(row.mdd)}</td>
-                                                        <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
-                                                    </React.Fragment>
-                                                )}
-                                            </tr>
-                            
+                                                        <td className="px
