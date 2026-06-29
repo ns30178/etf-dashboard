@@ -1,4 +1,591 @@
 {
+  "00400A": [],
+  "00783": [],
+  "00830": [
+    {
+      "title": "近一周最強美股ETF出爐！台新009807奪冠 今年已漲逾兩成",
+      "link": "https://tw.stock.yahoo.com/news/%E8%BF%91%E4%B8%80%E5%91%A8%E6%9C%80%E5%BC%B7%E7%BE%8E%E8%82%A1etf%E5%87%BA%E7%88%90%EF%BC%81%E5%8F%B0%E6%96%B0009807%E5%A5%AA%E5%86%A0-%E4%BB%8A%E5%B9%B4%E5%B7%B2%E6%BC%B2%E9%80%BE%E5%85%A9%E6%88%90-104935055.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "【投信瘋美股ETF】有賺頭嗎？每月投5千元 一年最狂6萬變7.2萬",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%90%E6%8A%95%E4%BF%A1%E7%98%8B%E7%BE%8E%E8%82%A1etf%E3%80%91%E6%9C%89%E8%B3%BA%E9%A0%AD%E5%97%8E%EF%BC%9F%E6%AF%8F%E6%9C%88%E6%8A%955%E5%8D%83%E5%85%83-%E4%B8%80%E5%B9%B4%E6%9C%80%E7%8B%826%E8%90%AC%E8%AE%8A72%E8%90%AC-023109371.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00736": [],
+  "00737": [],
+  "00738U": [],
+  "00739": [],
+  "00752": [],
+  "00753L": [
+    {
+      "title": "中美貿易戰升溫！2檔陸股ETF重摔11%...專家示警：短線風險高",
+      "link": "https://tw.stock.yahoo.com/news/%E4%B8%AD%E7%BE%8E%E8%B2%BF%E6%98%93%E6%88%B0%E5%8D%87%E6%BA%AB%EF%BC%812%E6%AA%94%E9%99%B8%E8%82%A1etf%E9%87%8D%E6%91%9411%E5%B0%88%E5%AE%B6%E7%A4%BA%E8%AD%A6%EF%BC%9A%E7%9F%AD%E7%B7%9A%E9%A2%A8%E9%9A%AA%E9%AB%98-050221641.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "陸股寫十年大驚奇 陸股ETF飆6% 13檔全補漲上攻",
+      "link": "https://tw.stock.yahoo.com/news/%E9%99%B8%E8%82%A1%E5%AF%AB%E5%8D%81%E5%B9%B4%E5%A4%A7%E9%A9%9A%E5%A5%87-%E9%99%B8%E8%82%A1etf%E9%A3%866-13%E6%AA%94%E5%85%A8%E8%A3%9C%E6%BC%B2%E4%B8%8A%E6%94%BB-034338195.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00757": [
+    {
+      "title": "科技ETF績效打趴高股息？！ 專家教戰心法「不錯失行情」！股民如何因應金管會配息規定？",
+      "link": "https://tw.stock.yahoo.com/news/%E7%A7%91%E6%8A%80etf%E7%B8%BE%E6%95%88%E6%89%93%E8%B6%B4%E9%AB%98%E8%82%A1%E6%81%AF%EF%BC%9F%EF%BC%81-%E5%B0%88%E5%AE%B6%E6%95%99%E6%88%B0%E5%BF%83%E6%B3%95%E3%80%8C%E4%B8%8D%E9%8C%AF%E5%A4%B1%E8%A1%8C%E6%83%85%E3%80%8D%EF%BC%81%E8%82%A1%E6%B0%91%E5%A6%82%E4%BD%95%E5%9B%A0%E6%87%89%E9%87%91%E7%AE%A1%E6%9C%83%E9%85%8D%E6%81%AF%E8%A6%8F%E5%AE%9A%EF%BC%9F-064920200.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "AI熱！美科技股ETF賺飽飽 台新009807、國泰00770五月底以來漲逾1成",
+      "link": "https://tw.stock.yahoo.com/news/ai%E7%86%B1%EF%BC%81%E7%BE%8E%E7%A7%91%E6%8A%80%E8%82%A1etf%E8%B3%BA%E9%A3%BD%E9%A3%BD-%E5%8F%B0%E6%96%B0009807%E3%80%81%E5%9C%8B%E6%B3%B000770%E4%BA%94%E6%9C%88%E5%BA%95%E4%BB%A5%E4%BE%86%E6%BC%B2%E9%80%BE1%E6%88%90-040341593.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "【投信瘋美股ETF】有賺頭嗎？每月投5千元 一年最狂6萬變7.2萬",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%90%E6%8A%95%E4%BF%A1%E7%98%8B%E7%BE%8E%E8%82%A1etf%E3%80%91%E6%9C%89%E8%B3%BA%E9%A0%AD%E5%97%8E%EF%BC%9F%E6%AF%8F%E6%9C%88%E6%8A%955%E5%8D%83%E5%85%83-%E4%B8%80%E5%B9%B4%E6%9C%80%E7%8B%826%E8%90%AC%E8%AE%8A72%E8%90%AC-023109371.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00762": [
+    {
+      "title": "「輝達ETF」人氣王揭曉！3檔股民月增雙位數",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C%E8%BC%9D%E9%81%94etf%E3%80%8D%E4%BA%BA%E6%B0%A3%E7%8E%8B%E6%8F%AD%E6%9B%89%EF%BC%813%E6%AA%94%E8%82%A1%E6%B0%91%E6%9C%88%E5%A2%9E%E9%9B%99%E4%BD%8D%E6%95%B8-073919944.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "航太展將登場！太空衛星股再掀投資熱 最強近一年漲逾7成",
+      "link": "https://tw.stock.yahoo.com/news/%E8%88%AA%E5%A4%AA%E5%B1%95%E5%B0%87%E7%99%BB%E5%A0%B4%EF%BC%81%E5%A4%AA%E7%A9%BA%E8%A1%9B%E6%98%9F%E8%82%A1%E5%86%8D%E6%8E%80%E6%8A%95%E8%B3%87%E7%86%B1-%E6%9C%80%E5%BC%B7%E8%BF%91%E4%B8%80%E5%B9%B4%E6%BC%B2%E9%80%BE7%E6%88%90-095357255.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00763U": [],
+  "00770": [
+    {
+      "title": "AI熱！美科技股ETF賺飽飽 台新009807、國泰00770五月底以來漲逾1成",
+      "link": "https://tw.stock.yahoo.com/news/ai%E7%86%B1%EF%BC%81%E7%BE%8E%E7%A7%91%E6%8A%80%E8%82%A1etf%E8%B3%BA%E9%A3%BD%E9%A3%BD-%E5%8F%B0%E6%96%B0009807%E3%80%81%E5%9C%8B%E6%B3%B000770%E4%BA%94%E6%9C%88%E5%BA%95%E4%BB%A5%E4%BE%86%E6%BC%B2%E9%80%BE1%E6%88%90-040341593.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "【投信瘋美股ETF】有賺頭嗎？每月投5千元 一年最狂6萬變7.2萬",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%90%E6%8A%95%E4%BF%A1%E7%98%8B%E7%BE%8E%E8%82%A1etf%E3%80%91%E6%9C%89%E8%B3%BA%E9%A0%AD%E5%97%8E%EF%BC%9F%E6%AF%8F%E6%9C%88%E6%8A%955%E5%8D%83%E5%85%83-%E4%B8%80%E5%B9%B4%E6%9C%80%E7%8B%826%E8%90%AC%E8%AE%8A72%E8%90%AC-023109371.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00735": [],
+  "00892": [
+    {
+      "title": "「造山者」概念股強勢 4檔半導體ETF比一比",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C%E9%80%A0%E5%B1%B1%E8%80%85%E3%80%8D%E6%A6%82%E5%BF%B5%E8%82%A1%E5%BC%B7%E5%8B%A2-4%E6%AA%94%E5%8D%8A%E5%B0%8E%E9%AB%94etf%E6%AF%94%E4%B8%80%E6%AF%94-122157822.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00893": [
+    {
+      "title": "川普概念股熱度不減？ 一表看第3季美股ETF前十強 最狂漲逾3成",
+      "link": "https://tw.stock.yahoo.com/news/%E5%B7%9D%E6%99%AE%E6%A6%82%E5%BF%B5%E8%82%A1%E7%86%B1%E5%BA%A6%E4%B8%8D%E6%B8%9B%EF%BC%9F-%E4%B8%80%E8%A1%A8%E7%9C%8B%E7%AC%AC3%E5%AD%A3%E7%BE%8E%E8%82%A1etf%E5%89%8D%E5%8D%81%E5%BC%B7-%E6%9C%80%E7%8B%82%E6%BC%B2%E9%80%BE3%E6%88%90-041031762.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00894": [
+    {
+      "title": "利用核心－衛星配置法 小資族累積成大資佬",
+      "link": "https://tw.stock.yahoo.com/news/%E5%88%A9%E7%94%A8%E6%A0%B8%E5%BF%83%EF%BC%8D%E8%A1%9B%E6%98%9F%E9%85%8D%E7%BD%AE%E6%B3%95-%E5%B0%8F%E8%B3%87%E6%97%8F%E7%B4%AF%E7%A9%8D%E6%88%90%E5%A4%A7%E8%B3%87%E4%BD%AC-053017150.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00895": [
+    {
+      "title": "美股震盪含輝ETF逆勢抗跌！前三檔占比逾14%以上",
+      "link": "https://tw.stock.yahoo.com/news/%E7%BE%8E%E8%82%A1%E9%9C%87%E7%9B%AA%E5%90%AB%E8%BC%9Detf%E9%80%86%E5%8B%A2%E6%8A%97%E8%B7%8C%EF%BC%81%E5%89%8D%E4%B8%89%E6%AA%94%E5%8D%A0%E6%AF%94%E9%80%BE14%E4%BB%A5%E4%B8%8A-044441421.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00896": [],
+  "00897": [],
+  "00898": [],
+  "00899": [],
+  "00900": [
+    {
+      "title": "本周10檔台股ETF資金活水194億到！00919發放股利129億元最多",
+      "link": "https://tw.stock.yahoo.com/news/%E6%9C%AC%E5%91%A810%E6%AA%94%E5%8F%B0%E8%82%A1etf%E8%B3%87%E9%87%91%E6%B4%BB%E6%B0%B4194%E5%84%84%E5%88%B0%EF%BC%8100919%E7%99%BC%E6%94%BE%E8%82%A1%E5%88%A9129%E5%84%84%E5%85%83%E6%9C%80%E5%A4%9A-012007318.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00901": [],
+  "00902": [],
+  "00903": [],
+  "00904": [
+    {
+      "title": "「造山者」概念股強勢 4檔半導體ETF比一比",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C%E9%80%A0%E5%B1%B1%E8%80%85%E3%80%8D%E6%A6%82%E5%BF%B5%E8%82%A1%E5%BC%B7%E5%8B%A2-4%E6%AA%94%E5%8D%8A%E5%B0%8E%E9%AB%94etf%E6%AF%94%E4%B8%80%E6%AF%94-122157822.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00905": [
+    {
+      "title": "今年以來ETF績效前十大出爐！FT臺灣Smart漲幅達近9%奪冠",
+      "link": "https://tw.stock.yahoo.com/news/%E4%BB%8A%E5%B9%B4%E4%BB%A5%E4%BE%86etf%E7%B8%BE%E6%95%88%E5%89%8D%E5%8D%81%E5%A4%A7%E5%87%BA%E7%88%90%EF%BC%81ft%E8%87%BA%E7%81%A3smart%E6%BC%B2%E5%B9%85%E9%81%94%E8%BF%919%E5%A5%AA%E5%86%A0-054613187.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00907": [],
+  "00908": [
+    {
+      "title": "【投信瘋美股ETF】有賺頭嗎？每月投5千元 一年最狂6萬變7.2萬",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%90%E6%8A%95%E4%BF%A1%E7%98%8B%E7%BE%8E%E8%82%A1etf%E3%80%91%E6%9C%89%E8%B3%BA%E9%A0%AD%E5%97%8E%EF%BC%9F%E6%AF%8F%E6%9C%88%E6%8A%955%E5%8D%83%E5%85%83-%E4%B8%80%E5%B9%B4%E6%9C%80%E7%8B%826%E8%90%AC%E8%AE%8A72%E8%90%AC-023109371.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00909": [
+    {
+      "title": "10月海外主題ETF漲幅十強出爐！國泰00909、第一金00910飆逾一成最狂",
+      "link": "https://tw.stock.yahoo.com/news/10%E6%9C%88%E6%B5%B7%E5%A4%96%E4%B8%BB%E9%A1%8Cetf%E6%BC%B2%E5%B9%85%E5%8D%81%E5%BC%B7%E5%87%BA%E7%88%90%EF%BC%81%E5%9C%8B%E6%B3%B000909%E3%80%81%E7%AC%AC%E4%B8%80%E9%87%9100910%E9%A3%86%E9%80%BE%E4%B8%80%E6%88%90%E6%9C%80%E7%8B%82-043033232.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "川普概念股熱度不減？ 一表看第3季美股ETF前十強 最狂漲逾3成",
+      "link": "https://tw.stock.yahoo.com/news/%E5%B7%9D%E6%99%AE%E6%A6%82%E5%BF%B5%E8%82%A1%E7%86%B1%E5%BA%A6%E4%B8%8D%E6%B8%9B%EF%BC%9F-%E4%B8%80%E8%A1%A8%E7%9C%8B%E7%AC%AC3%E5%AD%A3%E7%BE%8E%E8%82%A1etf%E5%89%8D%E5%8D%81%E5%BC%B7-%E6%9C%80%E7%8B%82%E6%BC%B2%E9%80%BE3%E6%88%90-041031762.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "航太展將登場！太空衛星股再掀投資熱 最強近一年漲逾7成",
+      "link": "https://tw.stock.yahoo.com/news/%E8%88%AA%E5%A4%AA%E5%B1%95%E5%B0%87%E7%99%BB%E5%A0%B4%EF%BC%81%E5%A4%AA%E7%A9%BA%E8%A1%9B%E6%98%9F%E8%82%A1%E5%86%8D%E6%8E%80%E6%8A%95%E8%B3%87%E7%86%B1-%E6%9C%80%E5%BC%B7%E8%BF%91%E4%B8%80%E5%B9%B4%E6%BC%B2%E9%80%BE7%E6%88%90-095357255.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00910": [
+    {
+      "title": "馬斯克SpaceX明年有望IPO！「太空衛星股純度最高ETF」12月漲近15%",
+      "link": "https://tw.stock.yahoo.com/news/%E9%A6%AC%E6%96%AF%E5%85%8Bspacex%E6%98%8E%E5%B9%B4%E6%9C%89%E6%9C%9Bipo%EF%BC%81%E3%80%8C%E5%A4%AA%E7%A9%BA%E8%A1%9B%E6%98%9F%E8%82%A1%E7%B4%94%E5%BA%A6%E6%9C%80%E9%AB%98etf%E3%80%8D12%E6%9C%88%E6%BC%B2%E8%BF%9115-065934935.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "10月海外主題ETF漲幅十強出爐！國泰00909、第一金00910飆逾一成最狂",
+      "link": "https://tw.stock.yahoo.com/news/10%E6%9C%88%E6%B5%B7%E5%A4%96%E4%B8%BB%E9%A1%8Cetf%E6%BC%B2%E5%B9%85%E5%8D%81%E5%BC%B7%E5%87%BA%E7%88%90%EF%BC%81%E5%9C%8B%E6%B3%B000909%E3%80%81%E7%AC%AC%E4%B8%80%E9%87%9100910%E9%A3%86%E9%80%BE%E4%B8%80%E6%88%90%E6%9C%80%E7%8B%82-043033232.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "川普概念股熱度不減？ 一表看第3季美股ETF前十強 最狂漲逾3成",
+      "link": "https://tw.stock.yahoo.com/news/%E5%B7%9D%E6%99%AE%E6%A6%82%E5%BF%B5%E8%82%A1%E7%86%B1%E5%BA%A6%E4%B8%8D%E6%B8%9B%EF%BC%9F-%E4%B8%80%E8%A1%A8%E7%9C%8B%E7%AC%AC3%E5%AD%A3%E7%BE%8E%E8%82%A1etf%E5%89%8D%E5%8D%81%E5%BC%B7-%E6%9C%80%E7%8B%82%E6%BC%B2%E9%80%BE3%E6%88%90-041031762.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00911": [
+    {
+      "title": "近一周最強美股ETF出爐！台新009807奪冠 今年已漲逾兩成",
+      "link": "https://tw.stock.yahoo.com/news/%E8%BF%91%E4%B8%80%E5%91%A8%E6%9C%80%E5%BC%B7%E7%BE%8E%E8%82%A1etf%E5%87%BA%E7%88%90%EF%BC%81%E5%8F%B0%E6%96%B0009807%E5%A5%AA%E5%86%A0-%E4%BB%8A%E5%B9%B4%E5%B7%B2%E6%BC%B2%E9%80%BE%E5%85%A9%E6%88%90-104935055.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00912": [],
+  "00913": [
+    {
+      "title": "台股回神！前十大ETF受益人數排行榜 00961單周暴增50% 奪人氣王",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E5%9B%9E%E7%A5%9E%EF%BC%81%E5%89%8D%E5%8D%81%E5%A4%A7etf%E5%8F%97%E7%9B%8A%E4%BA%BA%E6%95%B8%E6%8E%92%E8%A1%8C%E6%A6%9C-00961%E5%96%AE%E5%91%A8%E6%9A%B4%E5%A2%9E50-%E5%A5%AA%E4%BA%BA%E6%B0%A3%E7%8E%8B-034026615.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "「造山者」概念股強勢 4檔半導體ETF比一比",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C%E9%80%A0%E5%B1%B1%E8%80%85%E3%80%8D%E6%A6%82%E5%BF%B5%E8%82%A1%E5%BC%B7%E5%8B%A2-4%E6%AA%94%E5%8D%8A%E5%B0%8E%E9%AB%94etf%E6%AF%94%E4%B8%80%E6%AF%94-122157822.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00915": [
+    {
+      "title": "本周10檔台股ETF資金活水194億到！00919發放股利129億元最多",
+      "link": "https://tw.stock.yahoo.com/news/%E6%9C%AC%E5%91%A810%E6%AA%94%E5%8F%B0%E8%82%A1etf%E8%B3%87%E9%87%91%E6%B4%BB%E6%B0%B4194%E5%84%84%E5%88%B0%EF%BC%8100919%E7%99%BC%E6%94%BE%E8%82%A1%E5%88%A9129%E5%84%84%E5%85%83%E6%9C%80%E5%A4%9A-012007318.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00916": [],
+  "00917": [],
+  "00918": [
+    {
+      "title": "251萬人一早被錢香醒！00919、00713等9檔台股ETF發194億元現金股利",
+      "link": "https://tw.stock.yahoo.com/news/251%E8%90%AC%E4%BA%BA%E4%B8%80%E6%97%A9%E8%A2%AB%E9%8C%A2%E9%A6%99%E9%86%92%EF%BC%8100919%E3%80%8100713%E7%AD%899%E6%AA%94%E5%8F%B0%E8%82%A1etf%E7%99%BC194%E5%84%84%E5%85%83%E7%8F%BE%E9%87%91%E8%82%A1%E5%88%A9-005140422.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "本周10檔台股ETF資金活水194億到！00919發放股利129億元最多",
+      "link": "https://tw.stock.yahoo.com/news/%E6%9C%AC%E5%91%A810%E6%AA%94%E5%8F%B0%E8%82%A1etf%E8%B3%87%E9%87%91%E6%B4%BB%E6%B0%B4194%E5%84%84%E5%88%B0%EF%BC%8100919%E7%99%BC%E6%94%BE%E8%82%A1%E5%88%A9129%E5%84%84%E5%85%83%E6%9C%80%E5%A4%9A-012007318.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00891": [
+    {
+      "title": "「暴力配ETF」00934回魂年息近5% 配息首日填息達陣",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C%E6%9A%B4%E5%8A%9B%E9%85%8Detf%E3%80%8D00934%E5%9B%9E%E9%AD%82%E5%B9%B4%E6%81%AF%E8%BF%915-%E9%85%8D%E6%81%AF%E9%A6%96%E6%97%A5%E5%A1%AB%E6%81%AF%E9%81%94%E9%99%A3-040300541.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "「造山者」概念股強勢 4檔半導體ETF比一比",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C%E9%80%A0%E5%B1%B1%E8%80%85%E3%80%8D%E6%A6%82%E5%BF%B5%E8%82%A1%E5%BC%B7%E5%8B%A2-4%E6%AA%94%E5%8D%8A%E5%B0%8E%E9%AB%94etf%E6%AF%94%E4%B8%80%E6%AF%94-122157822.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00850": [],
+  "00852L": [],
+  "00861": [],
+  "00865B": [
+    {
+      "title": "一表看6檔逆勢創高債券ETF 群益優選非投等債00953B人氣最旺",
+      "link": "https://tw.stock.yahoo.com/news/%E4%B8%80%E8%A1%A8%E7%9C%8B6%E6%AA%94%E9%80%86%E5%8B%A2%E5%89%B5%E9%AB%98%E5%82%B5%E5%88%B8etf-%E7%BE%A4%E7%9B%8A%E5%84%AA%E9%81%B8%E9%9D%9E%E6%8A%95%E7%AD%89%E5%82%B500953b%E4%BA%BA%E6%B0%A3%E6%9C%80%E6%97%BA-022252272.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "債券ETF受益人數連6黑續創今年新低  00953B、00981B等7檔逆勢吸金",
+      "link": "https://tw.stock.yahoo.com/news/%E5%82%B5%E5%88%B8etf%E5%8F%97%E7%9B%8A%E4%BA%BA%E6%95%B8%E9%80%A36%E9%BB%91%E7%BA%8C%E5%89%B5%E4%BB%8A%E5%B9%B4%E6%96%B0%E4%BD%8E-00953b%E3%80%8100981b%E7%AD%897%E6%AA%94%E9%80%86%E5%8B%A2%E5%90%B8%E9%87%91-015520316.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00875": [],
+  "00876": [],
+  "00878": [
+    {
+      "title": "ETF太熱！占大盤成交比重首破一成 0050單日破161億元排第一",
+      "link": "https://tw.stock.yahoo.com/news/etf%E5%A4%AA%E7%86%B1%EF%BC%81%E5%8D%A0%E5%A4%A7%E7%9B%A4%E6%88%90%E4%BA%A4%E6%AF%94%E9%87%8D%E9%A6%96%E7%A0%B4%E4%B8%80%E6%88%90-0050%E5%96%AE%E6%97%A5%E7%A0%B4161%E5%84%84%E5%85%83%E6%8E%92%E7%AC%AC%E4%B8%80-032901539.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "法人狠倒710億台積電重傷 台股重摔691點/輝達遭三路空襲 財報能否回擊全看黃仁勳/被動族群逆風撐場 蜜望實興勤強彈｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E6%B3%95%E4%BA%BA%E7%8B%A0%E5%80%92710%E5%84%84%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%87%8D%E5%82%B7-%E5%8F%B0%E8%82%A1%E9%87%8D%E6%91%94691%E9%BB%9E%E8%BC%9D%E9%81%94%E9%81%AD%E4%B8%89%E8%B7%AF%E7%A9%BA%E8%A5%B2-%E8%B2%A1%E5%A0%B1%E8%83%BD%E5%90%A6%E5%9B%9E%E6%93%8A%E5%85%A8%E7%9C%8B%E9%BB%83%E4%BB%81%E5%8B%B3%E8%A2%AB%E5%8B%95%E6%97%8F%E7%BE%A4%E9%80%86%E9%A2%A8%E6%92%90%E5%A0%B4-%E8%9C%9C%E6%9C%9B%E5%AF%A6%E8%88%88%E5%8B%A4%E5%BC%B7%E5%BD%88%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-093403048.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "台股上二萬八！3.7萬人凍未條搶進ETF 總人數飆破1144萬創新高",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E4%B8%8A%E4%BA%8C%E8%90%AC%E5%85%AB%EF%BC%8137%E8%90%AC%E4%BA%BA%E5%87%8D%E6%9C%AA%E6%A2%9D%E6%90%B6%E9%80%B2etf-%E7%B8%BD%E4%BA%BA%E6%95%B8%E9%A3%86%E7%A0%B41144%E8%90%AC%E5%89%B5%E6%96%B0%E9%AB%98-010720181.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00881": [
+    {
+      "title": "台積電創1500元歷史天價 含積ETF單周漲幅前10強出爐",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E5%89%B51500%E5%85%83%E6%AD%B7%E5%8F%B2%E5%A4%A9%E5%83%B9-%E5%90%AB%E7%A9%8Detf%E5%96%AE%E5%91%A8%E6%BC%B2%E5%B9%85%E5%89%8D10%E5%BC%B7%E5%87%BA%E7%88%90-034344895.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "Yahoo股市App公布2025年第三季「十大爆紅台股榜」、「五大爆紅ETF榜」",
+      "link": "https://tw.stock.yahoo.com/news/yahoo%E8%82%A1%E5%B8%82app%E5%85%AC%E5%B8%832025%E5%B9%B4%E7%AC%AC%E4%B8%89%E5%AD%A3%E3%80%8C%E5%8D%81%E5%A4%A7%E7%88%86%E7%B4%85%E5%8F%B0%E8%82%A1%E6%A6%9C%E3%80%8D%E3%80%81%E3%80%8C%E4%BA%94%E5%A4%A7%E7%88%86%E7%B4%85etf%E6%A6%9C%E3%80%8D-022914362.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "台積電飆歷史新高 「含積ETF」0050持有33萬張居冠 富邦科技占比67%最高",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%A3%86%E6%AD%B7%E5%8F%B2%E6%96%B0%E9%AB%98-%E3%80%8C%E5%90%AB%E7%A9%8Detf%E3%80%8D0050%E6%8C%81%E6%9C%8933%E8%90%AC%E5%BC%B5%E5%B1%85%E5%86%A0-%E5%AF%8C%E9%82%A6%E7%A7%91%E6%8A%80%E5%8D%A0%E6%AF%9467%E6%9C%80%E9%AB%98-051553958.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00882": [],
+  "00885": [
+    {
+      "title": "「3檔海外ETF」吃美中關稅戰紅利！最強今年漲逾5成",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C3%E6%AA%94%E6%B5%B7%E5%A4%96etf%E3%80%8D%E5%90%83%E7%BE%8E%E4%B8%AD%E9%97%9C%E7%A8%85%E6%88%B0%E7%B4%85%E5%88%A9%EF%BC%81%E6%9C%80%E5%BC%B7%E4%BB%8A%E5%B9%B4%E6%BC%B2%E9%80%BE5%E6%88%90-071800779.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00919": [
+    {
+      "title": "外資連砍土洋對作 台積電走弱台股小跌11點/百萬張巨量衝新天價 台新新光金迎「高光時刻」/太空題材續熱 低軌衛星概念股成盤面最強主線｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%A4%96%E8%B3%87%E9%80%A3%E7%A0%8D%E5%9C%9F%E6%B4%8B%E5%B0%8D%E4%BD%9C-%E5%8F%B0%E7%A9%8D%E9%9B%BB%E8%B5%B0%E5%BC%B1%E5%8F%B0%E8%82%A1%E5%B0%8F%E8%B7%8C11%E9%BB%9E%E7%99%BE%E8%90%AC%E5%BC%B5%E5%B7%A8%E9%87%8F%E8%A1%9D%E6%96%B0%E5%A4%A9%E5%83%B9-%E5%8F%B0%E6%96%B0%E6%96%B0%E5%85%89%E9%87%91%E8%BF%8E%E3%80%8C%E9%AB%98%E5%85%89%E6%99%82%E5%88%BB%E3%80%8D%E5%A4%AA%E7%A9%BA%E9%A1%8C%E6%9D%90%E7%BA%8C%E7%86%B1-%E4%BD%8E%E8%BB%8C%E8%A1%9B%E6%98%9F%E6%A6%82%E5%BF%B5%E8%82%A1%E6%88%90%E7%9B%A4%E9%9D%A2%E6%9C%80%E5%BC%B7%E4%B8%BB%E7%B7%9A%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-093501279.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "外資連2日提款破千億 台股下殺330點跌破月線/SpaceX史詩級IPO在即 本夢比再掀論戰/太空AI想像空間炸裂 概念股全面點火｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%A4%96%E8%B3%87%E9%80%A32%E6%97%A5%E6%8F%90%E6%AC%BE%E7%A0%B4%E5%8D%83%E5%84%84-%E5%8F%B0%E8%82%A1%E4%B8%8B%E6%AE%BA330%E9%BB%9E%E8%B7%8C%E7%A0%B4%E6%9C%88%E7%B7%9Aspacex%E5%8F%B2%E8%A9%A9%E7%B4%9Aipo%E5%9C%A8%E5%8D%B3-%E6%9C%AC%E5%A4%A2%E6%AF%94%E5%86%8D%E6%8E%80%E8%AB%96%E6%88%B0%E5%A4%AA%E7%A9%BAai%E6%83%B3%E5%83%8F%E7%A9%BA%E9%96%93%E7%82%B8%E8%A3%82-%E6%A6%82%E5%BF%B5%E8%82%A1%E5%85%A8%E9%9D%A2%E9%BB%9E%E7%81%AB%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-094227673.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "法人齊抽手台積電領跌 台股黑色星期一跳水331點/GDP衝高點調薪只3%？勞工再成犧牲品/大同爆雷拖累 機器人族群成箭靶｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E6%B3%95%E4%BA%BA%E9%BD%8A%E6%8A%BD%E6%89%8B%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%A0%98%E8%B7%8C-%E5%8F%B0%E8%82%A1%E9%BB%91%E8%89%B2%E6%98%9F%E6%9C%9F%E4%B8%80%E8%B7%B3%E6%B0%B4331%E9%BB%9Egdp%E8%A1%9D%E9%AB%98%E9%BB%9E%E8%AA%BF%E8%96%AA%E5%8F%AA3%EF%BC%9F%E5%8B%9E%E5%B7%A5%E5%86%8D%E6%88%90%E7%8A%A7%E7%89%B2%E5%93%81%E5%A4%A7%E5%90%8C%E7%88%86%E9%9B%B7%E6%8B%96%E7%B4%AF-%E6%A9%9F%E5%99%A8%E4%BA%BA%E6%97%8F%E7%BE%A4%E6%88%90%E7%AE%AD%E9%9D%B6%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-094438192.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00731": [],
+  "00637L": [
+    {
+      "title": "中美貿易戰升溫！2檔陸股ETF重摔11%...專家示警：短線風險高",
+      "link": "https://tw.stock.yahoo.com/news/%E4%B8%AD%E7%BE%8E%E8%B2%BF%E6%98%93%E6%88%B0%E5%8D%87%E6%BA%AB%EF%BC%812%E6%AA%94%E9%99%B8%E8%82%A1etf%E9%87%8D%E6%91%9411%E5%B0%88%E5%AE%B6%E7%A4%BA%E8%AD%A6%EF%BC%9A%E7%9F%AD%E7%B7%9A%E9%A2%A8%E9%9A%AA%E9%AB%98-050221641.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "政府開水龍頭「救自住」還是「助炒房」引熱議/外資買超逾百億 台股震盪收紅79點/營建股「一片紅」冠德國建亮燈慶祝｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E6%94%BF%E5%BA%9C%E9%96%8B%E6%B0%B4%E9%BE%8D%E9%A0%AD%E3%80%8C%E6%95%91%E8%87%AA%E4%BD%8F%E3%80%8D%E9%82%84%E6%98%AF%E3%80%8C%E5%8A%A9%E7%82%92%E6%88%BF%E3%80%8D%E5%BC%95%E7%86%B1%E8%AD%B0%E5%A4%96%E8%B3%87%E8%B2%B7%E8%B6%85%E9%80%BE%E7%99%BE%E5%84%84-%E5%8F%B0%E8%82%A1%E9%9C%87%E7%9B%AA%E6%94%B6%E7%B4%8579%E9%BB%9E%E7%87%9F%E5%BB%BA%E8%82%A1%E3%80%8C%E4%B8%80%E7%89%87%E7%B4%85%E3%80%8D%E5%86%A0%E5%BE%B7%E5%9C%8B%E5%BB%BA%E4%BA%AE%E7%87%88%E6%85%B6%E7%A5%9D%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-095035903.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "陸股寫十年大驚奇 陸股ETF飆6% 13檔全補漲上攻",
+      "link": "https://tw.stock.yahoo.com/news/%E9%99%B8%E8%82%A1%E5%AF%AB%E5%8D%81%E5%B9%B4%E5%A4%A7%E9%A9%9A%E5%A5%87-%E9%99%B8%E8%82%A1etf%E9%A3%866-13%E6%AA%94%E5%85%A8%E8%A3%9C%E6%BC%B2%E4%B8%8A%E6%94%BB-034338195.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00638R": [],
+  "00639": [
+    {
+      "title": "慢牛變快牛？一表看陸股包辦海外ETF漲幅前十強",
+      "link": "https://tw.stock.yahoo.com/news/%E6%85%A2%E7%89%9B%E8%AE%8A%E5%BF%AB%E7%89%9B%EF%BC%9F%E4%B8%80%E8%A1%A8%E7%9C%8B%E9%99%B8%E8%82%A1%E5%8C%85%E8%BE%A6%E6%B5%B7%E5%A4%96etf%E6%BC%B2%E5%B9%85%E5%89%8D%E5%8D%81%E5%BC%B7-051531926.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00640L": [
+    {
+      "title": "川普關稅降到15% 日股史詩級狂漲千點重回4萬點大關 日股ETF飆5%",
+      "link": "https://tw.stock.yahoo.com/news/%E5%B7%9D%E6%99%AE%E9%97%9C%E7%A8%85%E9%99%8D%E5%88%B015-%E6%97%A5%E8%82%A1%E5%8F%B2%E8%A9%A9%E7%B4%9A%E7%8B%82%E6%BC%B2%E5%8D%83%E9%BB%9E%E9%87%8D%E5%9B%9E4%E8%90%AC%E9%BB%9E%E5%A4%A7%E9%97%9C-%E6%97%A5%E8%82%A1etf%E9%A3%865-014900452.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00641R": [],
+  "00642U": [],
+  "00643": [
+    {
+      "title": "慢牛變快牛？一表看陸股包辦海外ETF漲幅前十強",
+      "link": "https://tw.stock.yahoo.com/news/%E6%85%A2%E7%89%9B%E8%AE%8A%E5%BF%AB%E7%89%9B%EF%BC%9F%E4%B8%80%E8%A1%A8%E7%9C%8B%E9%99%B8%E8%82%A1%E5%8C%85%E8%BE%A6%E6%B5%B7%E5%A4%96etf%E6%BC%B2%E5%B9%85%E5%89%8D%E5%8D%81%E5%BC%B7-051531926.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00645": [],
+  "00646": [
+    {
+      "title": "外資回補471億創今年次高 台股強飆297點/伺服器概念衝刺 神達爆量、鴻海獲升評/轉型多年漲不動 台泥打出庫藏牌撐信心｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%A4%96%E8%B3%87%E5%9B%9E%E8%A3%9C471%E5%84%84%E5%89%B5%E4%BB%8A%E5%B9%B4%E6%AC%A1%E9%AB%98-%E5%8F%B0%E8%82%A1%E5%BC%B7%E9%A3%86297%E9%BB%9E%E4%BC%BA%E6%9C%8D%E5%99%A8%E6%A6%82%E5%BF%B5%E8%A1%9D%E5%88%BA-%E7%A5%9E%E9%81%94%E7%88%86%E9%87%8F%E3%80%81%E9%B4%BB%E6%B5%B7%E7%8D%B2%E5%8D%87%E8%A9%95%E8%BD%89%E5%9E%8B%E5%A4%9A%E5%B9%B4%E6%BC%B2%E4%B8%8D%E5%8B%95-%E5%8F%B0%E6%B3%A5%E6%89%93%E5%87%BA%E5%BA%AB%E8%97%8F%E7%89%8C%E6%92%90%E4%BF%A1%E5%BF%83%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-093200712.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00648R": [],
+  "00650L": [],
+  "00651R": [],
+  "00652": [
+    {
+      "title": "「3檔海外ETF」吃美中關稅戰紅利！最強今年漲逾5成",
+      "link": "https://tw.stock.yahoo.com/news/%E3%80%8C3%E6%AA%94%E6%B5%B7%E5%A4%96etf%E3%80%8D%E5%90%83%E7%BE%8E%E4%B8%AD%E9%97%9C%E7%A8%85%E6%88%B0%E7%B4%85%E5%88%A9%EF%BC%81%E6%9C%80%E5%BC%B7%E4%BB%8A%E5%B9%B4%E6%BC%B2%E9%80%BE5%E6%88%90-071800779.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00653L": [],
+  "00654R": [],
+  "00655L": [],
+  "00656R": [],
+  "00661": [],
+  "00662": [
+    {
+      "title": "AI熱！美科技股ETF賺飽飽 台新009807、國泰00770五月底以來漲逾1成",
+      "link": "https://tw.stock.yahoo.com/news/ai%E7%86%B1%EF%BC%81%E7%BE%8E%E7%A7%91%E6%8A%80%E8%82%A1etf%E8%B3%BA%E9%A3%BD%E9%A3%BD-%E5%8F%B0%E6%96%B0009807%E3%80%81%E5%9C%8B%E6%B3%B000770%E4%BA%94%E6%9C%88%E5%BA%95%E4%BB%A5%E4%BE%86%E6%BC%B2%E9%80%BE1%E6%88%90-040341593.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00636": [],
+  "00663L": [],
+  "00635U": [
+    {
+      "title": "金價貴桑桑 金益鼎、佳龍黃金雙雄及ETF股價鍍金連袂上漲",
+      "link": "https://tw.stock.yahoo.com/news/%E9%87%91%E5%83%B9%E8%B2%B4%E6%A1%91%E6%A1%91-%E9%87%91%E7%9B%8A%E9%BC%8E%E3%80%81%E4%BD%B3%E9%BE%8D%E9%BB%83%E9%87%91%E9%9B%99%E9%9B%84%E5%8F%8Aetf%E8%82%A1%E5%83%B9%E9%8D%8D%E9%87%91%E9%80%A3%E8%A2%82%E4%B8%8A%E6%BC%B2-015508032.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00633L": [
+    {
+      "title": "中美貿易戰升溫！2檔陸股ETF重摔11%...專家示警：短線風險高",
+      "link": "https://tw.stock.yahoo.com/news/%E4%B8%AD%E7%BE%8E%E8%B2%BF%E6%98%93%E6%88%B0%E5%8D%87%E6%BA%AB%EF%BC%812%E6%AA%94%E9%99%B8%E8%82%A1etf%E9%87%8D%E6%91%9411%E5%B0%88%E5%AE%B6%E7%A4%BA%E8%AD%A6%EF%BC%9A%E7%9F%AD%E7%B7%9A%E9%A2%A8%E9%9A%AA%E9%AB%98-050221641.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00401A": [],
+  "00403A": [],
+  "0050": [
+    {
+      "title": "台股ETF受益人數終止創新高　週減8.6萬人",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1etf%E5%8F%97%E7%9B%8A%E4%BA%BA%E6%95%B8%E7%B5%82%E6%AD%A2%E5%89%B5%E6%96%B0%E9%AB%98-%E9%80%B1%E6%B8%9B8-6%E8%90%AC%E4%BA%BA-053715254.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "【台股盤前】美股多數收紅　投顧：台股有望跌深反彈",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E7%9B%A4%E5%89%8D-%E7%BE%8E%E8%82%A1%E5%A4%9A%E6%95%B8%E6%94%B6%E7%B4%85-%E6%8A%95%E9%A1%A7-%E5%8F%B0%E8%82%A1%E6%9C%89%E6%9C%9B%E8%B7%8C%E6%B7%B1%E5%8F%8D%E5%BD%88-002138930.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "投資人危機入市　主動式及市值型ETF居成交量前5名",
+      "link": "https://tw.stock.yahoo.com/news/%E6%8A%95%E8%B3%87%E4%BA%BA%E5%8D%B1%E6%A9%9F%E5%85%A5%E5%B8%82-%E4%B8%BB%E5%8B%95%E5%BC%8F%E5%8F%8A%E5%B8%82%E5%80%BC%E5%9E%8Betf%E5%B1%85%E6%88%90%E4%BA%A4%E9%87%8F%E5%89%8D5%E5%90%8D-114109929.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "0051": [],
+  "0052": [
+    {
+      "title": "富邦NASDAQ ETF股價破百元　啟動分割投票",
+      "link": "https://tw.stock.yahoo.com/news/%E5%AF%8C%E9%82%A6nasdaq-etf%E8%82%A1%E5%83%B9%E7%A0%B4%E7%99%BE%E5%85%83-%E5%95%9F%E5%8B%95%E5%88%86%E5%89%B2%E6%8A%95%E7%A5%A8-080304213.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "金蛇年7檔台股ETF規模翻倍　「含積量」成焦點",
+      "link": "https://tw.stock.yahoo.com/news/%E9%87%91%E8%9B%87%E5%B9%B47%E6%AA%94%E5%8F%B0%E8%82%A1etf%E8%A6%8F%E6%A8%A1%E7%BF%BB%E5%80%8D-%E5%90%AB%E7%A9%8D%E9%87%8F-%E6%88%90%E7%84%A6%E9%BB%9E-034004972.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "台積電領台股向上！37檔含積ETF全面勁揚 00981A爆近6萬張成交量登人氣王",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%A0%98%E5%8F%B0%E8%82%A1%E5%90%91%E4%B8%8A%EF%BC%8137%E6%AA%94%E5%90%AB%E7%A9%8Detf%E5%85%A8%E9%9D%A2%E5%8B%81%E6%8F%9A-00981a%E7%88%86%E8%BF%916%E8%90%AC%E5%BC%B5%E6%88%90%E4%BA%A4%E9%87%8F%E7%99%BB%E4%BA%BA%E6%B0%A3%E7%8E%8B-020235512.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "0055": [],
+  "0056": [
+    {
+      "title": "外資加碼台股464億元連4買　青睞ETF敲進台積電鴻海",
+      "link": "https://tw.stock.yahoo.com/news/%E5%A4%96%E8%B3%87%E5%8A%A0%E7%A2%BC%E5%8F%B0%E8%82%A1464%E5%84%84%E5%85%83%E9%80%A34%E8%B2%B7-%E9%9D%92%E7%9D%9Eetf%E6%95%B2%E9%80%B2%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%B4%BB%E6%B5%B7-101650918.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "外資回補買超669億金額創第6大　加碼元大高股息居冠",
+      "link": "https://tw.stock.yahoo.com/news/%E5%A4%96%E8%B3%87%E5%9B%9E%E8%A3%9C%E8%B2%B7%E8%B6%85669%E5%84%84%E9%87%91%E9%A1%8D%E5%89%B5%E7%AC%AC6%E5%A4%A7-%E5%8A%A0%E7%A2%BC%E5%85%83%E5%A4%A7%E9%AB%98%E8%82%A1%E6%81%AF%E5%B1%85%E5%86%A0-121302740.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "0056本季預估配息1元創1年新高　4/23除息",
+      "link": "https://tw.stock.yahoo.com/news/0056%E6%9C%AC%E5%AD%A3%E9%A0%90%E4%BC%B0%E9%85%8D%E6%81%AF1%E5%85%83%E5%89%B51%E5%B9%B4%E6%96%B0%E9%AB%98-4-23%E9%99%A4%E6%81%AF-083318583.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "0061": [],
+  "006205": [],
+  "006206": [],
+  "006207": [],
+  "006208": [
+    {
+      "title": "年化報酬率23%有祕訣 達人教你挑「超級成長股」！退休族買美股ETF怎麼選？",
+      "link": "https://tw.stock.yahoo.com/news/%E5%B9%B4%E5%8C%96%E5%A0%B1%E9%85%AC%E7%8E%8723%E6%9C%89%E7%A5%95%E8%A8%A3-%E9%81%94%E4%BA%BA%E6%95%99%E4%BD%A0%E6%8C%91%E3%80%8C%E8%B6%85%E7%B4%9A%E6%88%90%E9%95%B7%E8%82%A1%E3%80%8D%EF%BC%81%E9%80%80%E4%BC%91%E6%97%8F%E8%B2%B7%E7%BE%8E%E8%82%A1etf%E6%80%8E%E9%BA%BC%E9%81%B8%EF%BC%9F-102249654.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "透過3檔市值型ETF 搭上熱錢資金瘋狗浪",
+      "link": "https://tw.stock.yahoo.com/news/%E9%80%8F%E9%81%8E3%E6%AA%94%E5%B8%82%E5%80%BC%E5%9E%8Betf-%E6%90%AD%E4%B8%8A%E7%86%B1%E9%8C%A2%E8%B3%87%E9%87%91%E7%98%8B%E7%8B%97%E6%B5%AA-053015683.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "台積電飆歷史新高！ 37檔含積ETF開紅花 0050、0052漲逾1%",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%A3%86%E6%AD%B7%E5%8F%B2%E6%96%B0%E9%AB%98%EF%BC%81-37%E6%AA%94%E5%90%AB%E7%A9%8Detf%E9%96%8B%E7%B4%85%E8%8A%B1-0050%E3%80%810052%E6%BC%B2%E9%80%BE1-020314125.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00631L": [
+    {
+      "title": "台股噴8543億史上最大量 外資反手倒貨298億/彭淮南防線成歷史？陶朱隱園刷新豪宅想像/群創禁閉關不住！友達接棒漲停爆量85萬張｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E5%99%B48543%E5%84%84%E5%8F%B2%E4%B8%8A%E6%9C%80%E5%A4%A7%E9%87%8F-%E5%A4%96%E8%B3%87%E5%8F%8D%E6%89%8B%E5%80%92%E8%B2%A8298%E5%84%84%E5%BD%AD%E6%B7%AE%E5%8D%97%E9%98%B2%E7%B7%9A%E6%88%90%E6%AD%B7%E5%8F%B2%EF%BC%9F%E9%99%B6%E6%9C%B1%E9%9A%B1%E5%9C%92%E5%88%B7%E6%96%B0%E8%B1%AA%E5%AE%85%E6%83%B3%E5%83%8F%E7%BE%A4%E5%89%B5%E7%A6%81%E9%96%89%E9%97%9C%E4%B8%8D%E4%BD%8F%EF%BC%81%E5%8F%8B%E9%81%94%E6%8E%A5%E6%A3%92%E6%BC%B2%E5%81%9C%E7%88%86%E9%87%8F85%E8%90%AC%E5%BC%B5%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-095045278.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00632R": [
+    {
+      "title": "台積電領漲多頭連發 大盤紅通通重返2萬3/外資連七買力挺 自營商齊助攻/南亞漲停填息搶鏡 帶旺集團買盤回籠｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E9%A0%98%E6%BC%B2%E5%A4%9A%E9%A0%AD%E9%80%A3%E7%99%BC-%E5%A4%A7%E7%9B%A4%E7%B4%85%E9%80%9A%E9%80%9A%E9%87%8D%E8%BF%942%E8%90%AC3%E5%A4%96%E8%B3%87%E9%80%A3%E4%B8%83%E8%B2%B7%E5%8A%9B%E6%8C%BA-%E8%87%AA%E7%87%9F%E5%95%86%E9%BD%8A%E5%8A%A9%E6%94%BB%E5%8D%97%E4%BA%9E%E6%BC%B2%E5%81%9C%E5%A1%AB%E6%81%AF%E6%90%B6%E9%8F%A1-%E5%B8%B6%E6%97%BA%E9%9B%86%E5%9C%98%E8%B2%B7%E7%9B%A4%E5%9B%9E%E7%B1%A0%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-090339389.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "台積電觸高回落 台股重挫352點/神達爆量稱王 法人看好富喬先蹲後跳/夜盤時段全攻略 上班族掌握美股先機｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E7%A9%8D%E9%9B%BB%E8%A7%B8%E9%AB%98%E5%9B%9E%E8%90%BD-%E5%8F%B0%E8%82%A1%E9%87%8D%E6%8C%AB352%E9%BB%9E%E7%A5%9E%E9%81%94%E7%88%86%E9%87%8F%E7%A8%B1%E7%8E%8B-%E6%B3%95%E4%BA%BA%E7%9C%8B%E5%A5%BD%E5%AF%8C%E5%96%AC%E5%85%88%E8%B9%B2%E5%BE%8C%E8%B7%B3%E5%A4%9C%E7%9B%A4%E6%99%82%E6%AE%B5%E5%85%A8%E6%94%BB%E7%95%A5-%E4%B8%8A%E7%8F%AD%E6%97%8F%E6%8E%8C%E6%8F%A1%E7%BE%8E%E8%82%A1%E5%85%88%E6%A9%9F%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-093601218.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00634R": [],
+  "00733": [],
+  "00664R": [],
+  "00700": [],
+  "00701": [
+    {
+      "title": "台股回神！前十大ETF受益人數排行榜 00961單周暴增50% 奪人氣王",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E5%9B%9E%E7%A5%9E%EF%BC%81%E5%89%8D%E5%8D%81%E5%A4%A7etf%E5%8F%97%E7%9B%8A%E4%BA%BA%E6%95%B8%E6%8E%92%E8%A1%8C%E6%A6%9C-00961%E5%96%AE%E5%91%A8%E6%9A%B4%E5%A2%9E50-%E5%A5%AA%E4%BA%BA%E6%B0%A3%E7%8E%8B-034026615.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00702": [],
+  "00703": [],
+  "00706L": [],
+  "00708L": [
+    {
+      "title": "金價貴桑桑 金益鼎、佳龍黃金雙雄及ETF股價鍍金連袂上漲",
+      "link": "https://tw.stock.yahoo.com/news/%E9%87%91%E5%83%B9%E8%B2%B4%E6%A1%91%E6%A1%91-%E9%87%91%E7%9B%8A%E9%BC%8E%E3%80%81%E4%BD%B3%E9%BE%8D%E9%BB%83%E9%87%91%E9%9B%99%E9%9B%84%E5%8F%8Aetf%E8%82%A1%E5%83%B9%E9%8D%8D%E9%87%91%E9%80%A3%E8%A2%82%E4%B8%8A%E6%BC%B2-015508032.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00710B": [
+    {
+      "title": "9月債券ETF除息秀！5檔非投等債ETF領先 年化配息率最高近9%",
+      "link": "https://tw.stock.yahoo.com/news/9%E6%9C%88%E5%82%B5%E5%88%B8etf%E9%99%A4%E6%81%AF%E7%A7%80%EF%BC%815%E6%AA%94%E9%9D%9E%E6%8A%95%E7%AD%89%E5%82%B5etf%E9%A0%98%E5%85%88-%E5%B9%B4%E5%8C%96%E9%85%8D%E6%81%AF%E7%8E%87%E6%9C%80%E9%AB%98%E8%BF%919-022228194.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "9月有37檔債券ETF要除息 年息最高達近9%",
+      "link": "https://tw.stock.yahoo.com/news/9%E6%9C%88%E6%9C%8937%E6%AA%94%E5%82%B5%E5%88%B8etf%E8%A6%81%E9%99%A4%E6%81%AF-%E5%B9%B4%E6%81%AF%E6%9C%80%E9%AB%98%E9%81%94%E8%BF%919-032303688.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "Fed恐啟動預防式降息 6檔非投等債ETF比較",
+      "link": "https://tw.stock.yahoo.com/news/fed%E6%81%90%E5%95%9F%E5%8B%95%E9%A0%90%E9%98%B2%E5%BC%8F%E9%99%8D%E6%81%AF-6%E6%AA%94%E9%9D%9E%E6%8A%95%E7%AD%89%E5%82%B5etf%E6%AF%94%E8%BC%83-075605048.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00711B": [],
+  "00712": [
+    {
+      "title": "聯準會12月降息預期升溫！外資搶買債券ETF 前15強出爐",
+      "link": "https://tw.stock.yahoo.com/news/%E8%81%AF%E6%BA%96%E6%9C%8312%E6%9C%88%E9%99%8D%E6%81%AF%E9%A0%90%E6%9C%9F%E5%8D%87%E6%BA%AB%EF%BC%81%E5%A4%96%E8%B3%87%E6%90%B6%E8%B2%B7%E5%82%B5%E5%88%B8etf-%E5%89%8D15%E5%BC%B7%E5%87%BA%E7%88%90-042109928.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00713": [
+    {
+      "title": "高股息ETF逆勢吸金 00919近半月含息報酬率0.56%跑第一",
+      "link": "https://tw.stock.yahoo.com/news/%E9%AB%98%E8%82%A1%E6%81%AFetf%E9%80%86%E5%8B%A2%E5%90%B8%E9%87%91-00919%E8%BF%91%E5%8D%8A%E6%9C%88%E5%90%AB%E6%81%AF%E5%A0%B1%E9%85%AC%E7%8E%87056%E8%B7%91%E7%AC%AC%E4%B8%80-035237107.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "251萬人一早被錢香醒！00919、00713等9檔台股ETF發194億元現金股利",
+      "link": "https://tw.stock.yahoo.com/news/251%E8%90%AC%E4%BA%BA%E4%B8%80%E6%97%A9%E8%A2%AB%E9%8C%A2%E9%A6%99%E9%86%92%EF%BC%8100919%E3%80%8100713%E7%AD%899%E6%AA%94%E5%8F%B0%E8%82%A1etf%E7%99%BC194%E5%84%84%E5%85%83%E7%8F%BE%E9%87%91%E8%82%A1%E5%88%A9-005140422.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "本周10檔台股ETF資金活水194億到！00919發放股利129億元最多",
+      "link": "https://tw.stock.yahoo.com/news/%E6%9C%AC%E5%91%A810%E6%AA%94%E5%8F%B0%E8%82%A1etf%E8%B3%87%E9%87%91%E6%B4%BB%E6%B0%B4194%E5%84%84%E5%88%B0%EF%BC%8100919%E7%99%BC%E6%94%BE%E8%82%A1%E5%88%A9129%E5%84%84%E5%85%83%E6%9C%80%E5%A4%9A-012007318.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00714": [],
+  "00715L": [
+    {
+      "title": "台股史上首度衝破28000點！尾盤失守仍創收盤新高/玉山金「娶壽險」壓力大 投資人用腳表態/國巨連日攻頂 被動元件行情續燒｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E5%8F%B0%E8%82%A1%E5%8F%B2%E4%B8%8A%E9%A6%96%E5%BA%A6%E8%A1%9D%E7%A0%B428000%E9%BB%9E%EF%BC%81%E5%B0%BE%E7%9B%A4%E5%A4%B1%E5%AE%88%E4%BB%8D%E5%89%B5%E6%94%B6%E7%9B%A4%E6%96%B0%E9%AB%98%E7%8E%89%E5%B1%B1%E9%87%91%E3%80%8C%E5%A8%B6%E5%A3%BD%E9%9A%AA%E3%80%8D%E5%A3%93%E5%8A%9B%E5%A4%A7-%E6%8A%95%E8%B3%87%E4%BA%BA%E7%94%A8%E8%85%B3%E8%A1%A8%E6%85%8B%E5%9C%8B%E5%B7%A8%E9%80%A3%E6%97%A5%E6%94%BB%E9%A0%82-%E8%A2%AB%E5%8B%95%E5%85%83%E4%BB%B6%E8%A1%8C%E6%83%85%E7%BA%8C%E7%87%92%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-092939161.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "陶朱隱園破冰12億成交 吹響豪宅復甦號角/外資賣壓不減 台股震盪收黑周線仍紅/油價急漲四寶沸騰 00715L人氣爆棚｜Yahoo財經掃描",
+      "link": "https://tw.stock.yahoo.com/news/%E9%99%B6%E6%9C%B1%E9%9A%B1%E5%9C%92%E7%A0%B4%E5%86%B012%E5%84%84%E6%88%90%E4%BA%A4-%E5%90%B9%E9%9F%BF%E8%B1%AA%E5%AE%85%E5%BE%A9%E7%94%A6%E8%99%9F%E8%A7%92%E5%A4%96%E8%B3%87%E8%B3%A3%E5%A3%93%E4%B8%8D%E6%B8%9B-%E5%8F%B0%E8%82%A1%E9%9C%87%E7%9B%AA%E6%94%B6%E9%BB%91%E5%91%A8%E7%B7%9A%E4%BB%8D%E7%B4%85%E6%B2%B9%E5%83%B9%E6%80%A5%E6%BC%B2%E5%9B%9B%E5%AF%B6%E6%B2%B8%E9%A8%B0-00715l%E4%BA%BA%E6%B0%A3%E7%88%86%E6%A3%9A%EF%BD%9Cyahoo%E8%B2%A1%E7%B6%93%E6%8E%83%E6%8F%8F-092906362.html",
+      "date": "2026-06-29"
+    },
+    {
+      "title": "川普制裁俄國...油價應聲飆漲！期街口布蘭特正2爆22萬張大量登成交王",
+      "link": "https://tw.stock.yahoo.com/news/%E5%B7%9D%E6%99%AE%E5%88%B6%E8%A3%81%E4%BF%84%E5%9C%8B%E6%B2%B9%E5%83%B9%E6%87%89%E8%81%B2%E9%A3%86%E6%BC%B2%EF%BC%81%E6%9C%9F%E8%A1%97%E5%8F%A3%E5%B8%83%E8%98%AD%E7%89%B9%E6%AD%A32%E7%88%8622%E8%90%AC%E5%BC%B5%E5%A4%A7%E9%87%8F%E7%99%BB%E6%88%90%E4%BA%A4%E7%8E%8B-040402524.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00717": [],
+  "00728": [],
+  "00730": [],
+  "00665L": [
+    {
+      "title": "中美貿易戰升溫！2檔陸股ETF重摔11%...專家示警：短線風險高",
+      "link": "https://tw.stock.yahoo.com/news/%E4%B8%AD%E7%BE%8E%E8%B2%BF%E6%98%93%E6%88%B0%E5%8D%87%E6%BA%AB%EF%BC%812%E6%AA%94%E9%99%B8%E8%82%A1etf%E9%87%8D%E6%91%9411%E5%B0%88%E5%AE%B6%E7%A4%BA%E8%AD%A6%EF%BC%9A%E7%9F%AD%E7%B7%9A%E9%A2%A8%E9%9A%AA%E9%AB%98-050221641.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00669R": [],
+  "00670L": [],
+  "00671R": [],
+  "00673R": [],
+  "00674R": [
+    {
+      "title": "金價飆高受害！元大反向黃金ETF淨值太低 證交所：暫停融資券及當沖",
+      "link": "https://tw.stock.yahoo.com/news/%E9%87%91%E5%83%B9%E9%A3%86%E9%AB%98%E5%8F%97%E5%AE%B3%EF%BC%81%E5%85%83%E5%A4%A7%E5%8F%8D%E5%90%91%E9%BB%83%E9%87%91etf%E6%B7%A8%E5%80%BC%E5%A4%AA%E4%BD%8E-%E8%AD%89%E4%BA%A4%E6%89%80%EF%BC%9A%E6%9A%AB%E5%81%9C%E8%9E%8D%E8%B3%87%E5%88%B8%E5%8F%8A%E7%95%B6%E6%B2%96-085006408.html",
+      "date": "2026-06-29"
+    }
+  ],
+  "00675L": [],
   "00946": [
     {
       "title": "6萬股民關注！00946連兩月配0.058元 年化配息率6.85%",
