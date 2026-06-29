@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全市場 ETF 動態追蹤儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
 </head>
@@ -15,7 +15,11 @@
     <div id="sys-error"></div>
     <script>
         window.onerror = function(msg, url, line) {
-            document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">系統發生錯誤: ' + msg + ' (行數: ' + line + ')</div>';
+            if (msg && msg.indexOf('Script error') > -1) {
+                document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">⚠️ 載入異常: 瀏覽器安全性阻擋或語法解析失敗。<br>請嘗試「清除瀏覽器快取」或使用「Safari/Chrome」開啟。</div>';
+            } else {
+                document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">系統發生錯誤: ' + msg + ' (行數: ' + line + ')</div>';
+            }
         };
     </script>
 
@@ -32,15 +36,26 @@
         const CATEGORIES = Object.keys(FILE_MAP);
         const TABS = ["⭐ 自選股", ...CATEGORIES];
 
-        function ETFDashboard() {
-            const [favorites, setFavorites] = useState(() => {
-                try {
-                    return JSON.parse(localStorage.getItem('etf_favorites') || '[]');
-                } catch(e) {
-                    return [];
+        function getSavedFavs() {
+            try {
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const saved = window.localStorage.getItem('etf_favorites');
+                    if (saved) return JSON.parse(saved);
                 }
-            });
+            } catch(e) {}
+            return [];
+        }
 
+        function saveFavs(favs) {
+            try {
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    window.localStorage.setItem('etf_favorites', JSON.stringify(favs));
+                }
+            } catch(e) {}
+        }
+
+        function ETFDashboard() {
+            const [favorites, setFavorites] = useState(getSavedFavs());
             const [activeTab, setActiveTab] = useState('高股息');
             const [currentData, setCurrentData] = useState([]);
             const [loading, setLoading] = useState(true);
@@ -54,11 +69,11 @@
             const searchRef = useRef(null);
 
             const toggleFavorite = (id) => {
-                const nextFav = favorites.includes(id) ? favorites.filter(x => x !== id) : [...favorites, id];
-                setFavorites(nextFav);
-                try {
-                    localStorage.setItem('etf_favorites', JSON.stringify(nextFav));
-                } catch(e) {}
+                setFavorites(prev => {
+                    const nextFav = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+                    saveFavs(nextFav);
+                    return nextFav;
+                });
             };
 
             const fmtVal = (val, prefix = "") => {
@@ -78,7 +93,7 @@
             
             const getReturnColor = (val) => {
                 if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
-                return val > 0 ? "text-red-600 font-bold" : "text-green-600 font-bold";
+                return val > 0 ? "text-red-600 font-bold" : (val < 0 ? "text-green-600 font-bold" : "text-slate-600 font-bold");
             };
 
             useEffect(() => {
@@ -115,13 +130,13 @@
                         results.forEach(arr => {
                             if(Array.isArray(arr)) merged = merged.concat(arr);
                         });
-                        const filtered = merged.filter(item => item && item.id && favorites.includes(item.id));
                         
                         const unique = [];
-                        const seen = new Set();
-                        for (let item of filtered) {
-                            if (!seen.has(item.id)) {
-                                seen.add(item.id);
+                        const seen = {};
+                        for (let i = 0; i < merged.length; i++) {
+                            const item = merged[i];
+                            if (item && item.id && !seen[item.id]) {
+                                seen[item.id] = true;
                                 unique.push(item);
                             }
                         }
@@ -142,11 +157,17 @@
                         });
                 }
                 return () => { isMounted = false; };
-            }, [activeTab, favorites]);
+            }, [activeTab]);
 
             const sortedData = useMemo(() => {
-                let sortableItems = Array.isArray(currentData) ? [...currentData] : [];
+                let sortableItems = [...currentData];
+                
+                if (activeTab === '⭐ 自選股') {
+                    sortableItems = sortableItems.filter(item => favorites.includes(item.id));
+                }
+
                 if (activeTab === '即將上市(IPO)') return sortableItems;
+
                 sortableItems.sort((a, b) => {
                     let aValue = a ? a[sortConfig.key] : null;
                     let bValue = b ? b[sortConfig.key] : null;
@@ -157,7 +178,7 @@
                     return 0;
                 });
                 return sortableItems;
-            }, [currentData, sortConfig, activeTab]);
+            }, [currentData, sortConfig, activeTab, favorites]);
 
             const requestSort = (key) => {
                 let direction = 'desc';
@@ -263,8 +284,11 @@
                                                 </td>
                                                 <td className="px-4 py-3 sticky left-10 z-10 border-r border-slate-100 bg-inherit">
                                                     <div className="flex items-center justify-between">
-                                                        <div><div className="font-bold text-slate-800 text-base">{row.id}</div><div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div></div>
-                                                        {row.freq && row.freq !== "" && !isIPO && (
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-blue-400 text-lg">{expandedRow === row.id ? '▼' : '▶'}</span>
+                                                            <div><div className="font-bold text-slate-800 text-base">{row.id}</div><div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div></div>
+                                                        </div>
+                                                        {row.freq && row.freq !== "" && row.freq !== "-" && !isIPO && (
                                                             <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-800 border border-purple-200 font-bold whitespace-nowrap">{row.freq}</span>
                                                         )}
                                                     </div>
@@ -293,12 +317,4 @@
                                                     <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
                                                         <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
                                                             {!isIPO && (
-                                                                <React.Fragment>
-                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息 (TTM)</h4>
-                                                                        <ul className="text-sm space-y-3">
-                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">實質 TTM 殖利率</span><span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span></li>
-                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">近一年累計發放</span><span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span></li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <d
+                                     
