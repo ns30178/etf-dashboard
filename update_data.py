@@ -21,7 +21,7 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-# 1. 靜態配息頻率字典
+# 靜態配息頻率字典
 FREQ_MAP = {
     "0050": "半年配", "0056": "季配", "00878": "季配", "00919": "季配",
     "00929": "月配", "00934": "月配", "00936": "月配", "00939": "月配", 
@@ -30,7 +30,6 @@ FREQ_MAP = {
 }
 
 def send_telegram_message(message):
-    print("--- 準備發送 Telegram 推播 ---")
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     try: requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": message}, timeout=10)
@@ -116,22 +115,19 @@ def main():
 
         try:
             hist = fetch_fugle_candles(ticker_id)
-            if hist.empty:
-                hist = fetch_finmind_price_fallback(ticker_id)
+            if hist.empty: hist = fetch_finmind_price_fallback(ticker_id)
 
             if not hist.empty and len(hist) > 0:
                 current_price = float(hist['close'].iloc[-1])
                 
-                # 4. 計算 YTD
+                # 計算 YTD
                 last_year_df = hist[hist.index.year == last_year]
                 if not last_year_df.empty:
-                    last_year_close = float(last_year_df['close'].iloc[-1])
-                    ytd = (current_price - last_year_close) / last_year_close
+                    ytd = (current_price - float(last_year_df['close'].iloc[-1])) / float(last_year_df['close'].iloc[-1])
                 else:
                     this_year_df = hist[hist.index.year == current_year]
                     if not this_year_df.empty:
-                        first_close = float(this_year_df['close'].iloc[0])
-                        ytd = (current_price - first_close) / first_close
+                        ytd = (current_price - float(this_year_df['close'].iloc[0])) / float(this_year_df['close'].iloc[0])
 
                 if len(hist) >= 20: vol_20d = int(hist['volume'].tail(20).mean() / 1000)
                 
@@ -164,7 +160,7 @@ def main():
     ]
     with open("data_ipo.json", "w", encoding="utf-8") as f: json.dump(ipo_db, f, ensure_ascii=False, indent=2)
 
-    # 2. 寫入時間戳記 meta.json
+    # 寫入時間戳記 meta.json
     tw_tz = timezone(timedelta(hours=8))
     tw_time = datetime.now(tw_tz).strftime('%Y-%m-%d %H:%M:%S')
     with open("meta.json", "w", encoding="utf-8") as f: json.dump({"last_update": tw_time}, f, ensure_ascii=False)
@@ -173,5 +169,4 @@ def main():
     print(success_msg)
     send_telegram_message(success_msg)
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()
