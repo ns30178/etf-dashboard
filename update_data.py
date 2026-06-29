@@ -4,17 +4,17 @@ import pandas as pd
 import json
 import time
 import math
-import random
 import warnings
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
+# 對接你截圖中正確的 Secrets 名稱
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
 FUGLE_KEY = os.environ.get("FUGLE_API_KEY", "")
-TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
+TELEGRAM_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
 
 FILE_MAP = {
     "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -23,18 +23,10 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15"
-]
-
-def get_headers():
-    return {"User-Agent": random.choice(USER_AGENTS)}
-
 def send_telegram_message(message):
     print("--- 準備發送 Telegram 推播 ---")
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: 
-        print("⚠️ 警告：找不到 Telegram 金鑰或 Chat ID，推播已略過。")
+        print("⚠️ 警告：找不到 TG_BOT_TOKEN 或 TG_CHAT_ID，推播已略過。")
         return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
@@ -60,18 +52,6 @@ def categorize_etf(name):
     if any(k in name for k in ['50', '100', '市值', '加權', '大盤', '摩台', 'MSCI', '中型', '富時']): return "市值型"
     return "綜合/其他"
 
-def calculate_issue_time(start_date_str):
-    if not start_date_str: return "-"
-    try:
-        start = datetime.strptime(start_date_str[:10], "%Y-%m-%d")
-        now = datetime.now()
-        diff = now - start
-        years = diff.days // 365
-        months = (diff.days % 365) // 30
-        if years == 0 and months == 0: return "未滿1個月"
-        return f"{years}年{months}月"
-    except: return "-"
-
 def fetch_etf_list():
     tickers = {}
     try:
@@ -81,10 +61,7 @@ def fetch_etf_list():
             for item in res.json().get('data', []):
                 if item.get('industry_category') == 'ETF':
                     code = str(item.get('stock_id'))
-                    tickers[code] = {
-                        "name": str(item.get('stock_name')), 
-                        "start_date": str(item.get('start_date', ''))
-                    }
+                    tickers[code] = {"name": str(item.get('stock_name'))}
     except: pass
     return tickers
 
@@ -92,35 +69,42 @@ def fetch_fugle_candles(symbol):
     end_date = datetime.now().strftime('%Y-%m-%d')
     start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
     url = f"https://api.fugle.tw/marketdata/v1.0/stock/historical/candles/{symbol}?from={start_date}&to={end_date}&timeframe=D"
-    try:
-        res = requests.get(url, headers={"X-API-KEY": FUGLE_KEY}, timeout=4)
-        if res.status_code == 200:
-            data = res.json().get('data', [])
-            if data:
-                df = pd.DataFrame(data)
-                df['date'] = pd.to_datetime(df['date'])
-                df.set_index('date', inplace=True)
-                df.sort_index(inplace=True)
-                return df
-    except: pass
+    
+    # 加入重試機制，避免網路瞬斷導致資料空白
+    for _ in range(2):
+        try:
+            res = requests.get(url, headers={"X-API-KEY": FUGLE_KEY}, timeout=5)
+            if res.status_code == 200:
+                data = res.json().get('data', [])
+                if data:
+                    df = pd.DataFrame(data)
+                    df['date'] = pd.to_datetime(df['date'])
+                    df.set_index('date', inplace=True)
+                    df.sort_index(inplace=True)
+                    return df
+        except: pass
+        time.sleep(1)
     return pd.DataFrame()
 
 def fetch_finmind_price_fallback(symbol):
     start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
     url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
-    try:
-        res = requests.get(url, timeout=4)
-        if res.status_code == 200:
-            data = res.json().get('data', [])
-            if data:
-                df = pd.DataFrame(data)
-                df['date'] = pd.to_datetime(df['date'])
-                df.set_index('date', inplace=True)
-                df['close'] = df['close'] if 'close' in df else df.get('Close')
-                df['volume'] = df['Trading_Volume']
-                df.sort_index(inplace=True)
-                return df
-    except: pass
+    
+    for _ in range(2):
+        try:
+            res = requests.get(url, timeout=5)
+            if res.status_code == 200:
+                data = res.json().get('data', [])
+                if data:
+                    df = pd.DataFrame(data)
+                    df['date'] = pd.to_datetime(df['date'])
+                    df.set_index('date', inplace=True)
+                    df['close'] = df['close'] if 'close' in df else df.get('Close')
+                    df['volume'] = df['Trading_Volume']
+                    df.sort_index(inplace=True)
+                    return df
+        except: pass
+        time.sleep(1)
     return pd.DataFrame()
 
 def fetch_finmind_dividend(symbol):
@@ -134,7 +118,7 @@ def fetch_finmind_dividend(symbol):
 
 def fetch_yahoo_news(symbol):
     try:
-        res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=get_headers(), timeout=4)
+        res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers={"User-Agent": "Mozilla/5.0"}, timeout=4)
         soup = BeautifulSoup(res.text, 'html.parser')
         news = []
         for a in soup.find_all('a', href=True):
@@ -160,7 +144,6 @@ def main():
     for idx, (ticker_id, info) in enumerate(tickers.items()):
         name = info['name']
         category = categorize_etf(name)
-        issue_time = calculate_issue_time(info['start_date'])
         
         current_price = cagr_1y = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
 
@@ -196,17 +179,17 @@ def main():
 
             if vol_20d and vol_20d > 100: news_db[ticker_id] = fetch_yahoo_news(ticker_id)
 
-        except Exception: pass
+        except Exception as e: print(f"{ticker_id} 處理異常: {e}")
         
         db[category].append({
-            "id": ticker_id, "name": name, "issue_time": issue_time,
+            "id": ticker_id, "name": name,
             "price": current_price, "cagr_1y": cagr_1y, 
             "sharpe": sharpe, "mdd": mdd, "vol_20d": vol_20d,
             "yield_ttm": yield_ttm, "dividend_rate": dividend_rate
         })
         search_index.append({"id": ticker_id, "name": name, "category": category})
         
-        time.sleep(0.8) # 由於少了 Yahoo 爬蟲，休眠時間可縮短，加快整體排程
+        time.sleep(1.0)
 
     for cat, data in db.items():
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
