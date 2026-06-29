@@ -11,6 +11,15 @@
     <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
+    
+    <div id="debug-error" style="color: red; font-weight: bold; padding: 20px; word-wrap: break-word;"></div>
+    <script>
+        window.onerror = function(msg, url, line, col, error) {
+            document.getElementById('debug-error').innerText = "❌ 網頁當機了！原因: " + msg + " (在第 " + line + " 行)";
+            return false;
+        };
+    </script>
+
     <div id="root"></div>
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
@@ -24,16 +33,15 @@
         const TABS = ["⭐ 自選股", ...CATEGORIES];
 
         function ETFDashboard() {
-            // 【防彈機制】安全讀取手機記憶體，避免 LINE 瀏覽器崩潰
-            const loadFavorites = () => {
+            // 防彈機制：安全讀取手機記憶體
+            const [favorites, setFavorites] = useState(() => {
                 try {
                     const saved = localStorage.getItem('etf_favorites');
                     return saved ? JSON.parse(saved) : [];
                 } catch (e) {
-                    console.warn("瀏覽器阻擋儲存功能");
                     return [];
                 }
-            };
+            });
 
             const [activeTab, setActiveTab] = useState('高股息');
             const [currentData, setCurrentData] = useState([]);
@@ -42,14 +50,12 @@
             const [expandedRow, setExpandedRow] = useState(null);
             const [lastUpdate, setLastUpdate] = useState("獲取中...");
 
-            const [favorites, setFavorites] = useState(loadFavorites);
-
             const [searchIndex, setSearchIndex] = useState([]);
             const [searchQuery, setSearchQuery] = useState("");
             const [showDropdown, setShowDropdown] = useState(false);
             const searchRef = useRef(null);
 
-            // 【防彈機制】安全寫入手機記憶體
+            // 防彈機制：安全寫入手機記憶體
             const toggleFavorite = (id) => {
                 setFavorites(prev => {
                     const newFav = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
@@ -78,8 +84,9 @@
             useEffect(() => {
                 fetch('./search_index.json?t=' + new Date().getTime())
                     .then(res => res.json()).then(data => setSearchIndex(data)).catch(() => setSearchIndex([]));
+                
                 fetch('./meta.json?t=' + new Date().getTime())
-                    .then(res => res.json()).then(data => setLastUpdate(data.last_update)).catch(() => setLastUpdate("未知"));
+                    .then(res => res.json()).then(data => setLastUpdate(data.last_update)).catch(() => setLastUpdate("剛剛"));
                 
                 const handleClickOutside = (event) => {
                     if (searchRef.current && !searchRef.current.contains(event.target)) setShowDropdown(false);
@@ -93,8 +100,11 @@
                     setLoading(true);
                     Promise.all(CATEGORIES.map(cat => fetch(`./${FILE_MAP[cat]}?t=` + new Date().getTime()).then(r => r.json()).catch(() => [])))
                         .then(results => {
-                            // 【防彈機制】使用相容性最高的 reduce 替代舊手機可能看不懂的 flat()
-                            const merged = results.reduce((acc, val) => acc.concat(val), []).filter(item => favorites.includes(item.id));
+                            // 修正舊版瀏覽器可能不支援 .flat() 的問題
+                            let merged = [];
+                            results.forEach(arr => { if(Array.isArray(arr)) merged = merged.concat(arr); });
+                            merged = merged.filter(item => favorites.includes(item.id));
+                            
                             const unique = Array.from(new Map(merged.map(item => [item.id, item])).values());
                             setCurrentData(unique);
                             setLoading(false);
@@ -264,5 +274,4 @@
                                                                         <div className="grid grid-cols-2 gap-2 mt-2">
                                                                             <a href={`https://www.wantgoo.com/stock/etf/${row.id}/nav`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">⚖️ 即時折溢價與淨值</a>
                                                                             <a href={`https://www.wantgoo.com/stock/etf/${row.id}/basic-info`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">📝 規模、費率與基本資料</a>
-                                                                            <a href={`https://www.wantgoo.com/stock/etf/${row.id}/constituent`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2">🏢 查看最新前十大成分股明細</a>
-                                                            
+   
