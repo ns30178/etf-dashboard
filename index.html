@@ -353,66 +353,33 @@
                                             {isExpanded && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
                                                     <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
-                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
-                                                            {!isIPO && (
-                                                                <React.Fragment>
-                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息</h4>
-                                                                        <ul className="text-sm space-y-3">
-                                                                            <li className="flex justify-between border-b pb-1">
-                                                                                <span className="text-slate-600">實質 TTM 殖利率</span>
-                                                                                <span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span>
-                                                                            </li>
-                                                                            <li className="flex justify-between border-b pb-1">
-                                                                                <span className="text-slate-600">近一年累計發放</span>
-                                                                                <span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    
-                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                        <h4 className="font-bold mb-3 text-blue-800">🔗 深度資訊連結</h4>
-                                                                        <div className="grid grid-cols-2 gap-2 mt-2">
-                                                                            <a 
-                                                                                href={`https://www.wantgoo.com/stock/etf/${row.id}/discount-premium`} 
-                                                                                target="_blank" 
-                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm"
-                                                                            >
-                                                                                ⚖️ 即時折溢價
-                                                                            </a>
-                                                                            <a 
-                                                                                href={`https://www.wantgoo.com/stock/etf/${row.id}/profile`} 
-                                                                                target="_blank" 
-                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm"
-                                                                            >
-                                                                                📝 規模與配息
-                                                                            </a>
-                                                                            <a 
-                                                                                href={`https://www.wantgoo.com/stock/etf/${row.id}/constituent`} 
-                                                                                target="_blank" 
-                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2"
-                                                                            >
-                                                                                🏢 最新前十大成分股
-                                                                            </a>
-                                                                            <a 
-                                                                                href={`https://www.moneydj.com/ETF/X/Basic/Basic0003.xdjhtm?etfid=${row.id}.TW`} 
-                                                                                target="_blank" 
-                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2"
-                                                                            >
-                                                                                💳 查詢真實內扣費用
-                                                                            </a>
-                                                                            <a 
-                                                                                href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} 
-                                                                                target="_blank" 
-                                                                                className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2"
-                                                                            >
-                                                                                📰 Yahoo 最新新聞
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </React.Fragment>
-                                                            )}
-                                                        </div>
+                                                        {!isIPO && (
+                                                            <div className="bg-white p-4 rounded-lg border shadow-sm max-w-4xl mx-auto">
+                                                                <h4 className="font-bold mb-3 text-slate-800 border-b pb-2">🔗 深度資訊與快捷連結</h4>
+                                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
+                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/discount-premium`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
+                                                                        <span className="text-xl">⚖️</span>
+                                                                        <span>折溢價與淨值</span>
+                                                                    </a>
+                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/dividend`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
+                                                                        <span className="text-xl">💰</span>
+                                                                        <span>歷年配息與殖利率</span>
+                                                                    </a>
+                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/profile`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
+                                                                        <span className="text-xl">📝</span>
+                                                                        <span>規模與基本資料</span>
+                                                                    </a>
+                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/constituent`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
+                                                                        <span className="text-xl">🏢</span>
+                                                                        <span>成分股明細</span>
+                                                                    </a>
+                                                                    <a href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} target="_blank" className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm col-span-2 md:col-span-4 flex items-center justify-center gap-2 mt-1">
+                                                                        <span className="text-lg">📰</span>
+                                                                        <span>Yahoo 最新關聯新聞</span>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        )}
                                                     </td>
                                                 </tr>
                                             )}
