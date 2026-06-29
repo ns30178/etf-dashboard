@@ -51,12 +51,6 @@
                 if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
                 return val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold";
             };
-            const getPremiumStyle = (val) => {
-                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
-                if (val > 0.005) return "bg-red-500 text-white font-bold px-2 py-0.5 rounded text-xs"; 
-                if (val < -0.005) return "text-green-600 font-bold";
-                return "text-slate-700 font-semibold";
-            };
 
             useEffect(() => {
                 fetch('./data_news.json?t=' + new Date().getTime())
@@ -166,8 +160,7 @@
                                             { key: 'topHoldings', label: '前十大成分股' }
                                         ].map(col => <th key={col.key} className="px-4 py-3">{col.label}</th>) : 
                                         [
-                                            { key: 'price', label: '市價' }, { key: 'premium', label: '折溢價' },
-                                            { key: 'aum', label: '規模(億)' }, { key: 'cagr_1y', label: '近1年報酬' },
+                                            { key: 'price', label: '市價' }, { key: 'cagr_1y', label: '近1年報酬' },
                                             { key: 'sharpe', label: '夏普值' }, { key: 'mdd', label: '最大回撤' },
                                             { key: 'issue_time', label: '發行時間' }, { key: 'vol_20d', label: '日均量(張)' }
                                         ].map(col => (
@@ -200,8 +193,6 @@
                                                 ) : (
                                                     <React.Fragment>
                                                         <td className="px-4 py-3 font-semibold">{fmtVal(row.price)}</td>
-                                                        <td className="px-4 py-3"><span className={getPremiumStyle(row.premium)}>{fmtPct(row.premium)}</span></td>
-                                                        <td className="px-4 py-3 text-slate-700 font-mono">{fmtVal(row.aum)}</td>
                                                         <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
                                                         <td className="px-4 py-3 text-red-500">{fmtPct(row.mdd)}</td>
@@ -212,26 +203,25 @@
                                             </tr>
                                             {expandedRow === row.id && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan={isIPO ? "6" : "9"} className="p-4 md:px-8">
+                                                    <td colSpan={isIPO ? "6" : "7"} className="p-4 md:px-8">
                                                         <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-3' : ''} gap-4`}>
                                                             {!isIPO && (
                                                                 <React.Fragment>
                                                                     <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息</h4>
-                                                                        <ul className="text-sm space-y-2">
+                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息 (TTM)</h4>
+                                                                        <ul className="text-sm space-y-3">
                                                                             <li className="flex justify-between border-b pb-1"><span className="text-slate-600">實質 TTM 殖利率</span><span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span></li>
-                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">累計發放金額</span><span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span></li>
-                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放金額</span><span className="font-bold text-slate-800">{fmtVal(row.next_div_amount, "$")}</span></li>
-                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">下次發放日期</span><span className="font-bold text-slate-800">{fmtText(row.next_div_date)}</span></li>
+                                                                            <li className="flex justify-between border-b pb-1"><span className="text-slate-600">近一年累計發放</span><span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span></li>
+                                                                            <li className="pt-2"><a href={`https://tw.stock.yahoo.com/quote/${row.id}/dividend`} target="_blank" className="block text-center bg-blue-50 text-blue-700 hover:bg-blue-100 font-bold py-2 rounded transition">👉 點擊查看完整配息日程與預估</a></li>
                                                                         </ul>
                                                                     </div>
                                                                     <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                        <h4 className="font-bold mb-3 text-blue-800">📊 前三名成分股與比例</h4>
-                                                                        <ul className="text-sm space-y-2">
-                                                                            {row.top_holdings && row.top_holdings.length > 0 ? 
-                                                                                row.top_holdings.map((h, i) => <li key={i} className="border-b border-slate-100 pb-1 text-slate-700 font-semibold">{h}</li>) : 
-                                                                                <li className="text-slate-500">API 防護阻擋或無資料</li>}
-                                                                        </ul>
+                                                                        <h4 className="font-bold mb-3 text-blue-800">🔗 深度資訊快捷連結</h4>
+                                                                        <div className="grid grid-cols-2 gap-2 mt-2">
+                                                                            <a href={`https://tw.stock.yahoo.com/quote/${row.id}`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">即時折溢價與淨值</a>
+                                                                            <a href={`https://tw.stock.yahoo.com/quote/${row.id}/profile`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">基金規模與內扣</a>
+                                                                            <a href={`https://tw.stock.yahoo.com/quote/${row.id}/holding`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2">📊 查看最新前十大成分股明細</a>
+                                                                        </div>
                                                                     </div>
                                                                 </React.Fragment>
                                                             )}
