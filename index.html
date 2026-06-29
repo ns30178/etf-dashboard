@@ -19,10 +19,9 @@
     <script>
         window.onerror = function(msg, url, line, col, error) {
             var errBox = document.getElementById('sys-error');
-            var realError = error ? error.stack : msg;
             errBox.innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">' +
                 '⚠️ 系統載入失敗<br><br>' +
-                '錯誤原因: ' + realError + '<br>行數: ' + line + '<br><br>' +
+                '錯誤原因: ' + msg + '<br>行數: ' + line + '<br><br>' +
                 '<button onclick="window.location.reload(true)" style="margin-top:10px; padding:8px 16px; background:#dc2626; color:white; border-radius:4px; border:none; font-weight:bold; cursor:pointer;">🔄 點我強制清除快取並重新整理</button>' +
                 '</div>';
             var fallbackUI = document.getElementById('fallback-ui');
@@ -32,7 +31,8 @@
 
     <div id="root">
         <div id="fallback-ui" style="text-align: center; padding: 50px; font-weight: bold; color: #2563eb;">
-            ⏳ 正在連接伺服器與啟動儀表板引擎...
+            ⏳ 正在連接伺服器與啟動儀表板引擎...<br>
+            <span style="font-size: 14px; color: #64748b; margin-top: 10px; display: inline-block;">若持續卡在此畫面，代表您的瀏覽器快取未更新，請重新整理</span>
         </div>
     </div>
 
@@ -336,4 +336,99 @@
                                                         <td className="px-4 py-3">{fmtVal(row.price, "$")}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.fee, "")}%</td>
                                                         <td className="px-4 py-3">{fmtText(row.freq)}</td>
-                                                        <td className="px
+                                                        <td className="px-4 py-3 text-xs text-slate-500 whitespace-normal min-w-[200px]">{fmtText(row.topHoldings)}</td>
+                                                    </React.Fragment>
+                                                ) : (
+                                                    <React.Fragment>
+                                                        <td className="px-4 py-3 font-semibold">{fmtVal(row.price)}</td>
+                                                        <td className={`px-4 py-3 ${getReturnColor(row.ytd)}`}>{fmtPct(row.ytd)}</td>
+                                                        <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
+                                                        <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
+                                                        <td className="px-4 py-3 text-green-600 font-bold">{fmtPct(row.mdd)}</td>
+                                                        <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
+                                                    </React.Fragment>
+                                                )}
+                                            </tr>
+                                            
+                                            {isExpanded && (
+                                                <tr className="bg-slate-50 border-b-2 border-blue-200">
+                                                    <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
+                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
+                                                            {!isIPO && (
+                                                                <React.Fragment>
+                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息</h4>
+                                                                        <ul className="text-sm space-y-3">
+                                                                            <li className="flex justify-between border-b pb-1">
+                                                                                <span className="text-slate-600">實質 TTM 殖利率</span>
+                                                                                <span className="font-bold text-purple-600 text-lg">{fmtPct(row.yield_ttm)}</span>
+                                                                            </li>
+                                                                            <li className="flex justify-between border-b pb-1">
+                                                                                <span className="text-slate-600">近一年累計發放</span>
+                                                                                <span className="font-bold text-slate-800">{fmtVal(row.dividend_rate, "$")}</span>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
+                                                                    
+                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                        <h4 className="font-bold mb-3 text-blue-800">🔗 深度資訊連結</h4>
+                                                                        <div className="grid grid-cols-2 gap-2 mt-2">
+                                                                            <a 
+                                                                                href={`https://www.wantgoo.com/stock/etf/${row.id}/discount-premium`} 
+                                                                                target="_blank" 
+                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm"
+                                                                            >
+                                                                                ⚖️ 即時折溢價
+                                                                            </a>
+                                                                            <a 
+                                                                                href={`https://www.wantgoo.com/stock/etf/${row.id}/profile`} 
+                                                                                target="_blank" 
+                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm"
+                                                                            >
+                                                                                📝 規模與配息
+                                                                            </a>
+                                                                            <a 
+                                                                                href={`https://www.wantgoo.com/stock/etf/${row.id}/constituent`} 
+                                                                                target="_blank" 
+                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2"
+                                                                            >
+                                                                                🏢 最新前十大成分股
+                                                                            </a>
+                                                                            <a 
+                                                                                href={`https://www.moneydj.com/ETF/X/Basic/Basic0003.xdjhtm?etfid=${row.id}.TW`} 
+                                                                                target="_blank" 
+                                                                                className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2"
+                                                                            >
+                                                                                💳 查詢真實內扣費用
+                                                                            </a>
+                                                                            <a 
+                                                                                href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} 
+                                                                                target="_blank" 
+                                                                                className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2"
+                                                                            >
+                                                                                📰 Yahoo 最新新聞
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                </React.Fragment>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </React.Fragment>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<ETFDashboard />);
+    </script>
+</body>
+</html>
