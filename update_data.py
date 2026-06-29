@@ -5,8 +5,12 @@ import json
 import time
 import math
 import random
+import warnings
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
+
+# 屏蔽 Pandas 除以零的數學警告，保持日誌乾淨
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 # 環境變數與金鑰
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
@@ -14,8 +18,9 @@ FUGLE_KEY = os.environ.get("FUGLE_API_KEY", "")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
-# 放寬斷路器容忍度：連續失敗 15 次才判定被封鎖
-YAHOO_TIMEOUTS = 0
+# 系統斷路器
+YAHOO_API_TIMEOUTS = 0
+YAHOO_HTML_TIMEOUTS = 0
 
 FILE_MAP = {
     "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -24,7 +29,6 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-# 隨機瀏覽器偽裝，降低被 Yahoo 擋掉的機率
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
@@ -35,11 +39,20 @@ def get_headers():
     return {"User-Agent": random.choice(USER_AGENTS)}
 
 def send_telegram_message(message):
-    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
+    print("--- 準備發送 Telegram 推播 ---")
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: 
+        print("⚠️ 警告：找不到 Telegram 金鑰或 Chat ID，推播已略過。請檢查 GitHub Secrets！")
+        return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
-    try: requests.post(url, json=payload, timeout=5)
-    except: pass
+    try: 
+        res = requests.post(url, json=payload, timeout=10)
+        if res.status_code == 200:
+            print("✅ Telegram 推播發送成功！")
+        else:
+            print(f"❌ Telegram 發送失敗。錯誤碼: {res.status_code}, 原因: {res.text}")
+    except Exception as e: 
+        print(f"❌ Telegram 連線發生異常: {e}")
 
 def sanitize_json(val):
     if isinstance(val, dict): return {k: sanitize_json(v) for k, v in val.items()}
@@ -137,38 +150,43 @@ def fetch_finmind_dividend(symbol):
 
 def get_yahoo_crumb():
     session = requests.Session()
-    session.headers.update(get_headers())
+    session.headers.update({
+        "User-Agent": random.choice(USER_AGENTS),
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.5",
+    })
     try:
-        session.get('https://tw.yahoo.com/', timeout=5)
-        crumb = session.get('https://query1.finance.yahoo.com/v1/test/getcrumb', timeout=5).text
-        if "<html>" in crumb: return session, ""
+        # 【關鍵修復】改去全球版首頁拿通行證，避免 tw.yahoo 的區域阻擋
+        session.get('https://finance.yahoo.com', timeout=5)
+        res = session.get('https://query1.finance.yahoo.com/v1/test/getcrumb', timeout=5)
+        crumb = res.text.strip()
+        if "<html>" in crumb or not crumb: return session, ""
         return session, crumb
     except: return session, ""
 
 def fetch_yahoo_quote(symbol, market, session, crumb):
-    global YAHOO_TIMEOUTS
-    if YAHOO_TIMEOUTS >= 15: return {}
+    global YAHOO_API_TIMEOUTS
+    if YAHOO_API_TIMEOUTS >= 15: return {}
     ticker = f"{symbol}.TW" if market == 'twse' else f"{symbol}.TWO"
     url = f"https://query2.finance.yahoo.com/v7/finance/quote?symbols={ticker}"
     if crumb: url += f"&crumb={crumb}"
     try:
         res = session.get(url, timeout=4)
         if res.status_code == 200: 
-            # 只要成功一次，就稍微降低 timeout 計數器，避免被小偶發中斷
-            if YAHOO_TIMEOUTS > 0: YAHOO_TIMEOUTS -= 1
+            if YAHOO_API_TIMEOUTS > 0: YAHOO_API_TIMEOUTS -= 1
             return res.json().get('quoteResponse', {}).get('result', [{}])[0]
-    except requests.exceptions.Timeout: YAHOO_TIMEOUTS += 1
+    except requests.exceptions.Timeout: YAHOO_API_TIMEOUTS += 1
     except: pass
     return {}
 
 def fetch_yahoo_html_backup(ticker_id):
-    global YAHOO_TIMEOUTS
+    global YAHOO_HTML_TIMEOUTS
     data = {"nav": None, "aum": None, "top_holdings": []}
-    if YAHOO_TIMEOUTS >= 15: return data
+    if YAHOO_HTML_TIMEOUTS >= 15: return data
         
     try:
         url = f"https://tw.stock.yahoo.com/quote/{ticker_id}/profile"
-        res = requests.get(url, headers=get_headers(), timeout=3)
+        res = requests.get(url, headers=get_headers(), timeout=4)
         soup = BeautifulSoup(res.text, 'html.parser')
         nav_node = soup.find(string=lambda t: t and t.strip() == "淨值")
         if nav_node:
@@ -180,12 +198,12 @@ def fetch_yahoo_html_backup(ticker_id):
                 aum_str = aum_node.find_next('span').text
                 if '億' in aum_str: data['aum'] = float(aum_str.replace('億', '').replace(',', '').strip())
             except: pass
-    except requests.exceptions.Timeout: YAHOO_TIMEOUTS += 1
+    except requests.exceptions.Timeout: YAHOO_HTML_TIMEOUTS += 1
     except: pass
 
     try:
         url_h = f"https://tw.stock.yahoo.com/quote/{ticker_id}/holding"
-        res_h = requests.get(url_h, headers=get_headers(), timeout=3)
+        res_h = requests.get(url_h, headers=get_headers(), timeout=4)
         soup_h = BeautifulSoup(res_h.text, 'html.parser')
         links = soup_h.find_all('a', href=True)
         for link in links:
@@ -197,16 +215,16 @@ def fetch_yahoo_html_backup(ticker_id):
                     if pct_span:
                         data['top_holdings'].append(f"{name} ({pct_span.strip()})")
                         if len(data['top_holdings']) >= 3: break
-    except requests.exceptions.Timeout: YAHOO_TIMEOUTS += 1
+    except requests.exceptions.Timeout: YAHOO_HTML_TIMEOUTS += 1
     except: pass
     
     return data
 
 def fetch_yahoo_news(symbol):
-    global YAHOO_TIMEOUTS
-    if YAHOO_TIMEOUTS >= 15: return []
+    global YAHOO_HTML_TIMEOUTS
+    if YAHOO_HTML_TIMEOUTS >= 15: return []
     try:
-        res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=get_headers(), timeout=3)
+        res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=get_headers(), timeout=4)
         soup = BeautifulSoup(res.text, 'html.parser')
         news = []
         for a in soup.find_all('a', href=True):
@@ -215,7 +233,6 @@ def fetch_yahoo_news(symbol):
                 news.append({"title": title, "link": href, "date": datetime.today().strftime('%Y-%m-%d')})
             if len(news) >= 3: break
         return news
-    except requests.exceptions.Timeout: YAHOO_TIMEOUTS += 1
     except: return []
 
 def main():
@@ -241,30 +258,26 @@ def main():
         top_holdings = []
 
         try:
-            # 1. 取得歷史行情
             hist = fetch_fugle_candles(ticker_id)
             if hist.empty:
                 hist = fetch_finmind_price_fallback(ticker_id)
 
-            # 【重要修正】只要有資料，即便只有 1 天，也強制取得最新市價 (解決 00961 等新股空白問題)
             if not hist.empty and len(hist) > 0:
                 current_price = float(hist['close'].iloc[-1])
                 
-                # 有 20 天資料才算日均量
                 if len(hist) >= 20:
                     vol_20d = int(hist['volume'].tail(20).mean() / 1000)
                 
-                # 有 200 天資料才算長線回報率
                 if len(hist) >= 200:
                     cagr_1y = float((current_price - hist['close'].iloc[0]) / hist['close'].iloc[0])
                     max_p = hist['close'].cummax()
                     mdd = float(((hist['close'] - max_p) / max_p).min())
                     daily_ret = hist['close'].pct_change().dropna()
-                    # 【重要修正】防呆除以零警告
-                    if len(daily_ret) > 1 and daily_ret.std() != 0:
-                        sharpe = float((daily_ret.mean() / daily_ret.std()) * (252**0.5))
+                    
+                    std_val = daily_ret.std()
+                    if pd.notna(std_val) and std_val > 0:
+                        sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
 
-            # 配息資料 (FinMind)
             div_data = fetch_finmind_dividend(ticker_id)
             ttm_div = 0.0
             now = datetime.now()
@@ -275,26 +288,22 @@ def main():
                     if datetime.strptime(ex_date_str, '%Y-%m-%d') <= now: ttm_div += amt
                 except: pass
 
-            # Yahoo API 預估配息與雙重備援
             quote = fetch_yahoo_quote(ticker_id, info['market'], yh_session, crumb)
             q_aum = quote.get('marketCap')
             
             html_data = fetch_yahoo_html_backup(ticker_id)
             
-            # 淨值優先度：官方 API -> Yahoo HTML -> Yahoo Quote API
             nav = nav_dict.get(ticker_id) or html_data.get('nav') or quote.get('navPrice')
             
-            # 規模計算：優先取 API 給的總值 -> 用發行股數自己算 -> 最後才去爬網頁
             if q_aum: aum = q_aum / 100000000
             elif quote.get('sharesOutstanding') and current_price: aum = (quote.get('sharesOutstanding') * current_price) / 100000000
             else: aum = html_data.get('aum')
             
             top_holdings = html_data.get('top_holdings', [])
 
-            # 若有淨值也有市價，就能算折溢價 (新股也能算了)
-            if nav and current_price and nav > 0: premium = ((current_price - nav) / nav)
+            if nav and current_price and nav > 0: 
+                premium = ((current_price - nav) / nav)
             
-            # 抓取下次配息日期與金額
             q_ex = quote.get('exDividendDate')
             if q_ex and q_ex > now.timestamp():
                 next_div_date = datetime.fromtimestamp(q_ex).strftime('%Y-%m-%d')
@@ -307,7 +316,6 @@ def main():
 
         except Exception: pass
         
-        # 容錯回寫 JSON
         db[category].append({
             "id": ticker_id, "name": name, "issue_time": issue_time,
             "price": current_price, "premium": premium, "aum": aum, 
@@ -318,7 +326,7 @@ def main():
         })
         search_index.append({"id": ticker_id, "name": name, "category": category})
         
-        time.sleep(1.2) # 給 API 稍稍多一點點的喘息時間
+        time.sleep(1.2) 
 
     for cat, data in db.items():
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
@@ -332,7 +340,7 @@ def main():
     with open("data_ipo.json", "w", encoding="utf-8") as f: json.dump(ipo_db, f, ensure_ascii=False, indent=2)
     with open("data_news.json", "w", encoding="utf-8") as f: json.dump(news_db, f, ensure_ascii=False, indent=2)
 
-    # 台灣時區推播 (Utc+8)
+    # 台灣時區推播
     tw_tz = timezone(timedelta(hours=8))
     tw_time = datetime.now(tw_tz).strftime('%Y-%m-%d %H:%M:%S')
     success_msg = f"更新✅ 台股全市場 ETF 數據庫與新聞動態更新成功！\n執行時間：{tw_time}"
