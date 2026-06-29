@@ -2,7 +2,7 @@ name: Daily ETF Update
 
 on:
   schedule:
-    - cron: '0 6,10 * * 1-5'
+    - cron: '30 10 * * 1-5'
   workflow_dispatch:
 
 jobs:
