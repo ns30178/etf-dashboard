@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全市場 ETF 動態追蹤儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
     <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
@@ -15,13 +15,16 @@
     <div id="sys-error"></div>
     <script>
         window.onerror = function(msg, url, line) {
-            if (msg && msg.indexOf('Script error') === -1) {
-                document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">⚠️ 錯誤訊息: ' + msg + '</div>';
-            }
+            document.getElementById('sys-error').innerHTML += '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">⚠️ 系統錯誤: ' + msg + ' (行數: ' + line + ')</div>';
         };
     </script>
 
-    <div id="root"></div>
+    <div id="root">
+        <div style="text-align: center; padding: 50px; font-size: 18px; font-weight: bold; color: #2563eb;">
+            ⏳ 正在連接伺服器與啟動儀表板引擎...<br>
+            <span style="font-size: 14px; color: #64748b; margin-top: 10px; display: inline-block;">若持續卡在此畫面超過 5 秒，表示您的網路或瀏覽器阻擋了外部程式庫。<br>請點擊右上角「...」使用 Safari 或 Chrome 開啟。</span>
+        </div>
+    </div>
 
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
@@ -34,38 +37,22 @@
         const CATEGORIES = Object.keys(FILE_MAP);
         const TABS = ["⭐ 自選股", ...CATEGORIES];
 
-        // 防彈級：安全讀取本機記憶體
         function getSavedFavs() {
             try {
-                const saved = localStorage.getItem('etf_favorites');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    return Array.isArray(parsed) ? parsed : [];
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    const saved = window.localStorage.getItem('etf_favorites');
+                    if (saved) return JSON.parse(saved);
                 }
             } catch(e) {}
             return [];
         }
 
-        // 防彈級：安全寫入本機記憶體
         function saveFavs(favs) {
-            try { localStorage.setItem('etf_favorites', JSON.stringify(favs)); } catch(e) {}
-        }
-
-        // 捕捉 React 內部錯誤，防止畫面全白
-        class ErrorBoundary extends React.Component {
-            constructor(props) {
-                super(props);
-                this.state = { hasError: false, errorMsg: "" };
-            }
-            static getDerivedStateFromError(error) {
-                return { hasError: true, errorMsg: error.toString() };
-            }
-            render() {
-                if (this.state.hasError) {
-                    return <div className="p-6 text-red-600 font-bold bg-red-50 m-4 rounded">網頁組件繪製失敗：{this.state.errorMsg}</div>;
+            try {
+                if (typeof window !== 'undefined' && window.localStorage) {
+                    window.localStorage.setItem('etf_favorites', JSON.stringify(favs));
                 }
-                return this.props.children;
-            }
+            } catch(e) {}
         }
 
         function ETFDashboard() {
@@ -313,7 +300,7 @@
                                                         <td className={`px-4 py-3 ${getReturnColor(row.ytd)}`}>{fmtPct(row.ytd)}</td>
                                                         <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
-                                                        <td className="px-4 py-3 text-red-500 font-bold">{fmtPct(row.mdd)}</td>
+                                                        <td className="px-4 py-3 text-green-600 font-bold">{fmtPct(row.mdd)}</td>
                                                         <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
                                                     </React.Fragment>
                                                 )}
@@ -321,4 +308,7 @@
                                             {expandedRow === row.id && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
                                                     <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
-                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-
+                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
+                                                            {!isIPO && (
+                                                                <React.Fragment>
+                                                                    <
