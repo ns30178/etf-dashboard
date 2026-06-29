@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全市場 ETF 動態追蹤儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
     <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
@@ -15,11 +15,7 @@
     <div id="sys-error"></div>
     <script>
         window.onerror = function(msg, url, line) {
-            if (msg && msg.indexOf('Script error') > -1) {
-                document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">⚠️ 載入異常: 瀏覽器安全性阻擋或語法解析失敗。<br>請嘗試「清除瀏覽器快取」或使用「Safari/Chrome」開啟。</div>';
-            } else {
-                document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">系統發生錯誤: ' + msg + ' (行數: ' + line + ')</div>';
-            }
+            document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">系統發生錯誤: ' + msg + ' (行數: ' + line + ')<br>請嘗試清除瀏覽器快取後重新整理。</div>';
         };
     </script>
 
@@ -140,7 +136,8 @@
                                 unique.push(item);
                             }
                         }
-                        setCurrentData(unique);
+                        // 確保自選股清單只顯示真的有標記星號的
+                        setCurrentData(unique.filter(item => favorites.includes(item.id)));
                         setLoading(false);
                     })
                     .catch(() => {
@@ -157,15 +154,11 @@
                         });
                 }
                 return () => { isMounted = false; };
-            }, [activeTab]);
+            }, [activeTab, favorites]);
 
             const sortedData = useMemo(() => {
                 let sortableItems = [...currentData];
                 
-                if (activeTab === '⭐ 自選股') {
-                    sortableItems = sortableItems.filter(item => favorites.includes(item.id));
-                }
-
                 if (activeTab === '即將上市(IPO)') return sortableItems;
 
                 sortableItems.sort((a, b) => {
@@ -178,7 +171,7 @@
                     return 0;
                 });
                 return sortableItems;
-            }, [currentData, sortConfig, activeTab, favorites]);
+            }, [currentData, sortConfig, activeTab]);
 
             const requestSort = (key) => {
                 let direction = 'desc';
@@ -317,4 +310,7 @@
                                                     <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
                                                         <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
                                                             {!isIPO && (
-                                     
+                                                                <React.Fragment>
+                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
+                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息 (TTM)</h4>
+        
