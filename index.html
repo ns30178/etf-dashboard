@@ -162,7 +162,7 @@
                                         [
                                             { key: 'price', label: '市價' }, { key: 'cagr_1y', label: '近1年報酬' },
                                             { key: 'sharpe', label: '夏普值' }, { key: 'mdd', label: '最大回撤' },
-                                            { key: 'issue_time', label: '發行時間' }, { key: 'vol_20d', label: '日均量(張)' }
+                                            { key: 'vol_20d', label: '日均量(張)' }
                                         ].map(col => (
                                             <th key={col.key} className="px-4 py-3 cursor-pointer hover:bg-slate-200 select-none" onClick={() => requestSort(col.key)}>
                                                 <span className="flex items-center gap-1">{col.label} <span className="text-blue-600 font-black">{sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}</span></span>
@@ -196,14 +196,13 @@
                                                         <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
                                                         <td className="px-4 py-3 text-red-500">{fmtPct(row.mdd)}</td>
-                                                        <td className="px-4 py-3 font-semibold text-slate-600">{fmtText(row.issue_time)}</td>
                                                         <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
                                                     </React.Fragment>
                                                 )}
                                             </tr>
                                             {expandedRow === row.id && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan={isIPO ? "6" : "7"} className="p-4 md:px-8">
+                                                    <td colSpan={isIPO ? "6" : "6"} className="p-4 md:px-8">
                                                         <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-3' : ''} gap-4`}>
                                                             {!isIPO && (
                                                                 <React.Fragment>
@@ -219,7 +218,7 @@
                                                                         <h4 className="font-bold mb-3 text-blue-800">🔗 深度資訊快捷連結</h4>
                                                                         <div className="grid grid-cols-2 gap-2 mt-2">
                                                                             <a href={`https://tw.stock.yahoo.com/quote/${row.id}`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">即時折溢價與淨值</a>
-                                                                            <a href={`https://tw.stock.yahoo.com/quote/${row.id}/profile`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">基金規模與內扣</a>
+                                                                            <a href={`https://tw.stock.yahoo.com/quote/${row.id}/profile`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">📝 基本資料與發行日</a>
                                                                             <a href={`https://tw.stock.yahoo.com/quote/${row.id}/holding`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2">📊 查看最新前十大成分股明細</a>
                                                                         </div>
                                                                     </div>
