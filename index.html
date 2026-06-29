@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全市場 ETF 動態追蹤儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
@@ -15,7 +15,9 @@
     <div id="sys-error"></div>
     <script>
         window.onerror = function(msg, url, line) {
-            document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">系統發生錯誤: ' + msg + ' (行數: ' + line + ')<br>請嘗試清除瀏覽器快取後重新整理。</div>';
+            if (msg && msg.indexOf('Script error') === -1) {
+                document.getElementById('sys-error').innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">⚠️ 錯誤訊息: ' + msg + '</div>';
+            }
         };
     </script>
 
@@ -32,22 +34,38 @@
         const CATEGORIES = Object.keys(FILE_MAP);
         const TABS = ["⭐ 自選股", ...CATEGORIES];
 
+        // 防彈級：安全讀取本機記憶體
         function getSavedFavs() {
             try {
-                if (typeof window !== 'undefined' && window.localStorage) {
-                    const saved = window.localStorage.getItem('etf_favorites');
-                    if (saved) return JSON.parse(saved);
+                const saved = localStorage.getItem('etf_favorites');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    return Array.isArray(parsed) ? parsed : [];
                 }
             } catch(e) {}
             return [];
         }
 
+        // 防彈級：安全寫入本機記憶體
         function saveFavs(favs) {
-            try {
-                if (typeof window !== 'undefined' && window.localStorage) {
-                    window.localStorage.setItem('etf_favorites', JSON.stringify(favs));
+            try { localStorage.setItem('etf_favorites', JSON.stringify(favs)); } catch(e) {}
+        }
+
+        // 捕捉 React 內部錯誤，防止畫面全白
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, errorMsg: "" };
+            }
+            static getDerivedStateFromError(error) {
+                return { hasError: true, errorMsg: error.toString() };
+            }
+            render() {
+                if (this.state.hasError) {
+                    return <div className="p-6 text-red-600 font-bold bg-red-50 m-4 rounded">網頁組件繪製失敗：{this.state.errorMsg}</div>;
                 }
-            } catch(e) {}
+                return this.props.children;
+            }
         }
 
         function ETFDashboard() {
@@ -89,16 +107,16 @@
             
             const getReturnColor = (val) => {
                 if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
-                return val > 0 ? "text-red-600 font-bold" : (val < 0 ? "text-green-600 font-bold" : "text-slate-600 font-bold");
+                return Number(val) > 0 ? "text-red-600 font-bold" : (Number(val) < 0 ? "text-green-600 font-bold" : "text-slate-600 font-bold");
             };
 
             useEffect(() => {
-                fetch('./search_index.json?t=' + new Date().getTime())
+                fetch('./search_index.json?t=' + Date.now())
                     .then(res => res.ok ? res.json() : [])
                     .then(data => setSearchIndex(Array.isArray(data) ? data : []))
-                    .catch(() => setSearchIndex([]));
+                    .catch(() => {});
                 
-                fetch('./meta.json?t=' + new Date().getTime())
+                fetch('./meta.json?t=' + Date.now())
                     .then(res => res.ok ? res.json() : { last_update: "等待更新" })
                     .then(data => setLastUpdate(data.last_update || "等待更新"))
                     .catch(() => setLastUpdate("等待更新"));
@@ -116,7 +134,7 @@
                 
                 if (activeTab === '⭐ 自選股') {
                     Promise.all(CATEGORIES.map(cat => 
-                        fetch(`./${FILE_MAP[cat]}?t=` + new Date().getTime())
+                        fetch(`./${FILE_MAP[cat]}?t=${Date.now()}`)
                         .then(res => res.ok ? res.json() : [])
                         .catch(() => [])
                     ))
@@ -124,41 +142,36 @@
                         if (!isMounted) return;
                         let merged = [];
                         results.forEach(arr => {
-                            if(Array.isArray(arr)) merged = merged.concat(arr);
+                            if (Array.isArray(arr)) merged = merged.concat(arr);
                         });
                         
                         const unique = [];
-                        const seen = {};
-                        for (let i = 0; i < merged.length; i++) {
-                            const item = merged[i];
-                            if (item && item.id && !seen[item.id]) {
-                                seen[item.id] = true;
+                        const seen = new Set();
+                        merged.forEach(item => {
+                            if (item && item.id && favorites.includes(item.id) && !seen.has(item.id)) {
+                                seen.add(item.id);
                                 unique.push(item);
                             }
-                        }
-                        // 確保自選股清單只顯示真的有標記星號的
-                        setCurrentData(unique.filter(item => favorites.includes(item.id)));
+                        });
+                        setCurrentData(unique);
                         setLoading(false);
                     })
-                    .catch(() => {
-                        if(isMounted) { setCurrentData([]); setLoading(false); }
-                    });
+                    .catch(() => { if (isMounted) { setCurrentData([]); setLoading(false); } });
                 } else {
-                    fetch(`./${FILE_MAP[activeTab]}?t=` + new Date().getTime())
+                    fetch(`./${FILE_MAP[activeTab]}?t=${Date.now()}`)
                         .then(res => res.ok ? res.json() : [])
                         .then(data => {
-                            if(isMounted) { setCurrentData(Array.isArray(data) ? data : []); setLoading(false); }
+                            if (isMounted) { setCurrentData(Array.isArray(data) ? data : []); setLoading(false); }
                         })
                         .catch(() => {
-                            if(isMounted) { setCurrentData([]); setLoading(false); }
+                            if (isMounted) { setCurrentData([]); setLoading(false); }
                         });
                 }
                 return () => { isMounted = false; };
             }, [activeTab, favorites]);
 
             const sortedData = useMemo(() => {
-                let sortableItems = [...currentData];
-                
+                let sortableItems = Array.isArray(currentData) ? [...currentData] : [];
                 if (activeTab === '即將上市(IPO)') return sortableItems;
 
                 sortableItems.sort((a, b) => {
@@ -179,12 +192,12 @@
                 setSortConfig({ key, direction });
             };
 
-            const filteredSearch = searchIndex.filter(item => 
-                item && (
-                    (item.id && item.id.includes(searchQuery)) || 
-                    (item.name && item.name.includes(searchQuery))
-                )
-            ).slice(0, 10);
+            const filteredSearch = searchIndex.filter(item => {
+                if (!item) return false;
+                const idStr = String(item.id || "");
+                const nameStr = String(item.name || "");
+                return idStr.includes(searchQuery) || nameStr.includes(searchQuery);
+            }).slice(0, 10);
 
             const handleSelectSearchResult = (item) => {
                 setActiveTab(item.category);
@@ -300,7 +313,7 @@
                                                         <td className={`px-4 py-3 ${getReturnColor(row.ytd)}`}>{fmtPct(row.ytd)}</td>
                                                         <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
                                                         <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
-                                                        <td className="px-4 py-3 text-green-600 font-bold">{fmtPct(row.mdd)}</td>
+                                                        <td className="px-4 py-3 text-red-500 font-bold">{fmtPct(row.mdd)}</td>
                                                         <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
                                                     </React.Fragment>
                                                 )}
@@ -308,9 +321,4 @@
                                             {expandedRow === row.id && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
                                                     <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
-                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
-                                                            {!isIPO && (
-                                                                <React.Fragment>
-                                                                    <div className="bg-white p-4 rounded-lg border shadow-sm">
-                                                                        <h4 className="font-bold mb-3 text-blue-800">💰 實質殖利率與配息 (TTM)</h4>
-        
+                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-
