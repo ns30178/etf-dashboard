@@ -21,7 +21,7 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-# 靜態配息頻率字典
+# 1. 靜態配息頻率字典
 FREQ_MAP = {
     "0050": "半年配", "0056": "季配", "00878": "季配", "00919": "季配",
     "00929": "月配", "00934": "月配", "00936": "月配", "00939": "月配", 
@@ -63,110 +63,3 @@ def fetch_etf_list():
     return tickers
 
 def fetch_fugle_candles(symbol):
-    end_date = datetime.now().strftime('%Y-%m-%d')
-    start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
-    url = f"https://api.fugle.tw/marketdata/v1.0/stock/historical/candles/{symbol}?from={start_date}&to={end_date}&timeframe=D"
-    for _ in range(2):
-        try:
-            res = requests.get(url, headers={"X-API-KEY": FUGLE_KEY}, timeout=5)
-            if res.status_code == 200 and res.json().get('data'):
-                df = pd.DataFrame(res.json().get('data'))
-                df['date'] = pd.to_datetime(df['date'])
-                return df.set_index('date').sort_index()
-        except: pass
-        time.sleep(1)
-    return pd.DataFrame()
-
-def fetch_finmind_price_fallback(symbol):
-    start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
-    url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
-    for _ in range(2):
-        try:
-            res = requests.get(url, timeout=5)
-            if res.status_code == 200 and res.json().get('data'):
-                df = pd.DataFrame(res.json().get('data'))
-                df['date'] = pd.to_datetime(df['date'])
-                df.set_index('date', inplace=True)
-                df['close'] = df['close'] if 'close' in df else df.get('Close')
-                df['volume'] = df['Trading_Volume']
-                return df.sort_index()
-        except: pass
-        time.sleep(1)
-    return pd.DataFrame()
-
-def main():
-    tickers = fetch_etf_list()
-    if not tickers: return
-
-    db = {cat: [] for cat in FILE_MAP.keys()}
-    search_index = []
-    
-    current_year = datetime.now().year
-    last_year = current_year - 1
-
-    print(f"啟動極速量化引擎，共 {len(tickers)} 檔...")
-
-    for idx, (ticker_id, info) in enumerate(tickers.items()):
-        name = info['name']
-        category = categorize_etf(name)
-        
-        current_price = cagr_1y = ytd = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
-        freq = FREQ_MAP.get(ticker_id, "") # 取得靜態配息頻率
-
-        try:
-            hist = fetch_fugle_candles(ticker_id)
-            if hist.empty: hist = fetch_finmind_price_fallback(ticker_id)
-
-            if not hist.empty and len(hist) > 0:
-                current_price = float(hist['close'].iloc[-1])
-                
-                # 計算 YTD
-                last_year_df = hist[hist.index.year == last_year]
-                if not last_year_df.empty:
-                    ytd = (current_price - float(last_year_df['close'].iloc[-1])) / float(last_year_df['close'].iloc[-1])
-                else:
-                    this_year_df = hist[hist.index.year == current_year]
-                    if not this_year_df.empty:
-                        ytd = (current_price - float(this_year_df['close'].iloc[0])) / float(this_year_df['close'].iloc[0])
-
-                if len(hist) >= 20: vol_20d = int(hist['volume'].tail(20).mean() / 1000)
-                
-                if len(hist) >= 200:
-                    cagr_1y = float((current_price - hist['close'].iloc[0]) / hist['close'].iloc[0])
-                    max_p = hist['close'].cummax()
-                    mdd = float(((hist['close'] - max_p) / max_p).min())
-                    daily_ret = hist['close'].pct_change().dropna()
-                    std_val = daily_ret.std()
-                    if pd.notna(std_val) and std_val > 0:
-                        sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
-        except Exception: pass
-        
-        db[category].append({
-            "id": ticker_id, "name": name, "freq": freq,
-            "price": current_price, "ytd": ytd, "cagr_1y": cagr_1y, 
-            "sharpe": sharpe, "mdd": mdd, "vol_20d": vol_20d,
-            "yield_ttm": yield_ttm, "dividend_rate": dividend_rate
-        })
-        search_index.append({"id": ticker_id, "name": name, "category": category})
-        time.sleep(0.5) 
-
-    for cat, data in db.items():
-        with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
-    with open("search_index.json", "w", encoding="utf-8") as f: json.dump(search_index, f, ensure_ascii=False, indent=2)
-
-    ipo_db = [
-        {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
-        {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
-    ]
-    with open("data_ipo.json", "w", encoding="utf-8") as f: json.dump(ipo_db, f, ensure_ascii=False, indent=2)
-
-    # 寫入時間戳記 meta.json
-    tw_tz = timezone(timedelta(hours=8))
-    tw_time = datetime.now(tw_tz).strftime('%Y-%m-%d %H:%M:%S')
-    with open("meta.json", "w", encoding="utf-8") as f: json.dump({"last_update": tw_time}, f, ensure_ascii=False)
-
-    success_msg = f"更新✅ 台股全市場 ETF 數據庫已極速更新完畢！\n執行時間：{tw_time}"
-    print(success_msg)
-    send_telegram_message(success_msg)
-
-if __name__ == "__main__": main()
