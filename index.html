@@ -24,6 +24,17 @@
         const TABS = ["⭐ 自選股", ...CATEGORIES];
 
         function ETFDashboard() {
+            // 【防彈機制】安全讀取手機記憶體，避免 LINE 瀏覽器崩潰
+            const loadFavorites = () => {
+                try {
+                    const saved = localStorage.getItem('etf_favorites');
+                    return saved ? JSON.parse(saved) : [];
+                } catch (e) {
+                    console.warn("瀏覽器阻擋儲存功能");
+                    return [];
+                }
+            };
+
             const [activeTab, setActiveTab] = useState('高股息');
             const [currentData, setCurrentData] = useState([]);
             const [loading, setLoading] = useState(true);
@@ -31,18 +42,18 @@
             const [expandedRow, setExpandedRow] = useState(null);
             const [lastUpdate, setLastUpdate] = useState("獲取中...");
 
-            // 自選股功能
-            const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('etf_favorites') || '[]'));
+            const [favorites, setFavorites] = useState(loadFavorites);
 
             const [searchIndex, setSearchIndex] = useState([]);
             const [searchQuery, setSearchQuery] = useState("");
             const [showDropdown, setShowDropdown] = useState(false);
             const searchRef = useRef(null);
 
+            // 【防彈機制】安全寫入手機記憶體
             const toggleFavorite = (id) => {
                 setFavorites(prev => {
                     const newFav = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-                    localStorage.setItem('etf_favorites', JSON.stringify(newFav));
+                    try { localStorage.setItem('etf_favorites', JSON.stringify(newFav)); } catch (e) {}
                     return newFav;
                 });
             };
@@ -77,15 +88,13 @@
                 return () => document.removeEventListener("mousedown", handleClickOutside);
             }, []);
 
-            // 抓取所有資料庫用於自選股渲染
-            const [allData, setAllData] = useState([]);
             useEffect(() => {
                 if (activeTab === '⭐ 自選股') {
                     setLoading(true);
                     Promise.all(CATEGORIES.map(cat => fetch(`./${FILE_MAP[cat]}?t=` + new Date().getTime()).then(r => r.json()).catch(() => [])))
                         .then(results => {
-                            const merged = results.flat().filter(item => favorites.includes(item.id));
-                            // 去重複
+                            // 【防彈機制】使用相容性最高的 reduce 替代舊手機可能看不懂的 flat()
+                            const merged = results.reduce((acc, val) => acc.concat(val), []).filter(item => favorites.includes(item.id));
                             const unique = Array.from(new Map(merged.map(item => [item.id, item])).values());
                             setCurrentData(unique);
                             setLoading(false);
@@ -256,6 +265,4 @@
                                                                             <a href={`https://www.wantgoo.com/stock/etf/${row.id}/nav`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">⚖️ 即時折溢價與淨值</a>
                                                                             <a href={`https://www.wantgoo.com/stock/etf/${row.id}/basic-info`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm">📝 規模、費率與基本資料</a>
                                                                             <a href={`https://www.wantgoo.com/stock/etf/${row.id}/constituent`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-slate-200 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2">🏢 查看最新前十大成分股明細</a>
-                                                                            <a href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} target="_blank" className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded text-sm font-bold transition text-center shadow-sm col-span-2">📰 點此開啟 Yahoo 最新關聯新聞</a>
-                                                                        </div>
-                     
+                                                            
