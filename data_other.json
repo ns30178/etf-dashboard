@@ -501,7 +501,7 @@
     "ytd": 0.10677083333333337,
     "cagr_1y": null,
     "sharpe": null,
-    "mdd": -1.0,
+    "mdd": null,
     "vol_20d": 2,
     "yield_ttm": null,
     "dividend_rate": null
