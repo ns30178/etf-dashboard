@@ -9,18 +9,12 @@ import warnings
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
-# 屏蔽 Pandas 除以零的數學警告，保持日誌乾淨
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-# 環境變數與金鑰
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
 FUGLE_KEY = os.environ.get("FUGLE_API_KEY", "")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
-
-# 系統斷路器
-YAHOO_API_TIMEOUTS = 0
-YAHOO_HTML_TIMEOUTS = 0
 
 FILE_MAP = {
     "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -31,8 +25,7 @@ FILE_MAP = {
 
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15"
 ]
 
 def get_headers():
@@ -41,16 +34,14 @@ def get_headers():
 def send_telegram_message(message):
     print("--- 準備發送 Telegram 推播 ---")
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: 
-        print("⚠️ 警告：找不到 Telegram 金鑰或 Chat ID，推播已略過。請檢查 GitHub Secrets！")
+        print("⚠️ 警告：找不到 Telegram 金鑰或 Chat ID，推播已略過。")
         return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
     payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
     try: 
         res = requests.post(url, json=payload, timeout=10)
-        if res.status_code == 200:
-            print("✅ Telegram 推播發送成功！")
-        else:
-            print(f"❌ Telegram 發送失敗。錯誤碼: {res.status_code}, 原因: {res.text}")
+        if res.status_code == 200: print("✅ Telegram 推播發送成功！")
+        else: print(f"❌ Telegram 發送失敗。錯誤碼: {res.status_code}")
     except Exception as e: 
         print(f"❌ Telegram 連線發生異常: {e}")
 
@@ -81,8 +72,8 @@ def calculate_issue_time(start_date_str):
         return f"{years}年{months}月"
     except: return "-"
 
-def fetch_etf_list_and_nav():
-    tickers, nav_dict = {}, {}
+def fetch_etf_list():
+    tickers = {}
     try:
         url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo&token={FINMIND_TOKEN}"
         res = requests.get(url, timeout=10)
@@ -92,17 +83,10 @@ def fetch_etf_list_and_nav():
                     code = str(item.get('stock_id'))
                     tickers[code] = {
                         "name": str(item.get('stock_name')), 
-                        "market": item.get('type', '').lower(),
                         "start_date": str(item.get('start_date', ''))
                     }
     except: pass
-    
-    try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=get_headers(), timeout=5)
-        for item in res.json(): 
-            nav_dict[str(item.get('Code')).strip()] = float(str(item.get('Nav', '0')).replace(',', '').strip())
-    except: pass
-    return tickers, nav_dict
+    return tickers
 
 def fetch_fugle_candles(symbol):
     end_date = datetime.now().strftime('%Y-%m-%d')
@@ -148,81 +132,7 @@ def fetch_finmind_dividend(symbol):
     except: pass
     return []
 
-def get_yahoo_crumb():
-    session = requests.Session()
-    session.headers.update({
-        "User-Agent": random.choice(USER_AGENTS),
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.5",
-    })
-    try:
-        # 【關鍵修復】改去全球版首頁拿通行證，避免 tw.yahoo 的區域阻擋
-        session.get('https://finance.yahoo.com', timeout=5)
-        res = session.get('https://query1.finance.yahoo.com/v1/test/getcrumb', timeout=5)
-        crumb = res.text.strip()
-        if "<html>" in crumb or not crumb: return session, ""
-        return session, crumb
-    except: return session, ""
-
-def fetch_yahoo_quote(symbol, market, session, crumb):
-    global YAHOO_API_TIMEOUTS
-    if YAHOO_API_TIMEOUTS >= 15: return {}
-    ticker = f"{symbol}.TW" if market == 'twse' else f"{symbol}.TWO"
-    url = f"https://query2.finance.yahoo.com/v7/finance/quote?symbols={ticker}"
-    if crumb: url += f"&crumb={crumb}"
-    try:
-        res = session.get(url, timeout=4)
-        if res.status_code == 200: 
-            if YAHOO_API_TIMEOUTS > 0: YAHOO_API_TIMEOUTS -= 1
-            return res.json().get('quoteResponse', {}).get('result', [{}])[0]
-    except requests.exceptions.Timeout: YAHOO_API_TIMEOUTS += 1
-    except: pass
-    return {}
-
-def fetch_yahoo_html_backup(ticker_id):
-    global YAHOO_HTML_TIMEOUTS
-    data = {"nav": None, "aum": None, "top_holdings": []}
-    if YAHOO_HTML_TIMEOUTS >= 15: return data
-        
-    try:
-        url = f"https://tw.stock.yahoo.com/quote/{ticker_id}/profile"
-        res = requests.get(url, headers=get_headers(), timeout=4)
-        soup = BeautifulSoup(res.text, 'html.parser')
-        nav_node = soup.find(string=lambda t: t and t.strip() == "淨值")
-        if nav_node:
-            try: data['nav'] = float(nav_node.find_next('span').text.replace(',', ''))
-            except: pass
-        aum_node = soup.find(string=lambda t: t and t.strip() == "基金規模")
-        if aum_node:
-            try:
-                aum_str = aum_node.find_next('span').text
-                if '億' in aum_str: data['aum'] = float(aum_str.replace('億', '').replace(',', '').strip())
-            except: pass
-    except requests.exceptions.Timeout: YAHOO_HTML_TIMEOUTS += 1
-    except: pass
-
-    try:
-        url_h = f"https://tw.stock.yahoo.com/quote/{ticker_id}/holding"
-        res_h = requests.get(url_h, headers=get_headers(), timeout=4)
-        soup_h = BeautifulSoup(res_h.text, 'html.parser')
-        links = soup_h.find_all('a', href=True)
-        for link in links:
-            if '/quote/' in link['href'] and link.text.strip() and len(link.text.strip()) > 1:
-                name = link.text.strip()
-                parent = link.find_parent('li') or link.find_parent('div')
-                if parent:
-                    pct_span = parent.find(string=lambda t: t and '%' in t)
-                    if pct_span:
-                        data['top_holdings'].append(f"{name} ({pct_span.strip()})")
-                        if len(data['top_holdings']) >= 3: break
-    except requests.exceptions.Timeout: YAHOO_HTML_TIMEOUTS += 1
-    except: pass
-    
-    return data
-
 def fetch_yahoo_news(symbol):
-    global YAHOO_HTML_TIMEOUTS
-    if YAHOO_HTML_TIMEOUTS >= 15: return []
     try:
         res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=get_headers(), timeout=4)
         soup = BeautifulSoup(res.text, 'html.parser')
@@ -236,7 +146,7 @@ def fetch_yahoo_news(symbol):
     except: return []
 
 def main():
-    tickers, nav_dict = fetch_etf_list_and_nav()
+    tickers = fetch_etf_list()
     if not tickers: 
         send_telegram_message("❌ ETF 資料庫更新失敗：FinMind 名單獲取異常。")
         return
@@ -244,7 +154,6 @@ def main():
     db = {cat: [] for cat in FILE_MAP.keys()}
     news_db = {}
     search_index = []
-    yh_session, crumb = get_yahoo_crumb()
 
     print(f"啟動 API 混合量化引擎，共 {len(tickers)} 檔...")
 
@@ -253,9 +162,7 @@ def main():
         category = categorize_etf(name)
         issue_time = calculate_issue_time(info['start_date'])
         
-        current_price = premium = aum = cagr_1y = sharpe = mdd = vol_20d = None
-        yield_ttm = dividend_rate = next_div_date = next_div_amount = None
-        top_holdings = []
+        current_price = cagr_1y = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
 
         try:
             hist = fetch_fugle_candles(ticker_id)
@@ -264,16 +171,12 @@ def main():
 
             if not hist.empty and len(hist) > 0:
                 current_price = float(hist['close'].iloc[-1])
-                
-                if len(hist) >= 20:
-                    vol_20d = int(hist['volume'].tail(20).mean() / 1000)
-                
+                if len(hist) >= 20: vol_20d = int(hist['volume'].tail(20).mean() / 1000)
                 if len(hist) >= 200:
                     cagr_1y = float((current_price - hist['close'].iloc[0]) / hist['close'].iloc[0])
                     max_p = hist['close'].cummax()
                     mdd = float(((hist['close'] - max_p) / max_p).min())
                     daily_ret = hist['close'].pct_change().dropna()
-                    
                     std_val = daily_ret.std()
                     if pd.notna(std_val) and std_val > 0:
                         sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
@@ -288,27 +191,6 @@ def main():
                     if datetime.strptime(ex_date_str, '%Y-%m-%d') <= now: ttm_div += amt
                 except: pass
 
-            quote = fetch_yahoo_quote(ticker_id, info['market'], yh_session, crumb)
-            q_aum = quote.get('marketCap')
-            
-            html_data = fetch_yahoo_html_backup(ticker_id)
-            
-            nav = nav_dict.get(ticker_id) or html_data.get('nav') or quote.get('navPrice')
-            
-            if q_aum: aum = q_aum / 100000000
-            elif quote.get('sharesOutstanding') and current_price: aum = (quote.get('sharesOutstanding') * current_price) / 100000000
-            else: aum = html_data.get('aum')
-            
-            top_holdings = html_data.get('top_holdings', [])
-
-            if nav and current_price and nav > 0: 
-                premium = ((current_price - nav) / nav)
-            
-            q_ex = quote.get('exDividendDate')
-            if q_ex and q_ex > now.timestamp():
-                next_div_date = datetime.fromtimestamp(q_ex).strftime('%Y-%m-%d')
-                next_div_amount = quote.get('dividendRate') or quote.get('trailingAnnualDividendRate')
-
             if ttm_div > 0: dividend_rate = ttm_div
             if ttm_div > 0 and current_price: yield_ttm = ttm_div / current_price
 
@@ -318,15 +200,13 @@ def main():
         
         db[category].append({
             "id": ticker_id, "name": name, "issue_time": issue_time,
-            "price": current_price, "premium": premium, "aum": aum, 
-            "cagr_1y": cagr_1y, "sharpe": sharpe, "mdd": mdd, "vol_20d": vol_20d,
-            "yield_ttm": yield_ttm, "dividend_rate": dividend_rate,
-            "next_div_date": next_div_date, "next_div_amount": next_div_amount,
-            "top_holdings": top_holdings
+            "price": current_price, "cagr_1y": cagr_1y, 
+            "sharpe": sharpe, "mdd": mdd, "vol_20d": vol_20d,
+            "yield_ttm": yield_ttm, "dividend_rate": dividend_rate
         })
         search_index.append({"id": ticker_id, "name": name, "category": category})
         
-        time.sleep(1.2) 
+        time.sleep(0.8) # 由於少了 Yahoo 爬蟲，休眠時間可縮短，加快整體排程
 
     for cat, data in db.items():
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
@@ -340,7 +220,6 @@ def main():
     with open("data_ipo.json", "w", encoding="utf-8") as f: json.dump(ipo_db, f, ensure_ascii=False, indent=2)
     with open("data_news.json", "w", encoding="utf-8") as f: json.dump(news_db, f, ensure_ascii=False, indent=2)
 
-    # 台灣時區推播
     tw_tz = timezone(timedelta(hours=8))
     tw_time = datetime.now(tw_tz).strftime('%Y-%m-%d %H:%M:%S')
     success_msg = f"更新✅ 台股全市場 ETF 數據庫與新聞動態更新成功！\n執行時間：{tw_time}"
