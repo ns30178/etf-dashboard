@@ -1,34 +1,8 @@
 [
   {
-    "id": "00774C",
-    "name": "新光中政金綠債+R",
-    "freq": "",
-    "price": null,
-    "ytd": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00774B",
-    "name": "新光中國政金綠債",
-    "freq": "",
-    "price": null,
-    "ytd": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00775B",
     "name": "新光投等債15+",
-    "freq": "",
+    "freq": "季配",
     "price": 32.9,
     "ytd": null,
     "cagr_1y": null,
@@ -41,7 +15,7 @@
   {
     "id": "00865B",
     "name": "國泰US短期公債",
-    "freq": "",
+    "freq": "季配",
     "price": 48.48,
     "ytd": 0.028207847295864227,
     "cagr_1y": 0.1274418604651162,
@@ -54,7 +28,7 @@
   {
     "id": "00710B",
     "name": "復華彭博非投等債",
-    "freq": "",
+    "freq": "季配",
     "price": 18.9,
     "ytd": -0.001584786053882786,
     "cagr_1y": 0.06779661016949148,
@@ -67,7 +41,7 @@
   {
     "id": "00711B",
     "name": "復華彭博新興債",
-    "freq": "",
+    "freq": "季配",
     "price": 16.27,
     "ytd": -0.003674219228413884,
     "cagr_1y": 0.12673130193905818,
@@ -80,7 +54,7 @@
   {
     "id": "00953B",
     "name": "群益優選非投等債",
-    "freq": "",
+    "freq": "月配",
     "price": 9.7,
     "ytd": -0.004106776180698247,
     "cagr_1y": 0.06710671067106705,
@@ -93,7 +67,7 @@
   {
     "id": "00945B",
     "name": "凱基美國非投等債",
-    "freq": "",
+    "freq": "月配",
     "price": 14.51,
     "ytd": 0.0006896551724137784,
     "cagr_1y": 0.08122205663189269,
@@ -106,7 +80,7 @@
   {
     "id": "00985B",
     "name": "群益ESG投等債0-5",
-    "freq": "",
+    "freq": "季配",
     "price": 10.31,
     "ytd": -0.0009689922480619948,
     "cagr_1y": null,
