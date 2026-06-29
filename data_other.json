@@ -2,7 +2,6 @@
   {
     "id": "0060",
     "name": "新台灣",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -14,7 +13,6 @@
   {
     "id": "00866",
     "name": "新光Shiller CAPE",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -26,7 +24,6 @@
   {
     "id": "0080",
     "name": "恒中國",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -38,7 +35,6 @@
   {
     "id": "0081",
     "name": "恒香港",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -50,7 +46,6 @@
   {
     "id": "00742",
     "name": "新光內需收益",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -62,7 +57,6 @@
   {
     "id": "00776",
     "name": "新光ICE美國權值",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -74,7 +68,6 @@
   {
     "id": "00767",
     "name": "FH美國金融股",
-    "issue_time": "-",
     "price": null,
     "cagr_1y": null,
     "sharpe": null,
@@ -86,7 +79,6 @@
   {
     "id": "00732",
     "name": "國泰RMB短期報酬",
-    "issue_time": "-",
     "price": 40.03,
     "cagr_1y": null,
     "sharpe": null,
@@ -98,7 +90,6 @@
   {
     "id": "00667",
     "name": "元大韓國",
-    "issue_time": "-",
     "price": 24.0,
     "cagr_1y": null,
     "sharpe": null,
@@ -110,7 +101,6 @@
   {
     "id": "0059",
     "name": "富邦金融",
-    "issue_time": "-",
     "price": 40.47,
     "cagr_1y": null,
     "sharpe": null,
@@ -122,7 +112,6 @@
   {
     "id": "0058",
     "name": "富邦發達",
-    "issue_time": "-",
     "price": 0.0,
     "cagr_1y": null,
     "sharpe": null,
@@ -134,7 +123,6 @@
   {
     "id": "00677U",
     "name": "期富邦VIX",
-    "issue_time": "-",
     "price": 5.34,
     "cagr_1y": null,
     "sharpe": null,
@@ -146,7 +134,6 @@
   {
     "id": "00649",
     "name": "FH香港",
-    "issue_time": "-",
     "price": 20.83,
     "cagr_1y": null,
     "sharpe": null,
@@ -158,7 +145,6 @@
   {
     "id": "00736",
     "name": "國泰新興市場",
-    "issue_time": "-",
     "price": 30.8,
     "cagr_1y": 0.3111962537249895,
     "sharpe": 1.9707496783887806,
@@ -170,7 +156,6 @@
   {
     "id": "00738U",
     "name": "期元大道瓊白銀",
-    "issue_time": "-",
     "price": 45.52,
     "cagr_1y": 0.49736842105263174,
     "sharpe": 1.0128901721988441,
@@ -182,7 +167,6 @@
   {
     "id": "00757",
     "name": "統一FANG+",
-    "issue_time": "-",
     "price": 122.35,
     "cagr_1y": 0.17870905587668592,
     "sharpe": 0.88122972500621,
@@ -194,7 +178,6 @@
   {
     "id": "00763U",
     "name": "期街口道瓊銅",
-    "issue_time": "-",
     "price": 32.14,
     "cagr_1y": 0.12416928996152503,
     "sharpe": 0.5271029801424681,
@@ -206,7 +189,6 @@
   {
     "id": "00894",
     "name": "中信小資高價30",
-    "issue_time": "-",
     "price": 46.6,
     "cagr_1y": 1.3606889564336375,
     "sharpe": 3.0748992612731945,
@@ -218,7 +200,6 @@
   {
     "id": "00895",
     "name": "富邦未來車",
-    "issue_time": "-",
     "price": 50.3,
     "cagr_1y": 0.6672190918130592,
     "sharpe": 2.4414614295994155,
@@ -230,7 +211,6 @@
   {
     "id": "00898",
     "name": "國泰基因免疫革命",
-    "issue_time": "-",
     "price": 8.96,
     "cagr_1y": 0.5033557046979867,
     "sharpe": 1.9906329226490946,
@@ -242,7 +222,6 @@
   {
     "id": "00899",
     "name": "FT潔淨能源",
-    "issue_time": "-",
     "price": 25.95,
     "cagr_1y": 0.8404255319148937,
     "sharpe": 2.7929974712586625,
@@ -254,7 +233,6 @@
   {
     "id": "00901",
     "name": "永豐智能車供應鏈",
-    "issue_time": "-",
     "price": 45.2,
     "cagr_1y": 1.2600000000000002,
     "sharpe": 2.813806389718032,
@@ -266,7 +244,6 @@
   {
     "id": "00902",
     "name": "中信電池及儲能",
-    "issue_time": "-",
     "price": 14.62,
     "cagr_1y": 0.876765083440308,
     "sharpe": 2.396884641046304,
@@ -278,7 +255,6 @@
   {
     "id": "00903",
     "name": "富邦元宇宙",
-    "issue_time": "-",
     "price": 20.22,
     "cagr_1y": 0.39834024896265546,
     "sharpe": 1.496255783711212,
@@ -290,7 +266,6 @@
   {
     "id": "00905",
     "name": "FT臺灣Smart",
-    "issue_time": "-",
     "price": 27.05,
     "cagr_1y": 0.9992609016999262,
     "sharpe": 3.0995546179716937,
@@ -302,7 +277,6 @@
   {
     "id": "00908",
     "name": "富邦入息REITs+",
-    "issue_time": "-",
     "price": 15.07,
     "cagr_1y": 0.17550702028081122,
     "sharpe": 1.6232445199210168,
@@ -314,7 +288,6 @@
   {
     "id": "00909",
     "name": "國泰數位支付服務",
-    "issue_time": "-",
     "price": 47.56,
     "cagr_1y": 0.4932496075353218,
     "sharpe": 1.1800019723940445,
@@ -326,7 +299,6 @@
   {
     "id": "00910",
     "name": "第一金太空衛星",
-    "issue_time": "-",
     "price": 57.35,
     "cagr_1y": 0.814873417721519,
     "sharpe": 1.6670171905071158,
@@ -338,7 +310,6 @@
   {
     "id": "00913",
     "name": "兆豐台灣晶圓製造",
-    "issue_time": "-",
     "price": 52.0,
     "cagr_1y": 1.6342451874366772,
     "sharpe": 3.193877689780554,
@@ -350,7 +321,6 @@
   {
     "id": "00917",
     "name": "中信特選金融",
-    "issue_time": "-",
     "price": 22.2,
     "cagr_1y": 0.03064066852367689,
     "sharpe": 0.2622497241878033,
@@ -362,7 +332,6 @@
   {
     "id": "00918",
     "name": "大華優利高填息30",
-    "issue_time": "-",
     "price": 31.15,
     "cagr_1y": 0.43946395563770785,
     "sharpe": 2.124142925166858,
@@ -374,7 +343,6 @@
   {
     "id": "00850",
     "name": "元大臺灣ESG永續",
-    "issue_time": "-",
     "price": 88.05,
     "cagr_1y": 1.018569463548831,
     "sharpe": 3.188143777045443,
@@ -386,7 +354,6 @@
   {
     "id": "00861",
     "name": "元大全球未來通訊",
-    "issue_time": "-",
     "price": 94.55,
     "cagr_1y": 1.237869822485207,
     "sharpe": 3.5932703886820168,
@@ -398,7 +365,6 @@
   {
     "id": "00875",
     "name": "國泰網路資安",
-    "issue_time": "-",
     "price": 46.4,
     "cagr_1y": 0.23931623931623935,
     "sharpe": 1.0661376998672198,
@@ -410,7 +376,6 @@
   {
     "id": "00885",
     "name": "富邦越南",
-    "issue_time": "-",
     "price": 18.88,
     "cagr_1y": 0.5424836601307188,
     "sharpe": 1.8468972498065912,
@@ -422,7 +387,6 @@
   {
     "id": "00642U",
     "name": "期元大S&P石油",
-    "issue_time": "-",
     "price": 23.0,
     "cagr_1y": 0.4366021236727044,
     "sharpe": 0.9135504314487823,
@@ -434,7 +398,6 @@
   {
     "id": "00643",
     "name": "群益深証中小",
-    "issue_time": "-",
     "price": 20.41,
     "cagr_1y": 0.6867768595041323,
     "sharpe": 2.7287718050188863,
@@ -446,7 +409,6 @@
   {
     "id": "00643K",
     "name": "群益深証中小+R",
-    "issue_time": "-",
     "price": 4.39,
     "cagr_1y": null,
     "sharpe": null,
@@ -458,7 +420,6 @@
   {
     "id": "00645",
     "name": "富邦日本",
-    "issue_time": "-",
     "price": 55.85,
     "cagr_1y": 0.41535732387227575,
     "sharpe": 1.9010464334283845,
@@ -470,7 +431,6 @@
   {
     "id": "00652",
     "name": "富邦印度",
-    "issue_time": "-",
     "price": 33.04,
     "cagr_1y": -0.08905431486076658,
     "sharpe": -0.5560380785113955,
@@ -482,7 +442,6 @@
   {
     "id": "00657",
     "name": "國泰日經225",
-    "issue_time": "-",
     "price": 80.7,
     "cagr_1y": 0.7007376185458377,
     "sharpe": 2.174032391058389,
@@ -494,7 +453,6 @@
   {
     "id": "00657K",
     "name": "國泰日經225+U",
-    "issue_time": "-",
     "price": 25.44,
     "cagr_1y": 0.5418181818181819,
     "sharpe": null,
@@ -506,7 +464,6 @@
   {
     "id": "00661",
     "name": "元大日經225",
-    "issue_time": "-",
     "price": 89.35,
     "cagr_1y": 0.7249034749034748,
     "sharpe": 2.223579631120421,
@@ -518,7 +475,6 @@
   {
     "id": "00662",
     "name": "富邦NASDAQ",
-    "issue_time": "-",
     "price": 119.1,
     "cagr_1y": 0.4044811320754717,
     "sharpe": 2.136377433238986,
@@ -530,7 +486,6 @@
   {
     "id": "00635U",
     "name": "期元大S&P黃金",
-    "issue_time": "-",
     "price": 41.9,
     "cagr_1y": 0.16648106904231616,
     "sharpe": 0.6901211170338517,
@@ -542,7 +497,6 @@
   {
     "id": "00401A",
     "name": "主動摩根台灣鑫收",
-    "issue_time": "-",
     "price": 13.21,
     "cagr_1y": null,
     "sharpe": null,
@@ -554,7 +508,6 @@
   {
     "id": "00405A",
     "name": "主動富邦台灣龍耀",
-    "issue_time": "-",
     "price": 9.0,
     "cagr_1y": null,
     "sharpe": null,
@@ -566,7 +519,6 @@
   {
     "id": "00406A",
     "name": "主動中信台灣收益",
-    "issue_time": "-",
     "price": 9.83,
     "cagr_1y": null,
     "sharpe": null,
@@ -578,7 +530,6 @@
   {
     "id": "00407A",
     "name": "主動凱基台灣",
-    "issue_time": "-",
     "price": 9.47,
     "cagr_1y": null,
     "sharpe": null,
@@ -590,7 +541,6 @@
   {
     "id": "0053",
     "name": "元大電子",
-    "issue_time": "-",
     "price": 233.5,
     "cagr_1y": 1.2691933916423712,
     "sharpe": 3.093621101693822,
@@ -602,7 +552,6 @@
   {
     "id": "0061",
     "name": "元大寶滬深",
-    "issue_time": "-",
     "price": 25.27,
     "cagr_1y": 0.43010752688172027,
     "sharpe": 2.488082709090123,
@@ -614,7 +563,6 @@
   {
     "id": "006205",
     "name": "富邦上証",
-    "issue_time": "-",
     "price": 41.3,
     "cagr_1y": 0.3545424729419482,
     "sharpe": 2.108181338359993,
@@ -626,7 +574,6 @@
   {
     "id": "006207",
     "name": "復華滬深",
-    "issue_time": "-",
     "price": 33.83,
     "cagr_1y": 0.4613390928725702,
     "sharpe": 2.534879002615863,
@@ -638,7 +585,6 @@
   {
     "id": "00625K",
     "name": "富邦上証+R",
-    "issue_time": "-",
     "price": 8.92,
     "cagr_1y": null,
     "sharpe": null,
@@ -650,7 +596,6 @@
   {
     "id": "00733",
     "name": "富邦臺灣中小",
-    "issue_time": "-",
     "price": 73.05,
     "cagr_1y": 0.8934681181959565,
     "sharpe": 2.258321659650942,
@@ -662,7 +607,6 @@
   {
     "id": "00700",
     "name": "富邦恒生國企",
-    "issue_time": "-",
     "price": 15.08,
     "cagr_1y": -0.08661417322834654,
     "sharpe": -0.4147167944224938,
@@ -674,7 +618,6 @@
   {
     "id": "00701",
     "name": "國泰股利精選30",
-    "issue_time": "-",
     "price": 39.21,
     "cagr_1y": 0.39190628328008514,
     "sharpe": 2.3051217786371554,
@@ -686,7 +629,6 @@
   {
     "id": "00709",
     "name": "富邦歐洲",
-    "issue_time": "-",
     "price": 39.1,
     "cagr_1y": 0.24800510692626887,
     "sharpe": 1.5779318696293905,
@@ -698,7 +640,6 @@
   {
     "id": "00714",
     "name": "群益道瓊美國地產",
-    "issue_time": "-",
     "price": 22.1,
     "cagr_1y": 0.17992525360384415,
     "sharpe": 1.3608221991797493,
@@ -710,7 +651,6 @@
   {
     "id": "00717",
     "name": "富邦美國特別股",
-    "issue_time": "-",
     "price": 14.78,
     "cagr_1y": 0.07101449275362309,
     "sharpe": 1.1025704067599567,
@@ -722,7 +662,6 @@
   {
     "id": "00728",
     "name": "第一金工業30",
-    "issue_time": "-",
     "price": 62.65,
     "cagr_1y": 1.0601775731667213,
     "sharpe": 3.0827733725305584,
@@ -734,7 +673,6 @@
   {
     "id": "00668",
     "name": "國泰美國道瓊",
-    "issue_time": "-",
     "price": 60.25,
     "cagr_1y": 0.2849221582426957,
     "sharpe": 2.1067662214034386,
@@ -746,7 +684,6 @@
   {
     "id": "00668K",
     "name": "國泰美國道瓊+U",
-    "issue_time": "-",
     "price": 18.98,
     "cagr_1y": 0.18625000000000003,
     "sharpe": null,
@@ -758,7 +695,6 @@
   {
     "id": "00682U",
     "name": "期元大美元指數",
-    "issue_time": "-",
     "price": 20.88,
     "cagr_1y": 0.05668016194331971,
     "sharpe": null,
@@ -770,7 +706,6 @@
   {
     "id": "00690",
     "name": "兆豐藍籌30",
-    "issue_time": "-",
     "price": 77.7,
     "cagr_1y": 1.2659667541557307,
     "sharpe": 3.212842030915977,
@@ -782,7 +717,6 @@
   {
     "id": "00692",
     "name": "富邦公司治理",
-    "issue_time": "-",
     "price": 89.2,
     "cagr_1y": 1.0017953321364452,
     "sharpe": 3.1478360234920317,
@@ -794,7 +728,6 @@
   {
     "id": "00693U",
     "name": "期街口S&P黃豆",
-    "issue_time": "-",
     "price": 21.04,
     "cagr_1y": 0.05835010060362174,
     "sharpe": 0.43607521279944,
@@ -806,7 +739,6 @@
   {
     "id": "00920",
     "name": "富邦ESG綠色電力",
-    "issue_time": "-",
     "price": 25.58,
     "cagr_1y": 1.0645682001614203,
     "sharpe": 3.1907182914183108,
@@ -818,7 +750,6 @@
   {
     "id": "00921",
     "name": "兆豐龍頭等權重",
-    "issue_time": "-",
     "price": 22.4,
     "cagr_1y": 0.35021097046413496,
     "sharpe": 1.8459970080839034,
@@ -830,7 +761,6 @@
   {
     "id": "00960",
     "name": "野村全球航運龍頭",
-    "issue_time": "-",
     "price": 17.17,
     "cagr_1y": 0.28517964071856305,
     "sharpe": 1.5412393358281142,
@@ -842,7 +772,6 @@
   {
     "id": "00971",
     "name": "野村美國研發龍頭",
-    "issue_time": "-",
     "price": 16.19,
     "cagr_1y": 0.15725518227305224,
     "sharpe": 0.9668873602013587,
@@ -854,7 +783,6 @@
   {
     "id": "009800",
     "name": "中信NASDAQ",
-    "issue_time": "-",
     "price": 12.87,
     "cagr_1y": 0.3973941368078174,
     "sharpe": 2.162979680687722,
@@ -866,7 +794,6 @@
   {
     "id": "009805",
     "name": "新光美國電力基建",
-    "issue_time": "-",
     "price": 17.05,
     "cagr_1y": 0.6489361702127661,
     "sharpe": 2.303388773195378,
@@ -878,7 +805,6 @@
   {
     "id": "00949",
     "name": "復華日本龍頭",
-    "issue_time": "-",
     "price": 20.28,
     "cagr_1y": 0.29501915708812265,
     "sharpe": 1.4732201803149447,
@@ -890,7 +816,6 @@
   {
     "id": "00926",
     "name": "凱基全球菁英55",
-    "issue_time": "-",
     "price": 24.03,
     "cagr_1y": 0.18901533894111827,
     "sharpe": 1.2636894730224995,
@@ -902,7 +827,6 @@
   {
     "id": "00938",
     "name": "凱基優選30",
-    "issue_time": "-",
     "price": 24.14,
     "cagr_1y": 0.6752255378209577,
     "sharpe": 3.290445043303867,
@@ -914,7 +838,6 @@
   {
     "id": "00947",
     "name": "台新臺灣IC設計",
-    "issue_time": "-",
     "price": 38.07,
     "cagr_1y": 1.8389261744966443,
     "sharpe": 2.9002742570260525,
@@ -926,7 +849,6 @@
   {
     "id": "00983D",
     "name": "主動富邦複合收益",
-    "issue_time": "-",
     "price": 10.2,
     "cagr_1y": null,
     "sharpe": null,
@@ -938,7 +860,6 @@
   {
     "id": "00984D",
     "name": "主動聯博全球非投",
-    "issue_time": "-",
     "price": 10.15,
     "cagr_1y": null,
     "sharpe": null,
@@ -950,7 +871,6 @@
   {
     "id": "00986A",
     "name": "主動台新龍頭成長",
-    "issue_time": "-",
     "price": 15.19,
     "cagr_1y": 0.5129482071713148,
     "sharpe": 2.2499130083135546,
@@ -962,7 +882,6 @@
   {
     "id": "00987A",
     "name": "主動台新優勢成長",
-    "issue_time": "-",
     "price": 16.42,
     "cagr_1y": null,
     "sharpe": null,
@@ -974,7 +893,6 @@
   {
     "id": "00988A",
     "name": "主動統一全球創新",
-    "issue_time": "-",
     "price": 21.92,
     "cagr_1y": null,
     "sharpe": null,
@@ -986,176 +904,161 @@
   {
     "id": "00993A",
     "name": "主動安聯台灣",
-    "issue_time": "-",
-    "price": null,
+    "price": 13.47,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 11049,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00994A",
     "name": "主動第一金台股優",
-    "issue_time": "-",
-    "price": null,
+    "price": 17.2,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
+    "vol_20d": 11035,
+    "yield_ttm": 0.026860465116279073,
+    "dividend_rate": 0.462
   },
   {
     "id": "00995A",
     "name": "主動中信台灣卓越",
-    "issue_time": "-",
-    "price": null,
+    "price": 17.21,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 7387,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00996A",
     "name": "主動兆豐台灣豐收",
-    "issue_time": "-",
-    "price": null,
+    "price": 15.21,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 11433,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00997A",
     "name": "主動群益美國增長",
-    "issue_time": "-",
-    "price": null,
+    "price": 13.98,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 25415,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00983A",
     "name": "主動中信ARK創新",
-    "issue_time": "-",
-    "price": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
+    "price": 11.72,
+    "cagr_1y": 0.12800769971126083,
+    "sharpe": 0.5670478038738875,
+    "mdd": -0.25970149253731345,
+    "vol_20d": 4937,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00982T",
     "name": "平衡兆豐台美動能",
-    "issue_time": "-",
-    "price": null,
+    "price": 15.6,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 113,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00982D",
     "name": "主動富邦動態入息",
-    "issue_time": "-",
-    "price": null,
+    "price": 10.03,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
+    "vol_20d": 993,
+    "yield_ttm": 0.03110667996011964,
+    "dividend_rate": 0.312
   },
   {
     "id": "00980A",
     "name": "主動野村臺灣優選",
-    "issue_time": "-",
-    "price": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
+    "price": 23.6,
+    "cagr_1y": 1.0940550133096718,
+    "sharpe": 2.934328566165337,
+    "mdd": -0.11313717364276836,
+    "vol_20d": 12461,
+    "yield_ttm": 0.04983050847457626,
+    "dividend_rate": 1.176
   },
   {
     "id": "009812",
     "name": "野村日本東證",
-    "issue_time": "-",
-    "price": null,
+    "price": 12.23,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 863,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "009819",
     "name": "中信數據及電力",
-    "issue_time": "-",
-    "price": null,
+    "price": 10.14,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 21514,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "00981A",
     "name": "主動統一台股增長",
-    "issue_time": "-",
-    "price": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
+    "price": 29.91,
+    "cagr_1y": 1.7315068493150687,
+    "sharpe": 3.3149221246320546,
+    "mdd": -0.09142475809142471,
+    "vol_20d": 271828,
+    "yield_ttm": 0.034770979605483116,
+    "dividend_rate": 1.04
   },
   {
     "id": "00981T",
     "name": "平衡凱基雙核收息",
-    "issue_time": "-",
-    "price": null,
+    "price": 12.19,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
+    "vol_20d": 4189,
+    "yield_ttm": 0.029532403609516002,
+    "dividend_rate": 0.36000000000000004
   },
   {
     "id": "009820",
     "name": "元大納斯達克精選",
-    "issue_time": "-",
-    "price": null,
+    "price": 9.72,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 23470,
     "yield_ttm": null,
     "dividend_rate": null
   },
   {
     "id": "009821",
     "name": "野村稀土關鍵資源",
-    "issue_time": "-",
-    "price": null,
+    "price": 14.23,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
@@ -1166,24 +1069,22 @@
   {
     "id": "00982A",
     "name": "主動群益台灣強棒",
-    "issue_time": "-",
-    "price": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
+    "price": 23.59,
+    "cagr_1y": 1.1701931922723092,
+    "sharpe": 2.6993725551079564,
+    "mdd": -0.13409703504043127,
+    "vol_20d": 40427,
+    "yield_ttm": 0.06727426875794829,
+    "dividend_rate": 1.5870000000000002
   },
   {
     "id": "009818",
     "name": "華南永昌NASDAQxT",
-    "issue_time": "-",
-    "price": null,
+    "price": 19.21,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": null,
+    "vol_20d": 465,
     "yield_ttm": null,
     "dividend_rate": null
   }
