@@ -47,6 +47,18 @@
         const CATEGORIES = Object.keys(FILE_MAP);
         const TABS = ["⭐ 自選股", ...CATEGORIES];
 
+        // 靜態 IPO 介紹與官網字典檔
+        const IPO_DETAILS = {
+            "00946": {
+                desc: "群益科技高息成長 ETF，首創結合「科技成長」與「高股息」雙重篩選指標，鎖定台灣優質電子半導體板塊，精選兼具獲利能力與高配息潛力之企業，採月配息機制。",
+                url: "https://www.capitalfund.com.tw/"
+            },
+            "00947": {
+                desc: "台新臺灣IC設計 ETF，全台首檔純聚焦於「IC設計」產業之標的。鎖定半導體產業鏈最上游、具備高毛利與全球高度競爭力的台灣IC設計龍頭企業，捕捉核心技術利潤。",
+                url: "https://www.tsit.com.tw/"
+            }
+        };
+
         function getSavedFavs() {
             try {
                 if (typeof window !== 'undefined' && window.localStorage) {
@@ -353,7 +365,35 @@
                                             {isExpanded && (
                                                 <tr className="bg-slate-50 border-b-2 border-blue-200">
                                                     <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
-                                                        {!isIPO && (
+                                                        {isIPO ? (
+                                                            <div className="bg-white p-4 rounded-lg border shadow-sm max-w-4xl mx-auto">
+                                                                <h4 className="font-bold mb-3 text-blue-800 border-b pb-2">📋 新上市 IPO 募集明細與題材</h4>
+                                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
+                                                                    <div className="md:col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
+                                                                        <span className="font-bold text-sm block mb-1 text-slate-700">🔍 核心設計架構與介紹：</span>
+                                                                        <p className="text-xs text-slate-600 leading-relaxed whitespace-normal">
+                                                                            {IPO_DETAILS[row.id]?.desc || "新上市標的，聚焦全市場焦點題材。詳細追蹤請參閱發行投信官方網頁簡章。"}
+                                                                        </p>
+                                                                    </div>
+                                                                    <div className="flex flex-col gap-2 justify-center">
+                                                                        <a 
+                                                                            href={IPO_DETAILS[row.id]?.url || "https://www.twse.com.tw/"} 
+                                                                            target="_blank" 
+                                                                            className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-xs font-bold transition text-center shadow-sm border border-slate-200 hover:border-blue-300 flex items-center justify-center gap-1"
+                                                                        >
+                                                                            🌐 前往投信官方網站
+                                                                        </a>
+                                                                        <a 
+                                                                            href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} 
+                                                                            target="_blank" 
+                                                                            className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded-lg text-xs font-bold transition text-center shadow-sm flex items-center justify-center gap-1"
+                                                                        >
+                                                                            📰 Yahoo 最新關聯新聞
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
                                                             <div className="bg-white p-4 rounded-lg border shadow-sm max-w-4xl mx-auto">
                                                                 <h4 className="font-bold mb-3 text-slate-800 border-b pb-2">🔗 深度資訊與快捷連結</h4>
                                                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
