@@ -15,26 +15,24 @@
     <div id="sys-error" style="color: #dc2626; font-weight: bold; padding: 20px; word-wrap: break-word; font-family: monospace;"></div>
     
     <script>
-        // 捕捉全域錯誤，如果載入失敗會在這裡印出原因
         window.onerror = function(msg, url, line, col, error) {
             document.getElementById('sys-error').innerHTML += "💥 系統錯誤: " + msg + " (行數: " + line + ")<br/>";
             const fallback = document.getElementById('fallback-ui');
             if(fallback) fallback.style.display = 'none';
         };
         window.addEventListener("unhandledrejection", function(event) {
-            document.getElementById('sys-error').innerHTML += "📡 網路/檔案存取錯誤: " + event.reason + "<br/>";
+            document.getElementById('sys-error').innerHTML += "📡 網路錯誤: " + event.reason + "<br/>";
         });
     </script>
 
     <div id="root">
         <div id="fallback-ui" style="padding: 40px 20px; text-align: center; margin-top: 10vh;">
             <h2 style="font-size: 24px; color: #2563eb; font-weight: bold;">📊 引擎啟動中...</h2>
-            <p style="color: #64748b; margin-top: 10px;">正在透過 Cloudflare 載入核心模組，請稍候。</p>
+            <p style="color: #64748b; margin-top: 10px;">正在載入核心模組，請稍候。</p>
         </div>
     </div>
 
     <script type="text/babel">
-    try {
         const { useState, useEffect, useMemo, useRef } = React;
         const FILE_MAP = {
             "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -89,3 +87,42 @@
             const fmtText = (val) => {
                 if (val === null || val === undefined || val === "") return "-";
                 return val;
+            };
+            const getReturnColor = (val) => {
+                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
+                return val > 0 ? "text-green-600 font-bold" : "text-red-600 font-bold";
+            };
+
+            useEffect(() => {
+                fetch('./search_index.json?t=' + new Date().getTime())
+                    .then(res => res.ok ? res.json() : [])
+                    .then(data => setSearchIndex(Array.isArray(data) ? data : []))
+                    .catch(() => setSearchIndex([]));
+                
+                fetch('./meta.json?t=' + new Date().getTime())
+                    .then(res => res.ok ? res.json() : { last_update: "剛更新" })
+                    .then(data => setLastUpdate((data && data.last_update) ? data.last_update : "未知"))
+                    .catch(() => setLastUpdate("剛更新"));
+                
+                const handleClickOutside = (event) => {
+                    if (searchRef.current && !searchRef.current.contains(event.target)) setShowDropdown(false);
+                };
+                document.addEventListener("mousedown", handleClickOutside);
+                return () => document.removeEventListener("mousedown", handleClickOutside);
+            }, []);
+
+            useEffect(() => {
+                let isMounted = true;
+                setLoading(true);
+                
+                if (activeTab === '⭐ 自選股') {
+                    Promise.all(CATEGORIES.map(cat => 
+                        fetch(`./${FILE_MAP[cat]}?t=` + new Date().getTime())
+                        .then(r => r.ok ? r.json() : [])
+                        .catch(() => [])
+                    )).then(results => {
+                        if (!isMounted) return;
+                        const merged = [];
+                        results.forEach(arr => { if(Array.isArray(arr)) merged.push(...arr); });
+                        
+                        const filtered = merged.
