@@ -5,28 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>全市場 ETF 動態追蹤儀表板</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.6/babel.min.js"></script>
+    <script crossorigin="anonymous" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin="anonymous" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin="anonymous" src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>.hide-scrollbar::-webkit-scrollbar { display: none; } .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }</style>
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans">
     
     <div id="sys-error"></div>
     <script>
-        window.onerror = function(msg, url, line) {
-            document.getElementById('sys-error').innerHTML += '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">⚠️ 系統錯誤: ' + msg + ' (行數: ' + line + ')</div>';
+        window.onerror = function(msg, url, line, col, error) {
+            var errBox = document.getElementById('sys-error');
+            var realError = error ? error.stack : msg;
+            errBox.innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">' +
+                '⚠️ 系統載入失敗<br><br>' +
+                '錯誤原因: ' + realError + '<br>行數: ' + line + '<br><br>' +
+                '這通常是因為 GitHub 伺服器剛剛發布時卡住，導致手機暫存了損壞的檔案。<br>' +
+                '<button onclick="window.location.reload(true)" style="margin-top:10px; padding:8px 16px; background:#dc2626; color:white; border-radius:4px; border:none; font-weight:bold; cursor:pointer;">🔄 點我強制清除快取並重新整理</button>' +
+                '</div>';
+            var fallbackUI = document.getElementById('fallback-ui');
+            if (fallbackUI) fallbackUI.style.display = 'none';
         };
     </script>
 
     <div id="root">
-        <div style="text-align: center; padding: 50px; font-size: 18px; font-weight: bold; color: #2563eb;">
+        <div id="fallback-ui" style="text-align: center; padding: 50px; font-size: 18px; font-weight: bold; color: #2563eb;">
             ⏳ 正在連接伺服器與啟動儀表板引擎...<br>
-            <span style="font-size: 14px; color: #64748b; margin-top: 10px; display: inline-block;">若持續卡在此畫面超過 5 秒，表示您的網路或瀏覽器阻擋了外部程式庫。<br>請點擊右上角「...」使用 Safari 或 Chrome 開啟。</span>
+            <span style="font-size: 14px; color: #64748b; margin-top: 10px; display: inline-block;">(若卡在此畫面，代表您的瀏覽器快取未更新，請重新整理)</span>
         </div>
     </div>
 
-    <script type="text/babel">
+    <script type="text/babel" data-presets="react,env">
         const { useState, useEffect, useMemo, useRef } = React;
         const FILE_MAP = {
             "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
@@ -305,10 +314,4 @@
                                                     </React.Fragment>
                                                 )}
                                             </tr>
-                                            {expandedRow === row.id && (
-                                                <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
-                                                        <div className={`grid grid-cols-1 ${!isIPO ? 'md:grid-cols-2' : ''} gap-4`}>
-                                                            {!isIPO && (
-                                                                <React.Fragment>
-                                                                    <
+                            
