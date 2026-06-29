@@ -4,16 +4,17 @@ import pandas as pd
 import json
 import time
 import math
+import random
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
-# 環境變數與金鑰（維持最高資安等級：從 Secrets 獲取）
+# 環境變數與金鑰
 FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
 FUGLE_KEY = os.environ.get("FUGLE_API_KEY", "")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 
-# 系統斷路器：避免 Yahoo 封鎖導致程式卡死
+# 放寬斷路器容忍度：連續失敗 15 次才判定被封鎖
 YAHOO_TIMEOUTS = 0
 
 FILE_MAP = {
@@ -23,7 +24,15 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+# 隨機瀏覽器偽裝，降低被 Yahoo 擋掉的機率
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.1 Safari/605.1.15",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"
+]
+
+def get_headers():
+    return {"User-Agent": random.choice(USER_AGENTS)}
 
 def send_telegram_message(message):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
@@ -76,8 +85,9 @@ def fetch_etf_list_and_nav():
     except: pass
     
     try:
-        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=HEADERS, timeout=5)
-        for item in res.json(): nav_dict[item.get('Code')] = float(str(item.get('Nav', '0')).replace(',', ''))
+        res = requests.get("https://openapi.twse.com.tw/v1/exchangeReport/MI_101", headers=get_headers(), timeout=5)
+        for item in res.json(): 
+            nav_dict[str(item.get('Code')).strip()] = float(str(item.get('Nav', '0')).replace(',', '').strip())
     except: pass
     return tickers, nav_dict
 
@@ -99,7 +109,6 @@ def fetch_fugle_candles(symbol):
     return pd.DataFrame()
 
 def fetch_finmind_price_fallback(symbol):
-    """【終極備援】當富果失敗時，切換至 FinMind 抓取歷史市價"""
     start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
     url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
     try:
@@ -128,7 +137,7 @@ def fetch_finmind_dividend(symbol):
 
 def get_yahoo_crumb():
     session = requests.Session()
-    session.headers.update(HEADERS)
+    session.headers.update(get_headers())
     try:
         session.get('https://tw.yahoo.com/', timeout=5)
         crumb = session.get('https://query1.finance.yahoo.com/v1/test/getcrumb', timeout=5).text
@@ -137,28 +146,29 @@ def get_yahoo_crumb():
     except: return session, ""
 
 def fetch_yahoo_quote(symbol, market, session, crumb):
-    """補回的 Yahoo API：用於取得預估配息與規模"""
     global YAHOO_TIMEOUTS
-    if YAHOO_TIMEOUTS >= 3: return {}
+    if YAHOO_TIMEOUTS >= 15: return {}
     ticker = f"{symbol}.TW" if market == 'twse' else f"{symbol}.TWO"
     url = f"https://query2.finance.yahoo.com/v7/finance/quote?symbols={ticker}"
     if crumb: url += f"&crumb={crumb}"
     try:
-        res = session.get(url, timeout=3)
-        if res.status_code == 200: return res.json().get('quoteResponse', {}).get('result', [{}])[0]
+        res = session.get(url, timeout=4)
+        if res.status_code == 200: 
+            # 只要成功一次，就稍微降低 timeout 計數器，避免被小偶發中斷
+            if YAHOO_TIMEOUTS > 0: YAHOO_TIMEOUTS -= 1
+            return res.json().get('quoteResponse', {}).get('result', [{}])[0]
     except requests.exceptions.Timeout: YAHOO_TIMEOUTS += 1
     except: pass
     return {}
 
 def fetch_yahoo_html_backup(ticker_id):
-    """HTML 備援，內建斷路器"""
     global YAHOO_TIMEOUTS
     data = {"nav": None, "aum": None, "top_holdings": []}
-    if YAHOO_TIMEOUTS >= 3: return data
+    if YAHOO_TIMEOUTS >= 15: return data
         
     try:
         url = f"https://tw.stock.yahoo.com/quote/{ticker_id}/profile"
-        res = requests.get(url, headers=HEADERS, timeout=3)
+        res = requests.get(url, headers=get_headers(), timeout=3)
         soup = BeautifulSoup(res.text, 'html.parser')
         nav_node = soup.find(string=lambda t: t and t.strip() == "淨值")
         if nav_node:
@@ -173,11 +183,9 @@ def fetch_yahoo_html_backup(ticker_id):
     except requests.exceptions.Timeout: YAHOO_TIMEOUTS += 1
     except: pass
 
-    if YAHOO_TIMEOUTS >= 3: return data
-
     try:
         url_h = f"https://tw.stock.yahoo.com/quote/{ticker_id}/holding"
-        res_h = requests.get(url_h, headers=HEADERS, timeout=3)
+        res_h = requests.get(url_h, headers=get_headers(), timeout=3)
         soup_h = BeautifulSoup(res_h.text, 'html.parser')
         links = soup_h.find_all('a', href=True)
         for link in links:
@@ -196,9 +204,9 @@ def fetch_yahoo_html_backup(ticker_id):
 
 def fetch_yahoo_news(symbol):
     global YAHOO_TIMEOUTS
-    if YAHOO_TIMEOUTS >= 3: return []
+    if YAHOO_TIMEOUTS >= 15: return []
     try:
-        res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=HEADERS, timeout=3)
+        res = requests.get(f"https://tw.stock.yahoo.com/quote/{symbol}/news", headers=get_headers(), timeout=3)
         soup = BeautifulSoup(res.text, 'html.parser')
         news = []
         for a in soup.find_all('a', href=True):
@@ -221,7 +229,7 @@ def main():
     search_index = []
     yh_session, crumb = get_yahoo_crumb()
 
-    print(f"啟動 API 混合量化引擎，以 FinMind 清單為基準，共 {len(tickers)} 檔...")
+    print(f"啟動 API 混合量化引擎，共 {len(tickers)} 檔...")
 
     for idx, (ticker_id, info) in enumerate(tickers.items()):
         name = info['name']
@@ -233,23 +241,28 @@ def main():
         top_holdings = []
 
         try:
-            # 1. 第一防線：Fugle 行情
+            # 1. 取得歷史行情
             hist = fetch_fugle_candles(ticker_id)
-            
-            # 2. 第二防線：若 Fugle 沒給數據，瞬間切換為 FinMind 行情
-            if hist.empty or len(hist) < 20:
+            if hist.empty:
                 hist = fetch_finmind_price_fallback(ticker_id)
 
+            # 【重要修正】只要有資料，即便只有 1 天，也強制取得最新市價 (解決 00961 等新股空白問題)
             if not hist.empty and len(hist) > 0:
                 current_price = float(hist['close'].iloc[-1])
+                
+                # 有 20 天資料才算日均量
                 if len(hist) >= 20:
                     vol_20d = int(hist['volume'].tail(20).mean() / 1000)
+                
+                # 有 200 天資料才算長線回報率
                 if len(hist) >= 200:
                     cagr_1y = float((current_price - hist['close'].iloc[0]) / hist['close'].iloc[0])
                     max_p = hist['close'].cummax()
                     mdd = float(((hist['close'] - max_p) / max_p).min())
                     daily_ret = hist['close'].pct_change().dropna()
-                    sharpe = float((daily_ret.mean() / daily_ret.std()) * (252**0.5)) if daily_ret.std() != 0 else None
+                    # 【重要修正】防呆除以零警告
+                    if len(daily_ret) > 1 and daily_ret.std() != 0:
+                        sharpe = float((daily_ret.mean() / daily_ret.std()) * (252**0.5))
 
             # 配息資料 (FinMind)
             div_data = fetch_finmind_dividend(ticker_id)
@@ -262,22 +275,26 @@ def main():
                     if datetime.strptime(ex_date_str, '%Y-%m-%d') <= now: ttm_div += amt
                 except: pass
 
-            # 【已修復】Yahoo API 與 HTML 雙重備援
+            # Yahoo API 預估配息與雙重備援
             quote = fetch_yahoo_quote(ticker_id, info['market'], yh_session, crumb)
             q_aum = quote.get('marketCap')
             
             html_data = fetch_yahoo_html_backup(ticker_id)
+            
+            # 淨值優先度：官方 API -> Yahoo HTML -> Yahoo Quote API
             nav = nav_dict.get(ticker_id) or html_data.get('nav') or quote.get('navPrice')
             
+            # 規模計算：優先取 API 給的總值 -> 用發行股數自己算 -> 最後才去爬網頁
             if q_aum: aum = q_aum / 100000000
             elif quote.get('sharesOutstanding') and current_price: aum = (quote.get('sharesOutstanding') * current_price) / 100000000
             else: aum = html_data.get('aum')
             
             top_holdings = html_data.get('top_holdings', [])
 
+            # 若有淨值也有市價，就能算折溢價 (新股也能算了)
             if nav and current_price and nav > 0: premium = ((current_price - nav) / nav)
             
-            # 【已修復】抓取預估配息
+            # 抓取下次配息日期與金額
             q_ex = quote.get('exDividendDate')
             if q_ex and q_ex > now.timestamp():
                 next_div_date = datetime.fromtimestamp(q_ex).strftime('%Y-%m-%d')
@@ -290,7 +307,7 @@ def main():
 
         except Exception: pass
         
-        # 寫入 JSON (容錯回寫)
+        # 容錯回寫 JSON
         db[category].append({
             "id": ticker_id, "name": name, "issue_time": issue_time,
             "price": current_price, "premium": premium, "aum": aum, 
@@ -301,7 +318,7 @@ def main():
         })
         search_index.append({"id": ticker_id, "name": name, "category": category})
         
-        time.sleep(1.0) # 遵守速率限制避免再次被鎖
+        time.sleep(1.2) # 給 API 稍稍多一點點的喘息時間
 
     for cat, data in db.items():
         with open(FILE_MAP[cat], "w", encoding="utf-8") as f: json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
