@@ -1,10 +1,10 @@
 [
   {
-    "id": "008201",
-    "name": "BP上證50",
+    "id": "0054",
+    "name": "元大台商50",
     "freq": "",
-    "price": 100.0,
-    "ytd": 0.03896103896103896,
+    "price": 23.5,
+    "ytd": -0.09196290571870167,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
@@ -13,11 +13,11 @@
     "dividend_rate": null
   },
   {
-    "id": "0054",
-    "name": "元大台商50",
+    "id": "008201",
+    "name": "BP上證50",
     "freq": "",
-    "price": 23.5,
-    "ytd": -0.09196290571870167,
+    "price": 100.0,
+    "ytd": 0.03896103896103896,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
@@ -312,32 +312,6 @@
     "dividend_rate": null
   },
   {
-    "id": "00924",
-    "name": "復華S&P500成長",
-    "freq": "",
-    "price": 32.29,
-    "ytd": 0.10430916552667582,
-    "cagr_1y": 0.3420615128844556,
-    "sharpe": 2.003614077758844,
-    "mdd": -0.11084905660377356,
-    "vol_20d": 2469,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00923",
-    "name": "群益台ESG低碳50",
-    "freq": "季配",
-    "price": 43.06,
-    "ytd": 0.6561538461538462,
-    "cagr_1y": 1.0446343779677116,
-    "sharpe": 2.963299055523714,
-    "mdd": -0.15327793167128348,
-    "vol_20d": 5897,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "009802",
     "name": "富邦旗艦50",
     "freq": "",
@@ -377,6 +351,32 @@
     "dividend_rate": null
   },
   {
+    "id": "00923",
+    "name": "群益台ESG低碳50",
+    "freq": "季配",
+    "price": 43.06,
+    "ytd": 0.6561538461538462,
+    "cagr_1y": 1.0446343779677116,
+    "sharpe": 2.963299055523714,
+    "mdd": -0.15327793167128348,
+    "vol_20d": 5897,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00924",
+    "name": "復華S&P500成長",
+    "freq": "",
+    "price": 32.29,
+    "ytd": 0.10430916552667582,
+    "cagr_1y": 0.3420615128844556,
+    "sharpe": 2.003614077758844,
+    "mdd": -0.11084905660377356,
+    "vol_20d": 2469,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
     "id": "009808",
     "name": "華南永昌優選50",
     "freq": "",
@@ -386,19 +386,6 @@
     "sharpe": 3.238460078982406,
     "mdd": -0.12068248023304211,
     "vol_20d": 893,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "009809",
-    "name": "富邦淨零ESG50",
-    "freq": "",
-    "price": 17.9,
-    "ytd": 0.6886792452830188,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": 991,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -425,6 +412,19 @@
     "sharpe": null,
     "mdd": null,
     "vol_20d": 111042,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "009809",
+    "name": "富邦淨零ESG50",
+    "freq": "",
+    "price": 17.9,
+    "ytd": 0.6886792452830188,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": 991,
     "yield_ttm": null,
     "dividend_rate": null
   },

@@ -65,19 +65,6 @@
     "dividend_rate": null
   },
   {
-    "id": "00919",
-    "name": "群益台灣精選高息",
-    "freq": "季配",
-    "price": 29.5,
-    "ytd": 0.3169642857142858,
-    "cagr_1y": 0.374650512581547,
-    "sharpe": 2.0617442051996653,
-    "mdd": -0.10487804878048787,
-    "vol_20d": 167304,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00878",
     "name": "國泰永續高股息",
     "freq": "季配",
@@ -100,6 +87,32 @@
     "sharpe": 0.8758020235158381,
     "mdd": -0.10600490196078434,
     "vol_20d": 13181,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00919",
+    "name": "群益台灣精選高息",
+    "freq": "季配",
+    "price": 29.5,
+    "ytd": 0.3169642857142858,
+    "cagr_1y": 0.374650512581547,
+    "sharpe": 2.0617442051996653,
+    "mdd": -0.10487804878048787,
+    "vol_20d": 167304,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00731",
+    "name": "復華富時高息低波",
+    "freq": "季配",
+    "price": 88.9,
+    "ytd": 0.28840579710144937,
+    "cagr_1y": 0.3408748114630469,
+    "sharpe": 2.2846724838763754,
+    "mdd": -0.08905013192612138,
+    "vol_20d": 864,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -156,15 +169,15 @@
     "dividend_rate": null
   },
   {
-    "id": "00731",
-    "name": "復華富時高息低波",
-    "freq": "季配",
-    "price": 88.9,
-    "ytd": 0.28840579710144937,
-    "cagr_1y": 0.3408748114630469,
-    "sharpe": 2.2846724838763754,
-    "mdd": -0.08905013192612138,
-    "vol_20d": 864,
+    "id": "00999A",
+    "name": "主動野村臺灣高息",
+    "freq": "",
+    "price": 10.85,
+    "ytd": 0.06581532416502947,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": 31602,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -373,19 +386,6 @@
     "sharpe": 2.578104215341221,
     "mdd": -0.1036077705827938,
     "vol_20d": 5252,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00999A",
-    "name": "主動野村臺灣高息",
-    "freq": "",
-    "price": 10.85,
-    "ytd": 0.06581532416502947,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": 31602,
     "yield_ttm": null,
     "dividend_rate": null
   },

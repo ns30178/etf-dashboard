@@ -13,19 +13,6 @@
     "dividend_rate": null
   },
   {
-    "id": "0058",
-    "name": "富邦發達",
-    "freq": "",
-    "price": 0.0,
-    "ytd": null,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00649",
     "name": "FH香港",
     "freq": "",
@@ -65,6 +52,19 @@
     "dividend_rate": null
   },
   {
+    "id": "0058",
+    "name": "富邦發達",
+    "freq": "",
+    "price": 0.0,
+    "ytd": null,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": null,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
     "id": "00677U",
     "name": "期富邦VIX",
     "freq": "",
@@ -74,6 +74,19 @@
     "sharpe": null,
     "mdd": null,
     "vol_20d": null,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00736",
+    "name": "國泰新興市場",
+    "freq": "",
+    "price": 31.16,
+    "ytd": 0.1140507686807294,
+    "cagr_1y": 0.32652192422307375,
+    "sharpe": 2.0416942677641208,
+    "mdd": -0.09525389976767333,
+    "vol_20d": 128,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -113,19 +126,6 @@
     "sharpe": 0.5931764246127176,
     "mdd": -0.24862553451435554,
     "vol_20d": 861,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00850",
-    "name": "元大臺灣ESG永續",
-    "freq": "半年配",
-    "price": 92.05,
-    "ytd": 0.6630532971996386,
-    "cagr_1y": 1.1102705181109582,
-    "sharpe": 3.342911502566422,
-    "mdd": -0.10565476190476192,
-    "vol_20d": 941,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -312,15 +312,15 @@
     "dividend_rate": null
   },
   {
-    "id": "00920",
-    "name": "富邦ESG綠色電力",
-    "freq": "",
-    "price": 26.0,
-    "ytd": 0.4317180616740088,
-    "cagr_1y": 1.0984665052461662,
-    "sharpe": 3.2378943627499743,
-    "mdd": -0.0975609756097561,
-    "vol_20d": 407,
+    "id": "00850",
+    "name": "元大臺灣ESG永續",
+    "freq": "半年配",
+    "price": 92.05,
+    "ytd": 0.6630532971996386,
+    "cagr_1y": 1.1102705181109582,
+    "sharpe": 3.342911502566422,
+    "mdd": -0.10565476190476192,
+    "vol_20d": 941,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -334,19 +334,6 @@
     "sharpe": 3.6274803685374644,
     "mdd": -0.09590043923865296,
     "vol_20d": 276,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00736",
-    "name": "國泰新興市場",
-    "freq": "",
-    "price": 31.16,
-    "ytd": 0.1140507686807294,
-    "cagr_1y": 0.32652192422307375,
-    "sharpe": 2.0416942677641208,
-    "mdd": -0.09525389976767333,
-    "vol_20d": 128,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -373,32 +360,6 @@
     "sharpe": 1.8578484558660908,
     "mdd": -0.136008337675873,
     "vol_20d": 3738,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00921",
-    "name": "兆豐龍頭等權重",
-    "freq": "",
-    "price": 23.01,
-    "ytd": 0.31260695949800343,
-    "cagr_1y": 0.3869801084990959,
-    "sharpe": 1.9852823930279588,
-    "mdd": -0.07442116868798243,
-    "vol_20d": 484,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00733",
-    "name": "富邦臺灣中小",
-    "freq": "",
-    "price": 78.0,
-    "ytd": 0.7011995637949836,
-    "cagr_1y": 1.021772939346812,
-    "sharpe": 2.434461651034607,
-    "mdd": -0.11597938144329896,
-    "vol_20d": 1105,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -650,6 +611,32 @@
     "dividend_rate": null
   },
   {
+    "id": "00733",
+    "name": "富邦臺灣中小",
+    "freq": "",
+    "price": 78.0,
+    "ytd": 0.7011995637949836,
+    "cagr_1y": 1.021772939346812,
+    "sharpe": 2.434461651034607,
+    "mdd": -0.11597938144329896,
+    "vol_20d": 1105,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00700",
+    "name": "富邦恒生國企",
+    "freq": "",
+    "price": 15.16,
+    "ytd": -0.16473829201101922,
+    "cagr_1y": -0.08176862507571177,
+    "sharpe": -0.37348035387660755,
+    "mdd": -0.21703011422637597,
+    "vol_20d": 376,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
     "id": "00701",
     "name": "國泰股利精選30",
     "freq": "",
@@ -715,19 +702,6 @@
     "dividend_rate": null
   },
   {
-    "id": "00700",
-    "name": "富邦恒生國企",
-    "freq": "",
-    "price": 15.16,
-    "ytd": -0.16473829201101922,
-    "cagr_1y": -0.08176862507571177,
-    "sharpe": -0.37348035387660755,
-    "mdd": -0.21703011422637597,
-    "vol_20d": 376,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00668",
     "name": "國泰美國道瓊",
     "freq": "",
@@ -750,6 +724,19 @@
     "sharpe": null,
     "mdd": -1.0,
     "vol_20d": 0,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00682U",
+    "name": "期元大美元指數",
+    "freq": "",
+    "price": 20.84,
+    "ytd": 0.033730158730158714,
+    "cagr_1y": 0.05465587044534404,
+    "sharpe": null,
+    "mdd": -1.0,
+    "vol_20d": 12,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -793,15 +780,28 @@
     "dividend_rate": null
   },
   {
-    "id": "00682U",
-    "name": "期元大美元指數",
+    "id": "00920",
+    "name": "富邦ESG綠色電力",
     "freq": "",
-    "price": 20.84,
-    "ytd": 0.033730158730158714,
-    "cagr_1y": 0.05465587044534404,
-    "sharpe": null,
-    "mdd": -1.0,
-    "vol_20d": 12,
+    "price": 26.0,
+    "ytd": 0.4317180616740088,
+    "cagr_1y": 1.0984665052461662,
+    "sharpe": 3.2378943627499743,
+    "mdd": -0.0975609756097561,
+    "vol_20d": 407,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00921",
+    "name": "兆豐龍頭等權重",
+    "freq": "",
+    "price": 23.01,
+    "ytd": 0.31260695949800343,
+    "cagr_1y": 0.3869801084990959,
+    "sharpe": 1.9852823930279588,
+    "mdd": -0.07442116868798243,
+    "vol_20d": 484,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -858,6 +858,19 @@
     "dividend_rate": null
   },
   {
+    "id": "00949",
+    "name": "復華日本龍頭",
+    "freq": "",
+    "price": 20.43,
+    "ytd": 0.11700382722799348,
+    "cagr_1y": 0.30459770114942525,
+    "sharpe": 1.5056444323035063,
+    "mdd": -0.10105363984674327,
+    "vol_20d": 939,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
     "id": "00926",
     "name": "凱基全球菁英55",
     "freq": "",
@@ -897,28 +910,15 @@
     "dividend_rate": null
   },
   {
-    "id": "00949",
-    "name": "復華日本龍頭",
+    "id": "00983D",
+    "name": "主動富邦複合收益",
     "freq": "",
-    "price": 20.43,
-    "ytd": 0.11700382722799348,
-    "cagr_1y": 0.30459770114942525,
-    "sharpe": 1.5056444323035063,
-    "mdd": -0.10105363984674327,
-    "vol_20d": 939,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00980A",
-    "name": "主動野村臺灣優選",
-    "freq": "",
-    "price": 24.6,
-    "ytd": 0.6088947024198824,
-    "cagr_1y": 1.1827861579414376,
-    "sharpe": 3.053026570395969,
-    "mdd": -0.11313717364276836,
-    "vol_20d": 11781,
+    "price": 10.22,
+    "ytd": -0.003898635477582763,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": 1149,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -1040,19 +1040,6 @@
     "dividend_rate": null
   },
   {
-    "id": "00983D",
-    "name": "主動富邦複合收益",
-    "freq": "",
-    "price": 10.22,
-    "ytd": -0.003898635477582763,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": 1149,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00983A",
     "name": "主動中信ARK創新",
     "freq": "",
@@ -1062,6 +1049,45 @@
     "sharpe": 0.7392463787680887,
     "mdd": -0.25970149253731345,
     "vol_20d": 5004,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00982T",
+    "name": "平衡兆豐台美動能",
+    "freq": "",
+    "price": 15.95,
+    "ytd": 0.5560975609756097,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": 104,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00982D",
+    "name": "主動富邦動態入息",
+    "freq": "",
+    "price": 10.06,
+    "ytd": -0.010816125860373593,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": 966,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00980A",
+    "name": "主動野村臺灣優選",
+    "freq": "",
+    "price": 24.6,
+    "ytd": 0.6088947024198824,
+    "cagr_1y": 1.1827861579414376,
+    "sharpe": 3.053026570395969,
+    "mdd": -0.11313717364276836,
+    "vol_20d": 11781,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -1079,19 +1105,6 @@
     "dividend_rate": null
   },
   {
-    "id": "009818",
-    "name": "華南永昌NASDAQxT",
-    "freq": "",
-    "price": 19.82,
-    "ytd": 0.3337819650067295,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": 425,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "009819",
     "name": "中信數據及電力",
     "freq": "",
@@ -1101,6 +1114,19 @@
     "sharpe": null,
     "mdd": null,
     "vol_20d": 19391,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00981A",
+    "name": "主動統一台股增長",
+    "freq": "",
+    "price": 31.28,
+    "ytd": 0.8497930218805441,
+    "cagr_1y": 1.8566210045662104,
+    "sharpe": 3.4176770088062955,
+    "mdd": -0.09142475809142471,
+    "vol_20d": 268676,
     "yield_ttm": null,
     "dividend_rate": null
   },
@@ -1157,41 +1183,15 @@
     "dividend_rate": null
   },
   {
-    "id": "00982D",
-    "name": "主動富邦動態入息",
+    "id": "009818",
+    "name": "華南永昌NASDAQxT",
     "freq": "",
-    "price": 10.06,
-    "ytd": -0.010816125860373593,
+    "price": 19.82,
+    "ytd": 0.3337819650067295,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
-    "vol_20d": 966,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00982T",
-    "name": "平衡兆豐台美動能",
-    "freq": "",
-    "price": 15.95,
-    "ytd": 0.5560975609756097,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": 104,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
-    "id": "00981A",
-    "name": "主動統一台股增長",
-    "freq": "",
-    "price": 31.28,
-    "ytd": 0.8497930218805441,
-    "cagr_1y": 1.8566210045662104,
-    "sharpe": 3.4176770088062955,
-    "mdd": -0.09142475809142471,
-    "vol_20d": 268676,
+    "vol_20d": 425,
     "yield_ttm": null,
     "dividend_rate": null
   }

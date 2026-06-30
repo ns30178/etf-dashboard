@@ -1,18 +1,5 @@
 [
   {
-    "id": "00658L",
-    "name": "國泰日本正2",
-    "freq": "",
-    "price": 37.96,
-    "ytd": 0.2977777777777778,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00672L",
     "name": "元大S&P原油正2",
     "freq": "",
@@ -44,6 +31,19 @@
     "freq": "",
     "price": 19.88,
     "ytd": -0.01875616979269509,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": null,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00658L",
+    "name": "國泰日本正2",
+    "freq": "",
+    "price": 37.96,
+    "ytd": 0.2977777777777778,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
@@ -195,19 +195,6 @@
     "dividend_rate": null
   },
   {
-    "id": "00665L",
-    "name": "富邦恒生國企正2",
-    "freq": "",
-    "price": 7.44,
-    "ytd": -0.30532212885154064,
-    "cagr_1y": -0.2633663366336633,
-    "sharpe": -0.6303013330860312,
-    "mdd": -0.4238875878220141,
-    "vol_20d": 27518,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00706L",
     "name": "期元大S&P日圓正2",
     "freq": "",
@@ -243,6 +230,19 @@
     "sharpe": 1.4342609597374347,
     "mdd": -0.5526635198921106,
     "vol_20d": 12088,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00665L",
+    "name": "富邦恒生國企正2",
+    "freq": "",
+    "price": 7.44,
+    "ytd": -0.30532212885154064,
+    "cagr_1y": -0.2633663366336633,
+    "sharpe": -0.6303013330860312,
+    "mdd": -0.4238875878220141,
+    "vol_20d": 27518,
     "yield_ttm": null,
     "dividend_rate": null
   },

@@ -13,19 +13,6 @@
     "dividend_rate": null
   },
   {
-    "id": "00716R",
-    "name": "華頓S&P布蘭特反1",
-    "freq": "",
-    "price": 19.42,
-    "ytd": 0.0,
-    "cagr_1y": null,
-    "sharpe": null,
-    "mdd": null,
-    "vol_20d": null,
-    "yield_ttm": null,
-    "dividend_rate": null
-  },
-  {
     "id": "00705R",
     "name": "台新MSCI台灣反1",
     "freq": "",
@@ -39,11 +26,11 @@
     "dividend_rate": null
   },
   {
-    "id": "00659R",
-    "name": "國泰日本反1",
+    "id": "00691R",
+    "name": "兆豐藍籌30反1",
     "freq": "",
-    "price": 12.81,
-    "ytd": -0.13795423956931352,
+    "price": 17.95,
+    "ytd": null,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
@@ -65,11 +52,24 @@
     "dividend_rate": null
   },
   {
-    "id": "00691R",
-    "name": "兆豐藍籌30反1",
+    "id": "00716R",
+    "name": "華頓S&P布蘭特反1",
     "freq": "",
-    "price": 17.95,
-    "ytd": null,
+    "price": 19.42,
+    "ytd": 0.0,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": null,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00659R",
+    "name": "國泰日本反1",
+    "freq": "",
+    "price": 12.81,
+    "ytd": -0.13795423956931352,
     "cagr_1y": null,
     "sharpe": null,
     "mdd": null,
