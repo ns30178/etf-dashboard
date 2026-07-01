@@ -21,54 +21,25 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-# 終極完整版 ETF 配息頻率對照表 (涵蓋最新上市、高股息、市值型與主動型)
+# 現有已知名單 (加速處理，降低 API 請求次數)
 FREQ_MAP = {
-    # == 月配息 ==
-    "00929": "月配", "00934": "月配", "00936": "月配", "00939": "月配", 
-    "00940": "月配", "00944": "月配", "00946": "月配", "00963": "月配", 
-    "00964": "月配", "00968B": "月配", "00945B": "月配", "00948B": "月配",
-    "00772B": "月配", "00773B": "月配",
-    
-    # == 雙月配息 ==
+    "00929": "月配", "00934": "月配", "00936": "月配", "00939": "月配", "00940": "月配", "00943": "月配", "00944": "月配", "00946": "月配", "00963": "月配", "00964": "月配", "00772B": "月配", "00773B": "月配", "00933B": "月配", "00937B": "月配", "00945B": "月配", "00948B": "月配", "00953B": "月配", "00958B": "月配", "00959B": "月配", "00968B": "月配",
     "00907": "雙月配",
-
-    # == 季配息 ==
-    "0056": "季配", "00878": "季配", "00919": "季配", "00713": "季配", 
-    "00915": "季配", "00731": "季配", "00918": "季配", "00702": "季配", 
-    "00932": "季配", "00961": "季配", "00962": "季配", "00956": "季配", 
-    "00972": "季配", "00400A": "季配", "00984A": "季配", "00896": "季配",
-    "00922": "季配", "00923": "季配", "00927": "季配", "00888": "季配",
-    "00891": "季配", "00894": "季配", "00904": "季配", "00912": "季配",
-    "00947": "季配", "00959B": "季配", "00960": "季配", "00966B": "季配",
-    "00728": "季配", "00882": "季配", "00892": "季配",
-
-    # == 半年配 ==
-    "0050": "半年配", "006208": "半年配", "00730": "半年配", "00690": "半年配", 
-    "00913": "半年配", "0051": "半年配", "0053": "半年配", "0055": "半年配", 
-    "006203": "半年配", "006204": "半年配", "00692": "半年配", "00850": "半年配",
-
-    # == 年配 / 不定期 ==
-    "00875": "年配", "00646": "年配", "006205": "年配"
+    "0056": "季配", "00878": "季配", "00919": "季配", "00713": "季配", "00915": "季配", "00731": "季配", "00918": "季配", "00702": "季配", "00932": "季配", "00961": "季配", "00962": "季配", "00956": "季配", "00972": "季配", "00400A": "季配", "00984A": "季配", "00896": "季配", "00922": "季配", "00923": "季配", "00927": "季配", "00888": "季配", "00891": "季配", "00894": "季配", "00904": "季配", "00912": "季配", "00947": "季配", "00960": "季配", "00728": "季配", "00882": "季配", "00892": "季配", "00900": "季配", "00905": "季配", "00885": "季配", "00901": "季配", "00752": "季配", "00876": "季配", "00928": "季配", "00935": "季配", "00951": "季配", "00952": "季配", "00712": "季配", "00714": "季配", "00717": "季配", "00733": "季配", "00751B": "季配", "00754B": "季配", "00755B": "季配", "00756B": "季配", "00758B": "季配", "00761B": "季配", "00764B": "季配", "00768B": "季配", "00782B": "季配", "00786B": "季配", "00788B": "季配", "00789B": "季配", "00795B": "季配", "00836B": "季配", "00840B": "季配", "00841B": "季配", "00842B": "季配", "00844B": "季配", "00846B": "季配", "00847B": "季配", "00848B": "季配", "00849B": "季配", "00853B": "季配", "00856B": "季配", "00857B": "季配", "00859B": "季配", "00862B": "季配", "00679B": "季配", "00687B": "季配", "00720B": "季配", "00725B": "季配", "00740B": "季配", "00746B": "季配", "00722B": "季配", "00723B": "季配", "00724B": "季配", "00726B": "季配", "00727B": "季配", "00778B": "季配", "00779B": "季配", "00966B": "季配",
+    "0050": "半年配", "006208": "半年配", "00730": "半年配", "00690": "半年配", "00913": "半年配", "0051": "半年配", "0053": "半年配", "0055": "半年配", "006203": "半年配", "006204": "半年配", "00692": "半年配", "00850": "半年配", "00881": "半年配", "00898": "半年配", "00903": "半年配", "00981A": "半年配", "00988A": "半年配", "00994A": "半年配", "00995A": "半年配", "00875": "半年配", "00646": "半年配", "006205": "半年配", "00830": "半年配", "00851": "半年配",
+    "00861": "年配", "00877": "年配"
 }
 
 def send_telegram_message(message):
-    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        return
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    try:
-        requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": message}, timeout=10)
-    except Exception:
-        pass
+    try: requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": message}, timeout=10)
+    except: pass
 
 def sanitize_json(val):
-    if isinstance(val, dict):
-        return {k: sanitize_json(v) for k, v in val.items()}
-    elif isinstance(val, list):
-        return [sanitize_json(v) for v in val]
-    elif isinstance(val, float):
-        if math.isnan(val) or math.isinf(val):
-            return None
-        return val
+    if isinstance(val, dict): return {k: sanitize_json(v) for k, v in val.items()}
+    elif isinstance(val, list): return [sanitize_json(v) for v in val]
+    elif isinstance(val, float): return None if math.isnan(val) or math.isinf(val) else val
     return val
 
 def categorize_etf(name):
@@ -80,6 +51,32 @@ def categorize_etf(name):
     if any(k in name for k in ['50', '100', '市值', '加權', '大盤', '摩台', 'MSCI', '中型', '富時']): return "市值型"
     return "綜合/其他"
 
+def get_dynamic_frequency(symbol, name):
+    # 1. 名稱特徵辨識
+    if "月配" in name: return "月配"
+    if "季配" in name: return "季配"
+    if "半年配" in name: return "半年配"
+    if "年配" in name: return "年配"
+
+    # 2. 歷史除權息紀錄回測
+    try:
+        start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+        url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockDividend&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
+        res = requests.get(url, timeout=5)
+        if res.status_code == 200:
+            data = res.json().get('data', [])
+            if data and len(data) > 0:
+                dates = set([d['date'] for d in data])
+                count = len(dates)
+                if count >= 10: return "月配"
+                elif count >= 3: return "季配"
+                elif count == 2: return "半年配"
+                elif count == 1: return "年配"
+    except Exception:
+        pass
+    
+    return "-"
+
 def fetch_etf_list():
     tickers = {}
     try:
@@ -89,8 +86,7 @@ def fetch_etf_list():
             for item in res.json().get('data', []):
                 if item.get('industry_category') == 'ETF':
                     tickers[str(item.get('stock_id'))] = {"name": str(item.get('stock_name'))}
-    except Exception:
-        pass
+    except: pass
     return tickers
 
 def fetch_fugle_candles(symbol):
@@ -104,8 +100,7 @@ def fetch_fugle_candles(symbol):
                 df = pd.DataFrame(res.json().get('data'))
                 df['date'] = pd.to_datetime(df['date'])
                 return df.set_index('date').sort_index()
-        except Exception:
-            pass
+        except: pass
         time.sleep(1)
     return pd.DataFrame()
 
@@ -122,15 +117,13 @@ def fetch_finmind_price_fallback(symbol):
                 df['close'] = df['close'] if 'close' in df else df.get('Close')
                 df['volume'] = df['Trading_Volume']
                 return df.sort_index()
-        except Exception:
-            pass
+        except: pass
         time.sleep(1)
     return pd.DataFrame()
 
 def main():
     tickers = fetch_etf_list()
-    if not tickers:
-        return
+    if not tickers: return
 
     db = {cat: [] for cat in FILE_MAP.keys()}
     search_index = []
@@ -146,13 +139,14 @@ def main():
         
         current_price = cagr_1y = ytd = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
         
-        # 抓取配息頻率 (從終極字典)
-        freq = FREQ_MAP.get(ticker_id, "") 
+        # 動態判定配息頻率
+        freq = FREQ_MAP.get(ticker_id)
+        if not freq:
+            freq = get_dynamic_frequency(ticker_id, name)
 
         try:
             hist = fetch_fugle_candles(ticker_id)
-            if hist.empty:
-                hist = fetch_finmind_price_fallback(ticker_id)
+            if hist.empty: hist = fetch_finmind_price_fallback(ticker_id)
 
             if not hist.empty and len(hist) > 0:
                 current_price = float(hist['close'].iloc[-1])
@@ -167,8 +161,7 @@ def main():
                         first_close = float(this_year_df['close'].iloc[0])
                         ytd = (current_price - first_close) / first_close
 
-                if len(hist) >= 20:
-                    vol_20d = int(hist['volume'].tail(20).mean() / 1000)
+                if len(hist) >= 20: vol_20d = int(hist['volume'].tail(20).mean() / 1000)
                 
                 if len(hist) >= 200:
                     first_price = float(hist['close'].iloc[0])
@@ -179,12 +172,9 @@ def main():
                     std_val = daily_ret.std()
                     if pd.notna(std_val) and std_val > 0:
                         sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
-        except Exception:
-            pass
+        except Exception: pass
         
-        # 下市淘汰機制：抓不到市價則跳過
-        if current_price is None or math.isnan(current_price):
-            continue
+        if current_price is None or math.isnan(current_price): continue
         
         db[category].append({
             "id": ticker_id, "name": name, "freq": freq,
@@ -218,5 +208,4 @@ def main():
     print(success_msg)
     send_telegram_message(success_msg)
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": main()
