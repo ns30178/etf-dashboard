@@ -2,7 +2,9 @@ name: Daily ETF Update
 
 on:
   schedule:
-    - cron: '30 10 * * 1-5'
+    # 修改時間為 10:45 (UTC)，即台灣時間 18:45，避開尖峰塞車
+    - cron: '45 10 * * 1-5'
+  # 這是關鍵保險：讓你以後在手機上隨時可以點按鈕強制執行
   workflow_dispatch:
 
 jobs:
@@ -10,10 +12,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
