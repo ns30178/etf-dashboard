@@ -118,11 +118,12 @@ def fetch_finmind_price_fallback(symbol):
         time.sleep(1)
     return pd.DataFrame()
 
-def fetch_ipo_data(listed_tickers):
+# 🚀 2. 完美介接 MoneyDJ 新基金募集資料模組
+def fetch_ipo_data():
     ipo_list = []
     try:
-        url = "https://www.moneydj.com/ETF/X/Basic/Basic0007A.xdjhtm"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        url = "https://www.moneydj.com/fundj/fundmarket.djhtm?a=broncho-1"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
         res = requests.get(url, headers=headers, timeout=10)
         res.encoding = 'utf-8'
         soup = BeautifulSoup(res.text, "html.parser")
@@ -130,39 +131,31 @@ def fetch_ipo_data(listed_tickers):
         tables = soup.find_all("table")
         for table in tables:
             rows = table.find_all("tr")
-            for row in rows[1:]:
+            for row in rows:
                 cols = row.find_all("td")
-                if len(cols) >= 4:
+                if len(cols) >= 5:
                     text_data = [c.text.strip() for c in cols]
-                    symbol = text_data[0]
-                    name = text_data[1]
+                    name = text_data[0]
+                    fund_type = text_data[1]
+                    manager = text_data[2]
+                    period = text_data[4] if len(text_data) > 4 else "-"
                     
-                    if not any(char.isdigit() for char in symbol) or len(symbol) > 6:
+                    if "基金名稱" in name or "核准募集" in name or not name:
                         continue
                         
-                    if symbol in listed_tickers:
+                    name = name.split("\n")[0].strip()
+                    if len(name) < 2:
                         continue
-                        
-                    issue_date = text_data[2] if len(text_data) > 2 else "-"
-                    price_text = text_data[3] if len(text_data) > 3 else "0"
-                    
-                    try:
-                        price_val = float(price_text.replace("元", "").replace("NT", "").strip())
-                    except ValueError:
-                        price_val = 0.0
                         
                     ipo_list.append({
-                        "id": symbol,
+                        "id": "IPO",  # 前端相容識別標籤
                         "name": name,
-                        "issueDate": issue_date,
-                        "price": price_val,
-                        "fee": "-", 
-                        "freq": get_dynamic_frequency(symbol, name),
-                        "topHoldings": "-"
+                        "type": fund_type,
+                        "manager": manager,
+                        "period": period
                     })
     except Exception as e:
-        print(f"IPO HTML 爬蟲解析異常: {e}")
-    
+        print(f"MoneyDJ IPO 募集解析異常: {e}")
     return ipo_list
 
 def main():
@@ -172,6 +165,18 @@ def main():
     db = {cat: [] for cat in FILE_MAP.keys()}
     search_index = []
     
+    # 🚀 1. 建立「歷史快取防禦機制」：先載入上次的資料庫，避免限流時檔案歸零
+    old_data_map = {}
+    for cat, filename in FILE_MAP.items():
+        if os.path.exists(filename):
+            try:
+                with open(filename, "r", encoding="utf-8") as f:
+                    items = json.load(f)
+                    for item in items:
+                        if isinstance(item, dict) and "id" in item:
+                            old_data_map[item["id"]] = item
+            except: pass
+            
     current_year = datetime.now().year
     last_year = current_year - 1
 
@@ -217,7 +222,12 @@ def main():
                         sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
         except Exception: pass
         
-        if current_price is None or math.isnan(current_price): continue
+        # 🛡️ 觸發防禦：若 API 被限流或沒給市價，直接拿上一次成功的數據補位，絕不遺漏任何一檔！
+        if current_price is None or math.isnan(current_price):
+            if ticker_id in old_data_map:
+                db[category].append(old_data_map[ticker_id])
+                search_index.append({"id": ticker_id, "name": name, "category": category})
+            continue
         
         db[category].append({
             "id": ticker_id, "name": name, "freq": freq,
@@ -235,8 +245,8 @@ def main():
     with open("search_index.json", "w", encoding="utf-8") as f:
         json.dump(search_index, f, ensure_ascii=False, indent=2)
 
-    ipo_db = fetch_ipo_data(tickers)
-    
+    # 執行 MoneyDJ 動態募集資料庫寫入
+    ipo_db = fetch_ipo_data()
     with open("data_ipo.json", "w", encoding="utf-8") as f:
         json.dump(ipo_db, f, ensure_ascii=False, indent=2)
 
