@@ -5,6 +5,7 @@ import json
 import time
 import math
 import warnings
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta, timezone
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
@@ -52,13 +53,10 @@ def categorize_etf(name):
     return "綜合/其他"
 
 def get_dynamic_frequency(symbol, name):
-    # 1. 名稱特徵辨識
     if "月配" in name: return "月配"
     if "季配" in name: return "季配"
     if "半年配" in name: return "半年配"
     if "年配" in name: return "年配"
-
-    # 2. 歷史除權息紀錄回測
     try:
         start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
         url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockDividend&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
@@ -74,7 +72,6 @@ def get_dynamic_frequency(symbol, name):
                 elif count == 1: return "年配"
     except Exception:
         pass
-    
     return "-"
 
 def fetch_etf_list():
@@ -121,6 +118,53 @@ def fetch_finmind_price_fallback(symbol):
         time.sleep(1)
     return pd.DataFrame()
 
+def fetch_ipo_data(listed_tickers):
+    ipo_list = []
+    try:
+        url = "https://www.moneydj.com/ETF/X/Basic/Basic0007A.xdjhtm"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        res = requests.get(url, headers=headers, timeout=10)
+        res.encoding = 'utf-8'
+        soup = BeautifulSoup(res.text, "html.parser")
+        
+        tables = soup.find_all("table")
+        for table in tables:
+            rows = table.find_all("tr")
+            for row in rows[1:]:
+                cols = row.find_all("td")
+                if len(cols) >= 4:
+                    text_data = [c.text.strip() for c in cols]
+                    symbol = text_data[0]
+                    name = text_data[1]
+                    
+                    if not any(char.isdigit() for char in symbol) or len(symbol) > 6:
+                        continue
+                        
+                    if symbol in listed_tickers:
+                        continue
+                        
+                    issue_date = text_data[2] if len(text_data) > 2 else "-"
+                    price_text = text_data[3] if len(text_data) > 3 else "0"
+                    
+                    try:
+                        price_val = float(price_text.replace("元", "").replace("NT", "").strip())
+                    except ValueError:
+                        price_val = 0.0
+                        
+                    ipo_list.append({
+                        "id": symbol,
+                        "name": name,
+                        "issueDate": issue_date,
+                        "price": price_val,
+                        "fee": "-", 
+                        "freq": get_dynamic_frequency(symbol, name),
+                        "topHoldings": "-"
+                    })
+    except Exception as e:
+        print(f"IPO HTML 爬蟲解析異常: {e}")
+    
+    return ipo_list
+
 def main():
     tickers = fetch_etf_list()
     if not tickers: return
@@ -139,7 +183,6 @@ def main():
         
         current_price = cagr_1y = ytd = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
         
-        # 動態判定配息頻率
         freq = FREQ_MAP.get(ticker_id)
         if not freq:
             freq = get_dynamic_frequency(ticker_id, name)
@@ -192,10 +235,8 @@ def main():
     with open("search_index.json", "w", encoding="utf-8") as f:
         json.dump(search_index, f, ensure_ascii=False, indent=2)
 
-    ipo_db = [
-        {"id": "00946", "name": "群益科技高息成長", "issueDate": "2026-05-09", "price": 10.0, "fee": 0.30, "freq": "月配", "topHoldings": "聯發科, 瑞昱, 聯詠"},
-        {"id": "00947", "name": "台新臺灣IC設計", "issueDate": "2026-06-12", "price": 15.0, "fee": 0.40, "freq": "季配", "topHoldings": "台積電, 聯發科, 瑞昱"}
-    ]
+    ipo_db = fetch_ipo_data(tickers)
+    
     with open("data_ipo.json", "w", encoding="utf-8") as f:
         json.dump(ipo_db, f, ensure_ascii=False, indent=2)
 
