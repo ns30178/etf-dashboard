@@ -118,44 +118,72 @@ def fetch_finmind_price_fallback(symbol):
         time.sleep(1)
     return pd.DataFrame()
 
-# 🚀 2. 完美介接 MoneyDJ 新基金募集資料模組
+# 🚀 強化版：MoneyDJ 新基金募集資料爬蟲模組
 def fetch_ipo_data():
     ipo_list = []
     try:
         url = "https://www.moneydj.com/fundj/fundmarket.djhtm?a=broncho-1"
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"}
-        res = requests.get(url, headers=headers, timeout=10)
+        # 加上更擬真、詳細的 Header，避免被輕易判定為機器人封鎖
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+            "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7"
+        }
+        res = requests.get(url, headers=headers, timeout=15)
         res.encoding = 'utf-8'
-        soup = BeautifulSoup(res.text, "html.parser")
         
-        tables = soup.find_all("table")
-        for table in tables:
-            rows = table.find_all("tr")
-            for row in rows:
-                cols = row.find_all("td")
-                if len(cols) >= 5:
-                    text_data = [c.text.strip() for c in cols]
-                    name = text_data[0]
-                    fund_type = text_data[1]
-                    manager = text_data[2]
-                    period = text_data[4] if len(text_data) > 4 else "-"
-                    
-                    if "基金名稱" in name or "核准募集" in name or not name:
-                        continue
-                        
-                    name = name.split("\n")[0].strip()
-                    if len(name) < 2:
-                        continue
-                        
-                    ipo_list.append({
-                        "id": "IPO",  # 前端相容識別標籤
-                        "name": name,
-                        "type": fund_type,
-                        "manager": manager,
-                        "period": period
-                    })
+        # 只有在成功取得網頁時才進行解析
+        if res.status_code == 200:
+            soup = BeautifulSoup(res.text, "html.parser")
+            tables = soup.find_all("table")
+            
+            for table in tables:
+                text_content = table.get_text()
+                # 精準定位：一定要同時包含這些表頭字眼才解析，避開雜訊表格
+                if "基金名稱" in text_content and "基金型態" in text_content and "募集期間" in text_content:
+                    rows = table.find_all("tr")
+                    for row in rows:
+                        # 加上 recursive=False 確保不會抓到「表格中的表格」導致錯亂
+                        cols = row.find_all(["td", "th"], recursive=False)
+                        if len(cols) >= 5:
+                            name = cols[0].get_text(strip=True)
+                            fund_type = cols[1].get_text(strip=True)
+                            manager = cols[2].get_text(strip=True)
+                            period = cols[4].get_text(strip=True)
+                            
+                            # 剔除表頭與無效行
+                            if "基金名稱" in name or "核准募集" in name or not name:
+                                continue
+                                
+                            name = name.split("\n")[0].strip()
+                            if len(name) < 2:
+                                continue
+                                
+                            # 確保不重複加入
+                            if not any(item['name'] == name for item in ipo_list):
+                                ipo_list.append({
+                                    "id": "IPO",
+                                    "name": name,
+                                    "type": fund_type,
+                                    "manager": manager,
+                                    "period": period
+                                })
+                    # 抓到目標表格並解析完畢後，直接跳出迴圈
+                    if len(ipo_list) > 0:
+                        break
     except Exception as e:
         print(f"MoneyDJ IPO 募集解析異常: {e}")
+
+    # 🛡️【防呆提示機制】：如果被 MoneyDJ 防火牆封鎖，或者網頁剛好真的清空了，給予前端一個提示，避免變成白畫面
+    if not ipo_list:
+        ipo_list.append({
+            "id": "⚠️ 系統提示",
+            "name": "目前無資料，或伺服器遭 MoneyDJ 阻擋",
+            "type": "請點擊展開",
+            "manager": "-",
+            "period": "點擊下方按鈕直接前往查看"
+        })
+        
     return ipo_list
 
 def main():
@@ -165,7 +193,7 @@ def main():
     db = {cat: [] for cat in FILE_MAP.keys()}
     search_index = []
     
-    # 🚀 1. 建立「歷史快取防禦機制」：先載入上次的資料庫，避免限流時檔案歸零
+    # 建立「歷史快取防禦機制」：先載入上次的資料庫，避免限流時檔案歸零
     old_data_map = {}
     for cat, filename in FILE_MAP.items():
         if os.path.exists(filename):
@@ -222,7 +250,7 @@ def main():
                         sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
         except Exception: pass
         
-        # 🛡️ 觸發防禦：若 API 被限流或沒給市價，直接拿上一次成功的數據補位，絕不遺漏任何一檔！
+        # 觸發防禦：若 API 被限流或沒給市價，拿上一次成功的數據補位
         if current_price is None or math.isnan(current_price):
             if ticker_id in old_data_map:
                 db[category].append(old_data_map[ticker_id])
