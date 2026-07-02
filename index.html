@@ -1,454 +1,255 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全市場 ETF 動態追蹤儀表板</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        .hide-scrollbar::-webkit-scrollbar { display: none; } 
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .highlight-row { animation: highlight-fade 2s ease-out; }
-        @keyframes highlight-fade {
-            0% { background-color: #dbeafe; }
-            100% { background-color: transparent; }
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800 font-sans">
-    
-    <div id="sys-error"></div>
-    <script>
-        window.onerror = function(msg, url, line, col, error) {
-            var errBox = document.getElementById('sys-error');
-            var realError = error ? error.stack : msg;
-            errBox.innerHTML = '<div style="background:#fee2e2; color:#dc2626; padding:16px; margin:16px; border-radius:8px; font-weight:bold;">' +
-                '⚠️ 系統載入失敗<br><br>' +
-                '錯誤原因: ' + realError + '<br>行數: ' + line + '<br><br>' +
-                '<button onclick="window.location.reload(true)" style="margin-top:10px; padding:8px 16px; background:#dc2626; color:white; border-radius:4px; border:none; font-weight:bold; cursor:pointer;">🔄 點我強制清除快取並重新整理</button>' +
-                '</div>';
-            var fallbackUI = document.getElementById('fallback-ui');
-            if (fallbackUI) fallbackUI.style.display = 'none';
-        };
-    </script>
+import os
+import requests
+import pandas as pd
+import json
+import time
+import math
+import warnings
+from bs4 import BeautifulSoup
+from datetime import datetime, timedelta, timezone
 
-    <div id="root">
-        <div id="fallback-ui" style="text-align: center; padding: 50px; font-weight: bold; color: #2563eb;">
-            ⏳ 正在連接伺服器與啟動儀表板引擎...<br>
-            <span style="font-size: 14px; color: #64748b; margin-top: 10px; display: inline-block;">若持續卡在此畫面，代表您的瀏覽器快取未更新，請重新整理</span>
-        </div>
-    </div>
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
-    <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
-        const FILE_MAP = {
-            "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
-            "主題型": "data_theme.json", "債券型": "data_bond.json",
-            "綜合/其他": "data_other.json", "槓桿型": "data_leverage.json",
-            "反向型": "data_inverse.json", "即將上市(IPO)": "data_ipo.json"
-        };
-        const CATEGORIES = Object.keys(FILE_MAP);
-        const TABS = ["⭐ 自選股", ...CATEGORIES];
+FINMIND_TOKEN = os.environ.get("FINMIND_TOKEN", "")
+FUGLE_KEY = os.environ.get("FUGLE_API_KEY", "")
+TELEGRAM_TOKEN = os.environ.get("TG_BOT_TOKEN", "")
+TELEGRAM_CHAT_ID = os.environ.get("TG_CHAT_ID", "")
 
-        function getSavedFavs() {
-            try {
-                if (typeof window !== 'undefined' && window.localStorage) {
-                    const saved = window.localStorage.getItem('etf_favorites');
-                    if (saved) return JSON.parse(saved);
-                }
-            } catch(e) {}
-            return [];
-        }
+FILE_MAP = {
+    "高股息": "data_high_div.json", "市值型": "data_market_cap.json",
+    "主題型": "data_theme.json", "債券型": "data_bond.json",
+    "槓桿型": "data_leverage.json", "反向型": "data_inverse.json",
+    "綜合/其他": "data_other.json"
+}
 
-        function saveFavs(favs) {
-            try {
-                if (typeof window !== 'undefined' && window.localStorage) {
-                    window.localStorage.setItem('etf_favorites', JSON.stringify(favs));
-                }
-            } catch(e) {}
-        }
+# 現有已知名單 (加速處理，降低 API 請求次數)
+FREQ_MAP = {
+    "00929": "月配", "00934": "月配", "00936": "月配", "00939": "月配", "00940": "月配", "00943": "月配", "00944": "月配", "00946": "月配", "00963": "月配", "00964": "月配", "00772B": "月配", "00773B": "月配", "00933B": "月配", "00937B": "月配", "00945B": "月配", "00948B": "月配", "00953B": "月配", "00958B": "月配", "00959B": "月配", "00968B": "月配",
+    "00907": "雙月配",
+    "0056": "季配", "00878": "季配", "00919": "季配", "00713": "季配", "00915": "季配", "00731": "季配", "00918": "季配", "00702": "季配", "00932": "季配", "00961": "季配", "00962": "季配", "00956": "季配", "00972": "季配", "00400A": "季配", "00984A": "季配", "00896": "季配", "00922": "季配", "00923": "季配", "00927": "季配", "00888": "季配", "00891": "季配", "00894": "季配", "00904": "季配", "00912": "季配", "00947": "季配", "00960": "季配", "00728": "季配", "00882": "季配", "00892": "季配", "00900": "季配", "00905": "季配", "00885": "季配", "00901": "季配", "00752": "季配", "00876": "季配", "00928": "季配", "00935": "季配", "00951": "季配", "00952": "季配", "00712": "季配", "00714": "季配", "00717": "季配", "00733": "季配", "00751B": "季配", "00754B": "季配", "00755B": "季配", "00756B": "季配", "00758B": "季配", "00761B": "季配", "00764B": "季配", "00768B": "季配", "00782B": "季配", "00786B": "季配", "00788B": "季配", "00789B": "季配", "00795B": "季配", "00836B": "季配", "00840B": "季配", "00841B": "季配", "00842B": "季配", "00844B": "季配", "00846B": "季配", "00847B": "季配", "00848B": "季配", "00849B": "季配", "00853B": "季配", "00856B": "季配", "00857B": "季配", "00859B": "季配", "00862B": "季配", "00679B": "季配", "00687B": "季配", "00720B": "季配", "00725B": "季配", "00740B": "季配", "00746B": "季配", "00722B": "季配", "00723B": "季配", "00724B": "季配", "00726B": "季配", "00727B": "季配", "00778B": "季配", "00779B": "季配", "00966B": "季配",
+    "0050": "半年配", "006208": "半年配", "00730": "半年配", "00690": "半年配", "00913": "半年配", "0051": "半年配", "0053": "半年配", "0055": "半年配", "006203": "半年配", "006204": "半年配", "00692": "半年配", "00850": "半年配", "00881": "半年配", "00898": "半年配", "00903": "半年配", "00981A": "半年配", "00988A": "半年配", "00994A": "半年配", "00995A": "半年配", "00875": "半年配", "00646": "半年配", "006205": "半年配", "00830": "半年配", "00851": "半年配",
+    "00861": "年配", "00877": "年配"
+}
 
-        function ETFDashboard() {
-            const [favorites, setFavorites] = useState(getSavedFavs());
-            const [activeTab, setActiveTab] = useState('高股息');
-            const [currentData, setCurrentData] = useState([]);
-            const [loading, setLoading] = useState(true);
-            const [sortConfig, setSortConfig] = useState({ key: 'ytd', direction: 'desc' });
-            const [expandedRow, setExpandedRow] = useState(null);
-            const [lastUpdate, setLastUpdate] = useState("獲取中...");
-            const [pendingScrollId, setPendingScrollId] = useState(null);
+def send_telegram_message(message):
+    if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID: return
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+    try: requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": message}, timeout=10)
+    except: pass
 
-            const [searchIndex, setSearchIndex] = useState([]);
-            const [searchQuery, setSearchQuery] = useState("");
-            const [showDropdown, setShowDropdown] = useState(false);
-            const searchRef = useRef(null);
+def sanitize_json(val):
+    if isinstance(val, dict): return {k: sanitize_json(v) for k, v in val.items()}
+    elif isinstance(val, list): return [sanitize_json(v) for v in val]
+    elif isinstance(val, float): return None if math.isnan(val) or math.isinf(val) else val
+    return val
 
-            const toggleFavorite = (id) => {
-                setFavorites(prev => {
-                    const nextFav = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-                    saveFavs(nextFav);
-                    return nextFav;
-                });
-            };
+def categorize_etf(name):
+    if any(k in name for k in ['正2', '正達', '倍']): return "槓桿型"
+    if any(k in name for k in ['反1', '反向']): return "反向型"
+    if any(k in name for k in ['高息', '高股息', '優息', '股息', '息收']): return "高股息"
+    if any(k in name for k in ['債', '國債', '投等', '金融債', '公司債']): return "債券型"
+    if any(k in name for k in ['半導體', '電動車', '5G', 'AI', '科技', '生技', '不動產', '綠能', '網購', '主題', '電競']): return "主題型"
+    if any(k in name for k in ['50', '100', '市值', '加權', '大盤', '摩台', 'MSCI', '中型', '富時']): return "市值型"
+    return "綜合/其他"
 
-            const fmtVal = (val, prefix = "") => {
-                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "-";
-                return `${prefix}${Number(val).toFixed(2)}`;
-            };
-            
-            const fmtPct = (val) => {
-                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "-";
-                return `${(Number(val) * 100).toFixed(2)}%`;
-            };
-            
-            const fmtText = (val) => {
-                if (val === null || val === undefined || val === "") return "-";
-                return val;
-            };
-            
-            const getReturnColor = (val) => {
-                if (val === null || val === undefined || val === "" || Number.isNaN(val)) return "text-slate-400";
-                return Number(val) > 0 ? "text-red-600 font-bold" : (Number(val) < 0 ? "text-green-600 font-bold" : "text-slate-600 font-bold");
-            };
+def get_dynamic_frequency(symbol, name):
+    if "月配" in name: return "月配"
+    if "季配" in name: return "季配"
+    if "半年配" in name: return "半年配"
+    if "年配" in name: return "年配"
+    try:
+        start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+        url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockDividend&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
+        res = requests.get(url, timeout=5)
+        if res.status_code == 200:
+            data = res.json().get('data', [])
+            if data and len(data) > 0:
+                dates = set([d['date'] for d in data])
+                count = len(dates)
+                if count >= 10: return "月配"
+                elif count >= 3: return "季配"
+                elif count == 2: return "半年配"
+                elif count == 1: return "年配"
+    except Exception:
+        pass
+    return "-"
 
-            useEffect(() => {
-                fetch('./search_index.json?t=' + Date.now())
-                    .then(res => res.ok ? res.json() : [])
-                    .then(data => setSearchIndex(Array.isArray(data) ? data : []))
-                    .catch(() => {});
-                
-                fetch('./meta.json?t=' + Date.now())
-                    .then(res => res.ok ? res.json() : { last_update: "等待更新" })
-                    .then(data => setLastUpdate(data.last_update || "等待更新"))
-                    .catch(() => setLastUpdate("等待更新"));
+def fetch_etf_list():
+    tickers = {}
+    try:
+        url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockInfo&token={FINMIND_TOKEN}"
+        res = requests.get(url, timeout=10)
+        if res.status_code == 200:
+            for item in res.json().get('data', []):
+                if item.get('industry_category') == 'ETF':
+                    tickers[str(item.get('stock_id'))] = {"name": str(item.get('stock_name'))}
+    except: pass
+    return tickers
 
-                const handleClickOutside = (event) => {
-                    if (searchRef.current && !searchRef.current.contains(event.target)) setShowDropdown(false);
-                };
-                document.addEventListener("mousedown", handleClickOutside);
-                return () => document.removeEventListener("mousedown", handleClickOutside);
-            }, []);
+def fetch_fugle_candles(symbol):
+    end_date = datetime.now().strftime('%Y-%m-%d')
+    start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+    url = f"https://api.fugle.tw/marketdata/v1.0/stock/historical/candles/{symbol}?from={start_date}&to={end_date}&timeframe=D"
+    for _ in range(2):
+        try:
+            res = requests.get(url, headers={"X-API-KEY": FUGLE_KEY}, timeout=5)
+            if res.status_code == 200 and res.json().get('data'):
+                df = pd.DataFrame(res.json().get('data'))
+                df['date'] = pd.to_datetime(df['date'])
+                return df.set_index('date').sort_index()
+        except: pass
+        time.sleep(1)
+    return pd.DataFrame()
 
-            useEffect(() => {
-                setLoading(true);
-                let isMounted = true;
-                
-                if (activeTab === '⭐ 自選股') {
-                    Promise.all(CATEGORIES.map(cat => 
-                        fetch(`./${FILE_MAP[cat]}?t=${Date.now()}`)
-                        .then(res => res.ok ? res.json() : [])
-                        .catch(() => [])
-                    ))
-                    .then(results => {
-                        if (!isMounted) return;
-                        let merged = [];
-                        results.forEach(arr => {
-                            if (Array.isArray(arr)) merged = merged.concat(arr);
-                        });
-                        
-                        const unique = [];
-                        const seen = new Set();
-                        merged.forEach(item => {
-                            if (item && item.id && favorites.includes(item.id) && !seen.has(item.id)) {
-                                seen.add(item.id);
-                                unique.push(item);
-                            }
-                        });
-                        setCurrentData(unique);
-                        setLoading(false);
-                    })
-                    .catch(() => { if (isMounted) { setCurrentData([]); setLoading(false); } });
-                } else {
-                    fetch(`./${FILE_MAP[activeTab]}?t=${Date.now()}`)
-                        .then(res => res.ok ? res.json() : [])
-                        .then(data => {
-                            if (isMounted) { setCurrentData(Array.isArray(data) ? data : []); setLoading(false); }
-                        })
-                        .catch(() => {
-                            if (isMounted) { setCurrentData([]); setLoading(false); }
-                        });
-                }
-                return () => { isMounted = false; };
-            }, [activeTab, favorites]);
+def fetch_finmind_price_fallback(symbol):
+    start_date = (datetime.now() - timedelta(days=365)).strftime('%Y-%m-%d')
+    url = f"https://api.finmindtrade.com/api/v4/data?dataset=TaiwanStockPrice&data_id={symbol}&start_date={start_date}&token={FINMIND_TOKEN}"
+    for _ in range(2):
+        try:
+            res = requests.get(url, timeout=5)
+            if res.status_code == 200 and res.json().get('data'):
+                df = pd.DataFrame(res.json().get('data'))
+                df['date'] = pd.to_datetime(df['date'])
+                df.set_index('date', inplace=True)
+                df['close'] = df['close'] if 'close' in df else df.get('Close')
+                df['volume'] = df['Trading_Volume']
+                return df.sort_index()
+        except: pass
+        time.sleep(1)
+    return pd.DataFrame()
 
-            useEffect(() => {
-                if (pendingScrollId && !loading && currentData.length > 0) {
-                    setTimeout(() => {
-                        const targetRow = document.getElementById(`row-${pendingScrollId}`);
-                        if (targetRow) {
-                            targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                            targetRow.classList.add('highlight-row');
-                            setTimeout(() => {
-                                targetRow.classList.remove('highlight-row');
-                            }, 2000);
-                            setPendingScrollId(null);
-                        }
-                    }, 150);
-                }
-            }, [currentData, loading, pendingScrollId]);
-
-            const sortedData = useMemo(() => {
-                let sortableItems = Array.isArray(currentData) ? [...currentData] : [];
-                if (activeTab === '即將上市(IPO)') return sortableItems;
-
-                sortableItems.sort((a, b) => {
-                    let aValue = a ? a[sortConfig.key] : null;
-                    let bValue = b ? b[sortConfig.key] : null;
-                    if (aValue === null || aValue === undefined) return 1;
-                    if (bValue === null || bValue === undefined) return -1;
-                    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-                    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-                    return 0;
-                });
-                return sortableItems;
-            }, [currentData, sortConfig, activeTab]);
-
-            const requestSort = (key) => {
-                let direction = 'desc';
-                if (sortConfig.key === key && sortConfig.direction === 'desc') direction = 'asc';
-                setSortConfig({ key, direction });
-            };
-
-            const filteredSearch = searchIndex.filter(item => {
-                if (!item) return false;
-                const idStr = String(item.id || "");
-                const nameStr = String(item.name || "");
-                return idStr.includes(searchQuery) || nameStr.includes(searchQuery);
-            }).slice(0, 10);
-
-            const handleSelectSearchResult = (item) => {
-                setActiveTab(item.category);
-                setExpandedRow(item.id);
-                setSearchQuery("");
-                setShowDropdown(false);
-                setPendingScrollId(item.id);
-            };
-
-            const isIPO = activeTab === '即將上市(IPO)';
-
-            return (
-                <div className="p-2 md:p-6 max-w-[1600px] mx-auto w-full overflow-hidden">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
-                        <div className="relative w-full md:w-96 z-50" ref={searchRef}>
-                            <input 
-                                type="text" 
-                                className="w-full border-2 border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-blue-500 shadow-sm" 
-                                placeholder="🔍 搜尋 ETF 代號或名稱..."
-                                value={searchQuery}
-                                onChange={(e) => { setSearchQuery(e.target.value); setShowDropdown(true); }}
-                                onFocus={() => setShowDropdown(true)}
-                            />
-                            {searchQuery && (
-                                <button className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 font-bold" onClick={() => { setSearchQuery(""); setShowDropdown(false); }}>✕</button>
-                            )}
-                            {showDropdown && searchQuery && (
-                                <div className="absolute top-11 left-0 w-full bg-white border shadow-lg rounded-lg max-h-60 overflow-y-auto z-50">
-                                    {filteredSearch.length > 0 ? filteredSearch.map(item => (
-                                        <div 
-                                            key={item.id} 
-                                            onClick={() => handleSelectSearchResult(item)} 
-                                            className="px-4 py-3 hover:bg-blue-50 cursor-pointer border-b last:border-0 flex justify-between items-center transition-colors"
-                                        >
-                                            <span className="font-bold text-slate-800">{item.id} {item.name}</span>
-                                            <span className="text-xs font-semibold bg-blue-100 text-blue-700 px-2 py-1 rounded">{item.category}</span>
-                                        </div>
-                                    )) : <div className="px-4 py-3 text-sm text-slate-500">查無相關 ETF 標的</div>}
-                                </div>
-                            )}
-                        </div>
-                        <div className="text-sm font-semibold text-slate-500 bg-white px-3 py-2 rounded-lg border shadow-sm">
-                            ⏱ 最後更新：{lastUpdate}
-                        </div>
-                    </div>
-
-                    <div className="flex overflow-x-auto gap-2 mb-4 pb-2 border-b-2 border-slate-200 hide-scrollbar z-40 relative">
-                        {TABS.map(cat => (
-                            <button 
-                                key={cat} 
-                                onClick={() => { setActiveTab(cat); setExpandedRow(null); }} 
-                                className={`whitespace-nowrap px-4 py-2 text-sm md:text-base font-bold rounded-t-lg transition-colors ${activeTab === cat ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-200 text-slate-600 hover:bg-slate-300'}`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
-                    </div>
-
-                    <div className="bg-white rounded-lg shadow border border-slate-200 w-full relative z-30">
-                        {loading && (
-                            <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center font-bold text-blue-600">
-                                資料載入中...
-                            </div>
-                        )}
-                        <div className="p-2 bg-blue-50 text-blue-800 text-xs font-semibold border-b border-blue-100 flex justify-between">
-                            <span>當前板塊：{activeTab} ({sortedData.length} 檔)</span>
-                            {!isIPO && <span>👆 點選欄位標頭可即時排序</span>}
-                        </div>
-                        <div className="overflow-x-auto max-h-[80vh] w-full relative">
-                            <table className="w-full text-sm text-left whitespace-nowrap">
-                                <thead className="bg-slate-100 text-slate-600 font-semibold sticky top-0 z-20 shadow-sm">
-                                    <tr>
-                                        <th className="px-2 py-3 sticky left-0 bg-slate-100 z-30 border-r w-10 text-center">⭐</th>
-                                        <th className="px-4 py-3 sticky left-10 bg-slate-100 z-30 border-r min-w-[200px]">代號 / 中文名稱</th>
-                                        {isIPO ? [
-                                            { key: 'issueDate', label: '掛牌日' }, 
-                                            { key: 'price', label: '發行價' },
-                                            { key: 'fee', label: '經管費' }, 
-                                            { key: 'freq', label: '配息頻率' },
-                                            { key: 'topHoldings', label: '前十大成分股' }
-                                        ].map(col => <th key={col.key} className="px-4 py-3">{col.label}</th>) : 
-                                        [
-                                            { key: 'price', label: '市價' }, 
-                                            { key: 'ytd', label: '今年以來(YTD)' },
-                                            { key: 'cagr_1y', label: '近1年報酬' },
-                                            { key: 'sharpe', label: '夏普值' }, 
-                                            { key: 'mdd', label: '最大回撤' },
-                                            { key: 'vol_20d', label: '日均量(張)' }
-                                        ].map(col => (
-                                            <th key={col.key} className="px-4 py-3 cursor-pointer hover:bg-slate-200 select-none" onClick={() => requestSort(col.key)}>
-                                                <span className="flex items-center gap-1">
-                                                    {col.label} 
-                                                    <span className="text-blue-600 font-black">
-                                                        {sortConfig.key === col.key ? (sortConfig.direction === 'asc' ? '↑' : '↓') : ''}
-                                                    </span>
-                                                </span>
-                                            </th>
-                                        ))}
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-slate-100">
-                                    {sortedData.map((row, idx) => {
-                                        if (!row || !row.id) return null;
-                                        const isFav = favorites.includes(row.id);
-                                        const isExpanded = expandedRow === row.id;
-
-                                        return (
-                                        <React.Fragment key={row.id || idx}>
-                                            <tr 
-                                                id={`row-${row.id}`}
-                                                className={`hover:bg-blue-50 cursor-pointer transition-colors duration-500 ${isExpanded ? 'bg-blue-50' : 'bg-white'}`} 
-                                                onClick={() => setExpandedRow(isExpanded ? null : row.id)}
-                                            >
-                                                <td 
-                                                    className="px-2 py-3 sticky left-0 z-10 border-r border-slate-100 bg-inherit text-center text-lg" 
-                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite(row.id); }}
-                                                >
-                                                    <span className={isFav ? "text-yellow-400 drop-shadow-sm" : "text-slate-300 hover:text-yellow-300"}>
-                                                        {isFav ? '★' : '☆'}
-                                                    </span>
-                                                </td>
-                                                <td className="px-4 py-3 sticky left-10 z-10 border-r border-slate-100 bg-inherit">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center gap-2">
-                                                            <span className="text-blue-400 text-lg">{isExpanded ? '▼' : '▶'}</span>
-                                                            <div>
-                                                                <div className="font-bold text-slate-800 text-base">{row.id}</div>
-                                                                <div className="text-xs text-blue-700 font-bold truncate max-w-[150px]">{row.name}</div>
-                                                            </div>
-                                                        </div>
-                                                        {row.freq && row.freq !== "" && row.freq !== "-" && !isIPO && (
-                                                            <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-800 border border-purple-200 font-bold whitespace-nowrap">
-                                                                {row.freq}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                {isIPO ? (
-                                                    <React.Fragment>
-                                                        <td className="px-4 py-3">{fmtText(row.issueDate)}</td>
-                                                        <td className="px-4 py-3">{fmtVal(row.price, "$")}</td>
-                                                        <td className="px-4 py-3">{fmtVal(row.fee, "")}</td>
-                                                        <td className="px-4 py-3">{fmtText(row.freq)}</td>
-                                                        <td className="px-4 py-3 text-xs text-slate-500 whitespace-normal min-w-[200px]">{fmtText(row.topHoldings)}</td>
-                                                    </React.Fragment>
-                                                ) : (
-                                                    <React.Fragment>
-                                                        <td className="px-4 py-3 font-semibold">{fmtVal(row.price)}</td>
-                                                        <td className={`px-4 py-3 ${getReturnColor(row.ytd)}`}>{fmtPct(row.ytd)}</td>
-                                                        <td className={`px-4 py-3 ${getReturnColor(row.cagr_1y)}`}>{fmtPct(row.cagr_1y)}</td>
-                                                        <td className="px-4 py-3">{fmtVal(row.sharpe)}</td>
-                                                        <td className="px-4 py-3 text-green-600 font-bold">{fmtPct(row.mdd)}</td>
-                                                        <td className="px-4 py-3 font-mono text-slate-600">{fmtVal(row.vol_20d)}</td>
-                                                    </React.Fragment>
-                                                )}
-                                            </tr>
-                                            
-                                            {isExpanded && (
-                                                <tr className="bg-slate-50 border-b-2 border-blue-200">
-                                                    <td colSpan={isIPO ? "7" : "8"} className="p-4 md:px-8">
-                                                        {isIPO ? (
-                                                            <div className="bg-white p-4 rounded-lg border shadow-sm max-w-4xl mx-auto">
-                                                                <h4 className="font-bold mb-3 text-blue-800 border-b pb-2">📋 新上市 IPO 募集明細與題材</h4>
-                                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-2">
-                                                                    <div className="md:col-span-2 bg-slate-50 p-3 rounded-lg border border-slate-200">
-                                                                        <span className="font-bold text-sm block mb-1 text-slate-700">🔍 核心設計架構與介紹：</span>
-                                                                        <p className="text-xs text-slate-600 leading-relaxed whitespace-normal">
-                                                                            此為近期準備募集或即將掛牌之新上市標的。因尚未正式掛牌，前十大成分股與確切內扣費用請以投信官方發布之「公開說明書」為準。
-                                                                        </p>
-                                                                    </div>
-                                                                    <div className="flex flex-col gap-2 justify-center">
-                                                                        <a 
-                                                                            href={`https://www.google.com/search?q=${row.id}+${row.name}+ETF+公開說明書+投信`} 
-                                                                            target="_blank" 
-                                                                            className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-xs font-bold transition text-center shadow-sm border border-slate-200 hover:border-blue-300 flex items-center justify-center gap-1"
-                                                                        >
-                                                                            🔍 Google 搜尋公開說明書
-                                                                        </a>
-                                                                        <a 
-                                                                            href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} 
-                                                                            target="_blank" 
-                                                                            className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded-lg text-xs font-bold transition text-center shadow-sm flex items-center justify-center gap-1"
-                                                                        >
-                                                                            📰 Yahoo 最新新聞
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="bg-white p-4 rounded-lg border shadow-sm max-w-4xl mx-auto">
-                                                                <h4 className="font-bold mb-3 text-slate-800 border-b pb-2">🔗 深度資訊與快捷連結</h4>
-                                                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3">
-                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/discount-premium`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
-                                                                        <span className="text-xl">⚖️</span>
-                                                                        <span>折溢價與淨值</span>
-                                                                    </a>
-                                                                    <a href={`https://www.moneydj.com/ETF/X/Basic/Basic0005.xdjhtm?etfid=${row.id}.TW`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
-                                                                        <span className="text-xl">💰</span>
-                                                                        <span>歷年配息與殖利率</span>
-                                                                    </a>
-                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/profile`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
-                                                                        <span className="text-xl">📝</span>
-                                                                        <span>規模與基本資料</span>
-                                                                    </a>
-                                                                    <a href={`https://www.wantgoo.com/stock/etf/${row.id}/constituent`} target="_blank" className="bg-slate-100 text-slate-700 hover:bg-blue-50 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm flex flex-col items-center justify-center gap-1 border border-slate-200 hover:border-blue-300">
-                                                                        <span className="text-xl">🏢</span>
-                                                                        <span>成分股明細</span>
-                                                                    </a>
-                                                                    <a href={`https://tw.stock.yahoo.com/quote/${row.id}/news`} target="_blank" className="bg-blue-600 text-white hover:bg-blue-700 px-2 py-3 rounded-lg text-sm font-bold transition text-center shadow-sm col-span-2 md:col-span-4 flex items-center justify-center gap-2 mt-1">
-                                                                        <span className="text-lg">📰</span>
-                                                                        <span>Yahoo 最新關聯新聞</span>
-                                                                    </a>
-                                                                </div>
-                                                            </div>
-                                                        )}
-                                                    </td>
-                                                </tr>
-                                            )}
-                                        </React.Fragment>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
+def fetch_ipo_data(listed_tickers):
+    ipo_list = []
+    try:
+        url = "https://www.moneydj.com/ETF/X/Basic/Basic0007A.xdjhtm"
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
+        res = requests.get(url, headers=headers, timeout=10)
+        res.encoding = 'utf-8'
+        soup = BeautifulSoup(res.text, "html.parser")
         
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ETFDashboard />);
-    </script>
-</body>
-</html>
+        tables = soup.find_all("table")
+        for table in tables:
+            rows = table.find_all("tr")
+            for row in rows[1:]:
+                cols = row.find_all("td")
+                if len(cols) >= 4:
+                    text_data = [c.text.strip() for c in cols]
+                    symbol = text_data[0]
+                    name = text_data[1]
+                    
+                    # 過濾 1: 必須包含數字且長度合理，排除不合法的代號
+                    if not any(char.isdigit() for char in symbol) or len(symbol) > 6:
+                        continue
+                        
+                    # 過濾 2: 交叉比對，若已經在上市清單內，直接踢除
+                    if symbol in listed_tickers:
+                        continue
+                        
+                    issue_date = text_data[2] if len(text_data) > 2 else "-"
+                    price_text = text_data[3] if len(text_data) > 3 else "0"
+                    
+                    try:
+                        price_val = float(price_text.replace("元", "").replace("NT", "").strip())
+                    except ValueError:
+                        price_val = 0.0
+                        
+                    ipo_list.append({
+                        "id": symbol,
+                        "name": name,
+                        "issueDate": issue_date,
+                        "price": price_val,
+                        "fee": "-", 
+                        "freq": get_dynamic_frequency(symbol, name),
+                        "topHoldings": "-"
+                    })
+    except Exception as e:
+        print(f"IPO HTML 爬蟲解析異常: {e}")
+    
+    return ipo_list
+
+def main():
+    tickers = fetch_etf_list()
+    if not tickers: return
+
+    db = {cat: [] for cat in FILE_MAP.keys()}
+    search_index = []
+    
+    current_year = datetime.now().year
+    last_year = current_year - 1
+
+    print(f"啟動量化引擎，共 {len(tickers)} 檔...")
+
+    for idx, (ticker_id, info) in enumerate(tickers.items()):
+        name = info['name']
+        category = categorize_etf(name)
+        
+        current_price = cagr_1y = ytd = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
+        
+        freq = FREQ_MAP.get(ticker_id)
+        if not freq:
+            freq = get_dynamic_frequency(ticker_id, name)
+
+        try:
+            hist = fetch_fugle_candles(ticker_id)
+            if hist.empty: hist = fetch_finmind_price_fallback(ticker_id)
+
+            if not hist.empty and len(hist) > 0:
+                current_price = float(hist['close'].iloc[-1])
+                
+                last_year_df = hist[hist.index.year == last_year]
+                if not last_year_df.empty:
+                    last_close = float(last_year_df['close'].iloc[-1])
+                    ytd = (current_price - last_close) / last_close
+                else:
+                    this_year_df = hist[hist.index.year == current_year]
+                    if not this_year_df.empty:
+                        first_close = float(this_year_df['close'].iloc[0])
+                        ytd = (current_price - first_close) / first_close
+
+                if len(hist) >= 20: vol_20d = int(hist['volume'].tail(20).mean() / 1000)
+                
+                if len(hist) >= 200:
+                    first_price = float(hist['close'].iloc[0])
+                    cagr_1y = (current_price - first_price) / first_price
+                    max_p = hist['close'].cummax()
+                    mdd = float(((hist['close'] - max_p) / max_p).min())
+                    daily_ret = hist['close'].pct_change().dropna()
+                    std_val = daily_ret.std()
+                    if pd.notna(std_val) and std_val > 0:
+                        sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
+        except Exception: pass
+        
+        if current_price is None or math.isnan(current_price): continue
+        
+        db[category].append({
+            "id": ticker_id, "name": name, "freq": freq,
+            "price": current_price, "ytd": ytd, "cagr_1y": cagr_1y, 
+            "sharpe": sharpe, "mdd": mdd, "vol_20d": vol_20d,
+            "yield_ttm": yield_ttm, "dividend_rate": dividend_rate
+        })
+        search_index.append({"id": ticker_id, "name": name, "category": category})
+        time.sleep(0.5) 
+
+    for cat, data in db.items():
+        with open(FILE_MAP[cat], "w", encoding="utf-8") as f:
+            json.dump(sanitize_json(data), f, ensure_ascii=False, indent=2)
+            
+    with open("search_index.json", "w", encoding="utf-8") as f:
+        json.dump(search_index, f, ensure_ascii=False, indent=2)
+
+    # 執行動態 IPO 爬蟲，並傳入上市名冊 (tickers) 作為交叉比對依據
+    ipo_db = fetch_ipo_data(tickers)
+    
+    with open("data_ipo.json", "w", encoding="utf-8") as f:
+        json.dump(ipo_db, f, ensure_ascii=False, indent=2)
+
+    tw_tz = timezone(timedelta(hours=8))
+    tw_time = datetime.now(tw_tz).strftime('%Y-%m-%d %H:%M:%S')
+    with open("meta.json", "w", encoding="utf-8") as f:
+        json.dump({"last_update": tw_time}, f, ensure_ascii=False)
+
+    success_msg = f"更新✅ 台股全市場 ETF 數據庫已更新完畢！\n執行時間：{tw_time}"
+    print(success_msg)
+    send_telegram_message(success_msg)
+
+if __name__ == "__main__": main()
