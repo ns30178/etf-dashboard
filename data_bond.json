@@ -11,5 +11,83 @@
     "vol_20d": null,
     "yield_ttm": null,
     "dividend_rate": null
+  },
+  {
+    "id": "00865B",
+    "name": "國泰US短期公債",
+    "freq": "-",
+    "price": 48.55,
+    "ytd": 0.029692470837751825,
+    "cagr_1y": 0.13222947761194018,
+    "sharpe": 2.9753135475616515,
+    "mdd": -0.021734357848518,
+    "vol_20d": 3642,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00710B",
+    "name": "復華彭博非投等債",
+    "freq": "季配",
+    "price": 18.98,
+    "ytd": 0.0026413100898045805,
+    "cagr_1y": 0.07171089779785429,
+    "sharpe": 1.379021490231241,
+    "mdd": -0.03072033898305076,
+    "vol_20d": 257,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00711B",
+    "name": "復華彭博新興債",
+    "freq": "季配",
+    "price": 16.14,
+    "ytd": -0.011635027556644075,
+    "cagr_1y": 0.11004126547455306,
+    "sharpe": 1.61542816548061,
+    "mdd": -0.05762304921968792,
+    "vol_20d": 142,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00953B",
+    "name": "群益優選非投等債",
+    "freq": "月配",
+    "price": 9.71,
+    "ytd": -0.003080082135523548,
+    "cagr_1y": 0.06820682068206832,
+    "sharpe": 1.4321115292402518,
+    "mdd": -0.0275510204081634,
+    "vol_20d": 31929,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00945B",
+    "name": "凱基美國非投等債",
+    "freq": "月配",
+    "price": 14.53,
+    "ytd": 0.002068965517241335,
+    "cagr_1y": 0.08594917787742888,
+    "sharpe": 1.9179992650890014,
+    "mdd": -0.023809523809523787,
+    "vol_20d": 6567,
+    "yield_ttm": null,
+    "dividend_rate": null
+  },
+  {
+    "id": "00985B",
+    "name": "群益ESG投等債0-5",
+    "freq": "季配",
+    "price": 10.29,
+    "ytd": -0.0029069767441861566,
+    "cagr_1y": null,
+    "sharpe": null,
+    "mdd": null,
+    "vol_20d": 6806,
+    "yield_ttm": null,
+    "dividend_rate": null
   }
 ]
