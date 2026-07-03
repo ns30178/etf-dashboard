@@ -22,7 +22,6 @@ FILE_MAP = {
     "綜合/其他": "data_other.json"
 }
 
-# 現有已知名單 (加速處理，降低 API 請求次數)
 FREQ_MAP = {
     "00929": "月配", "00934": "月配", "00936": "月配", "00939": "月配", "00940": "月配", "00943": "月配", "00944": "月配", "00946": "月配", "00963": "月配", "00964": "月配", "00772B": "月配", "00773B": "月配", "00933B": "月配", "00937B": "月配", "00945B": "月配", "00948B": "月配", "00953B": "月配", "00958B": "月配", "00959B": "月配", "00968B": "月配",
     "00907": "雙月配",
@@ -118,71 +117,95 @@ def fetch_finmind_price_fallback(symbol):
         time.sleep(1)
     return pd.DataFrame()
 
-# 🚀 強化版：MoneyDJ 新基金募集資料爬蟲模組
-def fetch_ipo_data():
+# 🚀 全新主備援架構：Yahoo 股市主線 + HiStock 第一備援
+def fetch_ipo_data(listed_tickers):
     ipo_list = []
+    
+    # ---- 1. 主線任務：Yahoo 股市新股專區 ----
     try:
-        url = "https://www.moneydj.com/fundj/fundmarket.djhtm?a=broncho-1"
-        # 加上更擬真、詳細的 Header，避免被輕易判定為機器人封鎖
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "Accept-Language": "zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7"
+        print("啟動新主線爬蟲：Yahoo 股市...")
+        url_yahoo = "https://tw.stock.yahoo.com/rank/ipo"
+        headers_yahoo = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        res = requests.get(url, headers=headers, timeout=15)
-        res.encoding = 'utf-8'
-        
-        # 只有在成功取得網頁時才進行解析
+        res = requests.get(url_yahoo, headers=headers_yahoo, timeout=12)
         if res.status_code == 200:
             soup = BeautifulSoup(res.text, "html.parser")
-            tables = soup.find_all("table")
-            
-            for table in tables:
-                text_content = table.get_text()
-                # 精準定位：一定要同時包含這些表頭字眼才解析，避開雜訊表格
-                if "基金名稱" in text_content and "基金型態" in text_content and "募集期間" in text_content:
-                    rows = table.find_all("tr")
-                    for row in rows:
-                        # 加上 recursive=False 確保不會抓到「表格中的表格」導致錯亂
-                        cols = row.find_all(["td", "th"], recursive=False)
-                        if len(cols) >= 5:
-                            name = cols[0].get_text(strip=True)
-                            fund_type = cols[1].get_text(strip=True)
-                            manager = cols[2].get_text(strip=True)
-                            period = cols[4].get_text(strip=True)
-                            
-                            # 剔除表頭與無效行
-                            if "基金名稱" in name or "核准募集" in name or not name:
-                                continue
-                                
-                            name = name.split("\n")[0].strip()
-                            if len(name) < 2:
-                                continue
-                                
-                            # 確保不重複加入
-                            if not any(item['name'] == name for item in ipo_list):
-                                ipo_list.append({
-                                    "id": "IPO",
-                                    "name": name,
-                                    "type": fund_type,
-                                    "manager": manager,
-                                    "period": period
-                                })
-                    # 抓到目標表格並解析完畢後，直接跳出迴圈
-                    if len(ipo_list) > 0:
-                        break
+            rows = soup.find_all("div", class_="table-row")
+            for row in rows:
+                cells = row.find_all("div", class_="table-cell")
+                if len(cells) >= 4:
+                    name_text = cells[0].get_text(strip=True)
+                    if "股票" in name_text or "代號" in name_text or not name_text:
+                        continue
+                    
+                    # 交叉比對：排除已經在常規上市清單內的代號
+                    if any(t_id in name_text for t_id in listed_tickers):
+                        continue
+                        
+                    period_text = cells[2].get_text(strip=True)
+                    
+                    ipo_list.append({
+                        "id": "IPO",
+                        "name": name_text,
+                        "type": "新上市/募集標的",
+                        "manager": "詳見公開說明書",
+                        "period": period_text if period_text else "近期掛牌"
+                    })
+            if len(ipo_list) > 0:
+                print(f"主線 Yahoo 股市資料擷取成功，共 {len(ipo_list)} 檔。")
+                return ipo_list
     except Exception as e:
-        print(f"MoneyDJ IPO 募集解析異常: {e}")
+        print(f"主線 Yahoo 解析異常: {e}")
 
-    # 🛡️【防呆提示機制】：如果被 MoneyDJ 防火牆封鎖，或者網頁剛好真的清空了，給予前端一個提示，避免變成白畫面
+    # ---- 2. 第一備援防線：HiStock 嗨投資新股專區 ----
     if not ipo_list:
-        ipo_list.append({
+        try:
+            print("主線無資料，啟動第一備援防線：HiStock 嗨投資...")
+            url_histock = "https://histock.tw/stock/public.aspx"
+            headers_histock = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            }
+            res = requests.get(url_histock, headers=headers_histock, timeout=12)
+            if res.status_code == 200:
+                soup = BeautifulSoup(res.text, "html.parser")
+                table = soup.find("table", class_="m-table")
+                if table:
+                    rows = table.find_all("tr")
+                    for row in rows[1:]:
+                        cols = row.find_all("td")
+                        if len(cols) >= 5:
+                            name_text = cols[1].get_text(strip=True)
+                            if not name_text or "股票" in name_text:
+                                continue
+                            if any(t_id in name_text for t_id in listed_tickers):
+                                continue
+                            period_text = cols[3].get_text(strip=True)
+                            
+                            ipo_list.append({
+                                "id": "IPO",
+                                "name": name_text,
+                                "type": "新股募集",
+                                "manager": "詳見公開說明書",
+                                "period": period_text if period_text else "近期募集"
+                            })
+                if len(ipo_list) > 0:
+                    print(f"第一備援 HiStock 擷取成功，共 {len(ipo_list)} 檔。")
+                    return ipo_list
+        except Exception as e:
+            print(f"第一備援 HiStock 解析異常: {e}")
+
+    # ---- 3. 終端防線：安全網提示 ----
+    if not ipo_list:
+        print("所有備援管道均無最新募集標的。")
+        ipo_db = [{
             "id": "⚠️ 系統提示",
-            "name": "目前無資料，或伺服器遭 MoneyDJ 阻擋",
-            "type": "請點擊展開",
+            "name": "目前全市場暫無募集中的新商品",
+            "type": "暫無新募集",
             "manager": "-",
-            "period": "點擊下方按鈕直接前往查看"
-        })
+            "period": "點擊下方按鈕可直接前往財經專區查看詳情"
+        }]
+        return ipo_db
         
     return ipo_list
 
@@ -193,7 +216,7 @@ def main():
     db = {cat: [] for cat in FILE_MAP.keys()}
     search_index = []
     
-    # 建立「歷史快取防禦機制」：先載入上次的資料庫，避免限流時檔案歸零
+    # 歷史快取增量防禦機制
     old_data_map = {}
     for cat, filename in FILE_MAP.items():
         if os.path.exists(filename):
@@ -213,7 +236,6 @@ def main():
     for idx, (ticker_id, info) in enumerate(tickers.items()):
         name = info['name']
         category = categorize_etf(name)
-        
         current_price = cagr_1y = ytd = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
         
         freq = FREQ_MAP.get(ticker_id)
@@ -226,7 +248,6 @@ def main():
 
             if not hist.empty and len(hist) > 0:
                 current_price = float(hist['close'].iloc[-1])
-                
                 last_year_df = hist[hist.index.year == last_year]
                 if not last_year_df.empty:
                     last_close = float(last_year_df['close'].iloc[-1])
@@ -238,7 +259,6 @@ def main():
                         ytd = (current_price - first_close) / first_close
 
                 if len(hist) >= 20: vol_20d = int(hist['volume'].tail(20).mean() / 1000)
-                
                 if len(hist) >= 200:
                     first_price = float(hist['close'].iloc[0])
                     cagr_1y = (current_price - first_price) / first_price
@@ -250,7 +270,7 @@ def main():
                         sharpe = float((daily_ret.mean() / std_val) * (252**0.5))
         except Exception: pass
         
-        # 觸發防禦：若 API 被限流或沒給市價，拿上一次成功的數據補位
+        # 快取備援補位機制
         if current_price is None or math.isnan(current_price):
             if ticker_id in old_data_map:
                 db[category].append(old_data_map[ticker_id])
@@ -273,8 +293,8 @@ def main():
     with open("search_index.json", "w", encoding="utf-8") as f:
         json.dump(search_index, f, ensure_ascii=False, indent=2)
 
-    # 執行 MoneyDJ 動態募集資料庫寫入
-    ipo_db = fetch_ipo_data()
+    # 執行多備援募集資料庫寫入
+    ipo_db = fetch_ipo_data(tickers)
     with open("data_ipo.json", "w", encoding="utf-8") as f:
         json.dump(ipo_db, f, ensure_ascii=False, indent=2)
 
