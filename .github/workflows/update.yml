@@ -1,10 +1,11 @@
 name: Daily ETF Update
 
 on:
-  schedule:
-    # 修改時間為 10:45 (UTC)，即台灣時間 18:45，避開尖峰塞車
-    - cron: '45 10 * * 1-5'
-  # 這是關鍵保險：讓你以後在手機上隨時可以點按鈕強制執行
+  # 已關閉 GitHub 內建容易延遲大塞車的排程，全權交由 cron-job.org 透過 API 精準觸發
+  # schedule:
+  #   - cron: '45 10 * * 1-5'
+  
+  # 保留外部 API 與手動強制觸發通道
   workflow_dispatch:
 
 jobs:
