@@ -161,6 +161,9 @@
                         setLoading(false);
                     })
                     .catch(() => { if (isMounted) { setCurrentData([]); setLoading(false); } });
+                } else if (activeTab === '即將上市(IPO)') {
+                    // IPO 分頁改為官方連結跳轉，不抓資料
+                    setCurrentData([]); setLoading(false);
                 } else {
                     fetch(`./${FILE_MAP[activeTab]}?t=${Date.now()}`)
                         .then(res => res.ok ? res.json() : [])
@@ -276,6 +279,36 @@
                         ))}
                     </div>
 
+                    {isIPO ? (
+                        <div className="bg-white rounded-lg shadow border border-slate-200 w-full p-5 md:p-8">
+                            <h3 className="text-lg font-bold text-blue-800 mb-1">🆕 即將上市 / 新募集 ETF —— 資訊快速入口</h3>
+                            <p className="text-sm text-slate-500 mb-5 leading-relaxed">
+                                募集中的 ETF 尚未掛牌、沒有市價，資料以官方與主流財經網站為準；點下方連結直接查看最新一期募集標的、募集期間與公開說明書。
+                                <br />ETF 一旦正式掛牌上市，本站會於隔日自動納入對應型態分頁（免手動維護）。
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {[
+                                    { icon: "🏛", t: "證交所 · IPO／SPO 資訊揭露專區", d: "官方最權威的新上市／現增揭露", url: "https://mopsov.twse.com.tw/ipospoinform" },
+                                    { icon: "💰", t: "MoneyDJ · 新基金／ETF 募集時間表", d: "含募集期間、申購日、承銷券商", url: "https://www.moneydj.com/funddj/FundMarket.djhtm?a=broncho-1" },
+                                    { icon: "🆕", t: "MoneyDJ · 最新上市 ETF 清單", d: "最近成立掛牌的 ETF", url: "https://www.moneydj.com/etf/ec/et305002.djhtm?a=2" },
+                                    { icon: "📋", t: "證交所 · ETF 商品資訊清單", d: "全部已上市 ETF 官方清單", url: "https://www.twse.com.tw/zh/products/securities/etf/products/list.html" },
+                                    { icon: "🗓", t: "HiStock · 股票申購／抽籤日程表", d: "新股申購行事曆", url: "https://histock.tw/stock/public.aspx" },
+                                ].map((L, i) => (
+                                    <a key={i} href={L.url} target="_blank" rel="noopener noreferrer"
+                                        className="flex items-center justify-between gap-3 p-4 rounded-lg border border-slate-200 hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                                        <span className="flex items-center gap-3 min-w-0">
+                                            <span className="text-2xl">{L.icon}</span>
+                                            <span className="min-w-0">
+                                                <span className="block font-bold text-slate-800 text-sm">{L.t}</span>
+                                                <span className="block text-xs text-slate-500 truncate">{L.d}</span>
+                                            </span>
+                                        </span>
+                                        <span className="text-blue-500 font-bold text-sm whitespace-nowrap">前往 ↗</span>
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+                    ) : (
                     <div className="bg-white rounded-lg shadow border border-slate-200 w-full relative z-30">
                         {loading && (
                             <div className="absolute inset-0 bg-white/80 z-50 flex items-center justify-center font-bold text-blue-600">
@@ -448,6 +481,7 @@
                             </table>
                         </div>
                     </div>
+                    )}
                 </div>
             );
         }
