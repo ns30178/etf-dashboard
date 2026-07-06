@@ -42,8 +42,14 @@ def sanitize_json(val):
     elif isinstance(val, float): return None if math.isnan(val) or math.isinf(val) else val
     return val
 
-def categorize_etf(name):
-    if any(k in name for k in ['正2', '正達', '倍']): return "槓桿型"
+def categorize_etf(symbol, name):
+    # 先用代號字尾判斷（台股 ETF 命名慣例最可靠）：L=槓桿、R=反向、B=債券
+    code = str(symbol).upper()
+    if code.endswith('L'): return "槓桿型"
+    if code.endswith('R'): return "反向型"
+    if code.endswith('B'): return "債券型"
+    # 字尾判不出來，再用名稱關鍵字
+    if any(k in name for k in ['正2', '正達', '倍', '槓桿']): return "槓桿型"
     if any(k in name for k in ['反1', '反向']): return "反向型"
     if any(k in name for k in ['高息', '高股息', '優息', '股息', '息收']): return "高股息"
     if any(k in name for k in ['債', '國債', '投等', '金融債', '公司債']): return "債券型"
@@ -117,101 +123,13 @@ def fetch_finmind_price_fallback(symbol):
         time.sleep(1)
     return pd.DataFrame()
 
-# 🚀 全新主備援架構：Yahoo 股市主線 + HiStock 第一備援
-def fetch_ipo_data(listed_tickers):
-    ipo_list = []
-    
-    # ---- 1. 主線任務：Yahoo 股市新股專區 ----
-    try:
-        print("啟動新主線爬蟲：Yahoo 股市...")
-        url_yahoo = "https://tw.stock.yahoo.com/rank/ipo"
-        headers_yahoo = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        }
-        res = requests.get(url_yahoo, headers=headers_yahoo, timeout=12)
-        if res.status_code == 200:
-            soup = BeautifulSoup(res.text, "html.parser")
-            rows = soup.find_all("div", class_="table-row")
-            for row in rows:
-                cells = row.find_all("div", class_="table-cell")
-                if len(cells) >= 4:
-                    name_text = cells[0].get_text(strip=True)
-                    if "股票" in name_text or "代號" in name_text or not name_text:
-                        continue
-                    
-                    # 交叉比對：排除已經在常規上市清單內的代號
-                    if any(t_id in name_text for t_id in listed_tickers):
-                        continue
-                        
-                    period_text = cells[2].get_text(strip=True)
-                    
-                    ipo_list.append({
-                        "id": "IPO",
-                        "name": name_text,
-                        "type": "新上市/募集標的",
-                        "manager": "詳見公開說明書",
-                        "period": period_text if period_text else "近期掛牌"
-                    })
-            if len(ipo_list) > 0:
-                print(f"主線 Yahoo 股市資料擷取成功，共 {len(ipo_list)} 檔。")
-                return ipo_list
-    except Exception as e:
-        print(f"主線 Yahoo 解析異常: {e}")
-
-    # ---- 2. 第一備援防線：HiStock 嗨投資新股專區 ----
-    if not ipo_list:
-        try:
-            print("主線無資料，啟動第一備援防線：HiStock 嗨投資...")
-            url_histock = "https://histock.tw/stock/public.aspx"
-            headers_histock = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-            }
-            res = requests.get(url_histock, headers=headers_histock, timeout=12)
-            if res.status_code == 200:
-                soup = BeautifulSoup(res.text, "html.parser")
-                table = soup.find("table", class_="m-table")
-                if table:
-                    rows = table.find_all("tr")
-                    for row in rows[1:]:
-                        cols = row.find_all("td")
-                        if len(cols) >= 5:
-                            name_text = cols[1].get_text(strip=True)
-                            if not name_text or "股票" in name_text:
-                                continue
-                            if any(t_id in name_text for t_id in listed_tickers):
-                                continue
-                            period_text = cols[3].get_text(strip=True)
-                            
-                            ipo_list.append({
-                                "id": "IPO",
-                                "name": name_text,
-                                "type": "新股募集",
-                                "manager": "詳見公開說明書",
-                                "period": period_text if period_text else "近期募集"
-                            })
-                if len(ipo_list) > 0:
-                    print(f"第一備援 HiStock 擷取成功，共 {len(ipo_list)} 檔。")
-                    return ipo_list
-        except Exception as e:
-            print(f"第一備援 HiStock 解析異常: {e}")
-
-    # ---- 3. 終端防線：安全網提示 ----
-    if not ipo_list:
-        print("所有備援管道均無最新募集標的。")
-        ipo_db = [{
-            "id": "⚠️ 系統提示",
-            "name": "目前全市場暫無募集中的新商品",
-            "type": "暫無新募集",
-            "manager": "-",
-            "period": "點擊下方按鈕可直接前往財經專區查看詳情"
-        }]
-        return ipo_db
-        
-    return ipo_list
-
 def main():
     tickers = fetch_etf_list()
-    if not tickers: return
+    if not tickers:
+        # 抓不到全市場清單（FinMind 當機或流量超限）：發告警，並直接結束、不覆蓋任何舊 JSON，維持上一版資料
+        send_telegram_message("⚠️ ETF 更新警告：無法取得全市場清單（FinMind 可能當機或流量超限），本次略過更新、保留既有資料。")
+        print("[WARN] 無法取得 ETF 清單，保留舊資料並結束。")
+        return
 
     db = {cat: [] for cat in FILE_MAP.keys()}
     search_index = []
@@ -235,7 +153,7 @@ def main():
 
     for idx, (ticker_id, info) in enumerate(tickers.items()):
         name = info['name']
-        category = categorize_etf(name)
+        category = categorize_etf(ticker_id, name)
         current_price = cagr_1y = ytd = sharpe = mdd = vol_20d = yield_ttm = dividend_rate = None
         
         freq = FREQ_MAP.get(ticker_id)
@@ -293,10 +211,7 @@ def main():
     with open("search_index.json", "w", encoding="utf-8") as f:
         json.dump(search_index, f, ensure_ascii=False, indent=2)
 
-    # 執行多備援募集資料庫寫入
-    ipo_db = fetch_ipo_data(tickers)
-    with open("data_ipo.json", "w", encoding="utf-8") as f:
-        json.dump(ipo_db, f, ensure_ascii=False, indent=2)
+    # IPO（即將上市/募集）已改為前端「官方連結跳轉」，後端不再爬蟲、不產生 data_ipo.json
 
     tw_tz = timezone(timedelta(hours=8))
     tw_time = datetime.now(tw_tz).strftime('%Y-%m-%d %H:%M:%S')
