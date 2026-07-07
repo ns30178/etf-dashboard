@@ -1,7 +1,9 @@
 name: Daily ETF Update
 
 on:
-  # 關閉 GitHub 內建的每日排程，完全交由 cron-job.org 或手動觸發
+  # 接收來自 cron-job.org 的外部 API 觸發信號 (對應 URL: /dispatches)
+  repository_dispatch:
+  # 保留 GitHub 網頁上的手動按鈕觸發通道
   workflow_dispatch:
 
 # 允許 workflow 推回 commit
@@ -11,7 +13,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 90        # 全市場 300+ 檔 + FinMind 節流，預留充足時間
+    timeout-minutes: 90
 
     steps:
     - name: Date Guard (Check if 1st or 16th)
